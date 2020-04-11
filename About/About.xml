@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<name>MoHAR hediffs src</name>
+	<author>Gouda quiche</author>
+	<url>https://github.com/goudaQuiche</url>
+	<supportedVersions>
+			<li>1.1</li>
+	</supportedVersions>
+	<packageId>goudaquiche.MoharHediffs.src</packageId>
+	
+	<modDependencies>
+      <li>
+        <packageId>erdelf.HumanoidAlienRaces</packageId>
+        <displayName>Humanoid Alien Races 2.0</displayName>
+        <steamWorkshopUrl>https://steamcommunity.com/workshop/filedetails/?id=839005762</steamWorkshopUrl>
+      </li>
+    </modDependencies>
+	
+	<description>Adds hediffs for humanlike beings.
+	
+- nullify/make immune to another Hediff.
+- make pawn a material or pawn factory
+- make the pawn puff some steam
+
+Example:
+Use dev mode; Spawn pawn; choose MoharGuineaPig
+
+Mod creators: 
+The mod comes with ressources to allow some fast tests :
+- Textures
+- Xml hediff
+- Xml backstories
+- Xml race definition
+- Xml pawnkind definition
+
+To allow your pawns to use these hediffs,  you only need : 
+- Dll in the assembly directory
+- Cml hediff definitions
+- A way to give your race the hediff. I used backstories but there are other ways.</description>
+
+
+</ModMetaData>

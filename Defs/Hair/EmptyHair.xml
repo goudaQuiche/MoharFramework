@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	<HairDef>
+		<defName>EmptyHair</defName>
+		<label>empty</label>
+		<hairGender>Any</hairGender>
+		<texPath>Hair/empty</texPath>
+		<hairTags>
+			<li>EmptyHair</li>
+		</hairTags>
+	</HairDef>
+</Defs>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<PawnKindDef Abstract="True" Name="BaseGuineaPigPawnKind">
+		<race>Alien_GuineaPig</race>
+		
+		<combatPower>40</combatPower>
+		<baseRecruitDifficulty>0.50</baseRecruitDifficulty>
+		<isFighter>false</isFighter>
+		<apparelIgnoreSeasons>false</apparelIgnoreSeasons>
+		<forceNormalGearQuality>true</forceNormalGearQuality>
+	</PawnKindDef>
+
+	<PawnKindDef ParentName="BaseGuineaPigPawnKind">
+		<defName>MoharGuineaPig</defName>
+		<label>whatever</label>
+		
+		<defaultFactionType>PlayerColony</defaultFactionType>
+		
+		<backstoryFiltersOverride>
+			<li>
+				<categories>
+					<li>GuineaPigBackstory</li>
+				</categories>
+			</li>
+		</backstoryFiltersOverride>
+		
+		<apparelTags>
+			<li>Neolithic</li>
+		</apparelTags>
+		<gearHealthRange>
+			<min>0.2</min>
+			<max>1.1</max>
+		</gearHealthRange>
+		<apparelMoney>
+			<min>200</min>
+			<max>300</max>
+		</apparelMoney>
+		
+		<minGenerationAge>39</minGenerationAge>
+		
+	</PawnKindDef>
+
+	
+</Defs>
