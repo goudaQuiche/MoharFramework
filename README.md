@@ -1,6 +1,7 @@
-# LTF_Slug
-# Adds 1 race to RimWorld
-# Slug race from Faster than light
-# Xenophobic, socially awkward, psychic resistant, drool slug dew
-# Dependencies : 
-# Alien framework 2.0 : https://github.com/erdelf/AlienRaces# MoharHediffs
+# MoharHediffs
+#Adds hediffs for humanlike beings.
+#- nullify/make immune to another Hediff.
+#- make pawn a material or pawn factory
+#- make the pawn puff some steam
+#Example:
+#Use dev mode; Spawn pawn; choose MoharGuineaPig
