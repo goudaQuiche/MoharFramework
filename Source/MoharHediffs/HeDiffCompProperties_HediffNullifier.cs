@@ -10,7 +10,7 @@
 using System.Collections.Generic;
 using Verse;
 
-namespace MoharBehaviors
+namespace MoharHediffs
 {
 	public class HeDiffCompProperties_HediffNullifier : HediffCompProperties
 	{

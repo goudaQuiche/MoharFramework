@@ -10,7 +10,7 @@
 		<labelNoun>Hediff_AlcoholImmunity.labelNoun</labelNoun>
 		
 		<comps>
-			<li Class="MoharBehaviors.HeDiffCompProperties_HediffNullifier">
+			<li Class="MoharHediffs.HeDiffCompProperties_HediffNullifier">
 				<hediffToNullify>
 					<li>AlcoholHigh</li>
 					<li>AlcoholTolerance</li>
@@ -30,7 +30,7 @@
 		<labelNoun>Hediff_PlagueImmunity.labelNoun</labelNoun>
 		
 		<comps>
-			<li Class="MoharBehaviors.HeDiffCompProperties_HediffNullifier">
+			<li Class="MoharHediffs.HeDiffCompProperties_HediffNullifier">
 				<hediffToNullify>
 					<li>Plague</li>	
 				</hediffToNullify>
@@ -46,7 +46,7 @@
 		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
 		
 		<comps>
-		<li Class="MoharBehaviors.HediffCompProperties_LTF_Spawner">
+		<li Class="MoharHediffs.HediffCompProperties_LTF_Spawner">
 			<thingToSpawn>RawFungus</thingToSpawn>
 			<spawnCount>1</spawnCount>
 
@@ -75,7 +75,7 @@
 		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
 		
 		<comps>
-		<li Class="MoharBehaviors.HediffCompProperties_LTF_Spawner">
+		<li Class="MoharHediffs.HediffCompProperties_LTF_Spawner">
 			<thingToSpawn>RawPotatoes</thingToSpawn>
 			<spawnCount>3</spawnCount>
 
@@ -103,7 +103,7 @@
 		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
 		
 		<comps>
-		<li Class="MoharBehaviors.HediffCompProperties_LTF_Spawner">
+		<li Class="MoharHediffs.HediffCompProperties_LTF_Spawner">
 			<thingToSpawn>RawCorn</thingToSpawn>
 			<spawnCount>7</spawnCount>
 			<minDaysB4Next>.6</minDaysB4Next>
@@ -132,7 +132,7 @@
 		
 		<comps>
 
-		<li Class="MoharBehaviors.HediffCompProperties_LTF_Spawner">
+		<li Class="MoharHediffs.HediffCompProperties_LTF_Spawner">
 			<animalThing>true</animalThing>
 
 			<animalName>Megascarab</animalName>
@@ -161,7 +161,7 @@
 		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
 		
 		<comps>
-		<li Class="MoharBehaviors.HediffCompProperties_LTF_Spawner">
+		<li Class="MoharHediffs.HediffCompProperties_LTF_Spawner">
 			<thingToSpawn>Meat_Megaspider</thingToSpawn>
 			<spawnCount>5</spawnCount>
 			<minDaysB4Next>1.5</minDaysB4Next>
@@ -188,7 +188,7 @@
 		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
 		
 		<comps>
-		<li Class="MoharBehaviors.HediffCompProperties_LTF_Spawner">
+		<li Class="MoharHediffs.HediffCompProperties_LTF_Spawner">
 			<thingToSpawn>Yayo</thingToSpawn>
 			<spawnCount>2</spawnCount>
 
@@ -217,7 +217,7 @@
 		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
 		
 		<comps>
-			<li Class="MoharBehaviors.HeDiffCompProperties_LTF_Steamer">
+			<li Class="MoharHediffs.HeDiffCompProperties_LTF_Steamer">
 					<MinTicksBetweenSprays>2560</MinTicksBetweenSprays>
 					<MaxTicksBetweenSprays>5120</MaxTicksBetweenSprays>
 			</li>

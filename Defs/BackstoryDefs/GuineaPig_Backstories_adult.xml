@@ -23,8 +23,9 @@
 			<li>Hediff_InsectProduction</li>
 			
 			<li>Hediff_PlagueImmunity</li>
-			
 			<li>Hediff_AlcoholImmunity</li>
+			
+			<li>Hediff_Steamer</li>
 		</forcedHediffs>
     </AlienRace.BackstoryDef>
 </Defs>

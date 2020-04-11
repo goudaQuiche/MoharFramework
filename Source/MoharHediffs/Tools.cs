@@ -10,7 +10,7 @@ using UnityEngine;
 using Verse;
 
 
-namespace MoharBehaviors
+namespace MoharHediffs
 {
     public class Tools
     {

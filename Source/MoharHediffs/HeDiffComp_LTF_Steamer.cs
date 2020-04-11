@@ -2,7 +2,7 @@
 using System;
 using RimWorld;
 
-namespace MoharBehaviors
+namespace MoharHediffs
 {
     public class HeDiffComp_LTF_Steamer : HediffComp
     {

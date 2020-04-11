@@ -12,7 +12,7 @@ using System;
 using System.Collections.Generic;
 using Verse;
 
-namespace MoharBehaviors
+namespace MoharHediffs
 {
     public class HeDiffComp_HediffNullifier : HediffComp
     {

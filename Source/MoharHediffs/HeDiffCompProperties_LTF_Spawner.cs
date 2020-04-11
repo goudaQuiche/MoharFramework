@@ -8,7 +8,7 @@
  */
 using Verse;
 
-namespace MoharBehaviors
+namespace MoharHediffs
 {
 	public class HeDiffCompProperties_LTF_Spawner : HediffCompProperties
 	{
