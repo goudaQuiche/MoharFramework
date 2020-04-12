@@ -16,7 +16,7 @@
 			<li>Hediff_PlagueImmunity</li>
 			<!-- <li>Hediff_AlcoholImmunity</li> -->
 
-			<li>Hediff_MaterialProductionFungus</li>
+			<!-- <li>Hediff_MaterialProductionFungus</li> -->
 			<!-- <li>Hediff_MaterialProductionPotato</li> -->
 			<!-- <li>Hediff_MaterialProductionCorn</li> -->
 			<!-- <li>Hediff_MaterialProductionInsectMeat</li> -->
@@ -26,7 +26,7 @@
 			<!-- <li>Hediff_AnimalProductionChicken</li> -->
 			<!-- <li>Hediff_AnimalProductionSnake</li> -->
 			
-			<li>Hediff_Steamer</li>
+			<!-- <li>Hediff_Steamer</li> -->
 		</forcedHediffs>
     </AlienRace.BackstoryDef>
 </Defs>

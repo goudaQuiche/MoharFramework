@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	
+<!---->	
+	<HediffDef>
+		<defName>Hediff_PlagueImmunity</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		<description>Plague immunity.</description>
+		<label>Plague immune</label>
+		<labelNoun>Hediff_PlagueImmunity.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_HediffNullifier">
+				<hediffToNullify>
+					<li>Plague</li>	
+				</hediffToNullify>
+			</li>
+		</comps>
+	</HediffDef>
+
+</Defs>

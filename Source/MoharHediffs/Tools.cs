@@ -1,6 +1,12 @@
 ﻿using RimWorld;
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
+
+using UnityEngine;
 using Verse;
 
 
@@ -8,46 +14,6 @@ namespace MoharHediffs
 {
     public class Tools
     {
-        public static void DestroyParentHediff(Hediff parentHediff, bool debug=false)
-        {
-            if (OkPawn(parentHediff.pawn) && parentHediff.def.defName != null)
-                Tools.Warn(parentHediff.pawn.Name.ToStringShort + "'s Hediff called " + parentHediff.def.defName + " says goodbye.", debug);
-            parentHediff.Severity = 0;
-        }
-
-        public static float GetPawnAgeOverlifeExpectancyRatio(Pawn pawn, bool debug=false)
-        {
-            float ratio = 1f;
-
-            if (!OkPawn(pawn))
-            {
-                Tools.Warn("GetPawnAgeOverlifeExpectancyRatio pawn NOT OK", debug);
-                return ratio;
-            }
-
-            ratio = (pawn.ageTracker.AgeBiologicalYearsFloat / pawn.RaceProps.lifeExpectancy);
-
-            return ratio;
-        }
-
-        public static float GetPawnAdultRatio(Pawn pawn, bool debug = false)
-        {
-            float ratio = 1f;
-
-            if (!OkPawn(pawn))
-            {
-                Tools.Warn("GetPawnAgeOverlifeExpectancyRatio pawn NOT OK", debug);
-                return ratio;
-            }
-
-            //Expecting adult to be the last lifestage
-            ratio = ( 
-                (pawn.ageTracker.AgeBiologicalYearsFloat - pawn.RaceProps.lifeStageAges.Last().minAge) /
-                (pawn.RaceProps.lifeExpectancy - pawn.RaceProps.lifeStageAges.Last().minAge)
-            );
-
-            return ratio;
-        }
 
         public static bool OkPawn(Pawn pawn)
         {

@@ -14,16 +14,16 @@ using Verse;
 
 namespace MoharHediffs
 {
-    public class HediffComp_HediffNullifier : HediffComp
+    public class HeDiffComp_HediffNullifier : HediffComp
     {
         const int tickLimiterModulo = 60;
         bool myDebug = false;
 
-        public HediffCompProperties_HediffNullifier Props
+        public HeDiffCompProperties_HediffNullifier Props
         {
             get
             {
-                return (HediffCompProperties_HediffNullifier)this.props;
+                return (HeDiffCompProperties_HediffNullifier)this.props;
             }
         }
 

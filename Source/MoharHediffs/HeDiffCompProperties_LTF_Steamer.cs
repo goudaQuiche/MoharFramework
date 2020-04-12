@@ -10,7 +10,7 @@ using Verse;
 
 namespace MoharHediffs
 {
-    public class HediffCompProperties_Steamer : HediffCompProperties
+    public class HeDiffCompProperties_LTF_Steamer : HediffCompProperties
     {
 
         public int MinTicksBetweenSprays = 200;
@@ -23,9 +23,9 @@ namespace MoharHediffs
 
         public float puffingChance = 1f;
 
-        public HediffCompProperties_Steamer()
+        public HeDiffCompProperties_LTF_Steamer()
         {
-            this.compClass = typeof(HediffComp_Steamer);
+            this.compClass = typeof(HeDiffComp_LTF_Steamer);
         }
     }
 }

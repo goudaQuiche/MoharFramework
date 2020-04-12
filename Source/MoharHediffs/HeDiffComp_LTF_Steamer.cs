@@ -4,7 +4,7 @@ using RimWorld;
 
 namespace MoharHediffs
 {
-    public class HediffComp_Steamer : HediffComp
+    public class HeDiffComp_LTF_Steamer : HediffComp
     {
         Pawn steamEmitter = null;
 
@@ -14,11 +14,11 @@ namespace MoharHediffs
         /*public Action startSprayCallback;
         public Action endSprayCallback;*/
 
-        public HediffCompProperties_Steamer Props
+        public HeDiffCompProperties_LTF_Steamer Props
         {
             get
             {
-                return (HediffCompProperties_Steamer)this.props;
+                return (HeDiffCompProperties_LTF_Steamer)this.props;
             }
         }
         
