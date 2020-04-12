@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	
+<!---->	
+	<HediffDef>
+		<defName>Hediff_PlagueImmunity</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		<description>Plague immunity.</description>
+		<label>Plague immune</label>
+		<labelNoun>Hediff_PlagueImmunity.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_HediffNullifier">
+				<hediffToNullify>
+					<li>Plague</li>	
+				</hediffToNullify>
+			</li>
+		</comps>
+	</HediffDef>
+	
+<!---->	
+	<HediffDef>
+		<defName>Hediff_MaterialProductionFungus</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		<description>pawn spawns fungus</description>
+		<label>Fungus maker</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_Spawner">
+				<thingToSpawn>RawFungus</thingToSpawn>
+				<!-- must be lower than 200; dll limited -->
+				<spawnCount>75</spawnCount>
+
+				<!-- must be higher than maxDaysB4Next ; must be higher than .001; default = 1; dll limited-->
+				<minDaysB4Next>.1</minDaysB4Next>
+				<!-- default = 2 -->
+				<maxDaysB4Next>.2</maxDaysB4Next>
+				<!-- default = .5 -->
+				<graceDays>.3</graceDays>
+
+				<spawnMaxAdjacent>40</spawnMaxAdjacent>
+				<spawnForbidden>false</spawnForbidden>
+
+				<hungerRelative>true</hungerRelative>
+				<randomGrace>.5</randomGrace>
+				
+				<ageWeighted>true</ageWeighted>
+				<olderMoreOften>true</olderMoreOften>
+				<olderBiggerQuantity>true</olderBiggerQuantity>
+
+				<exponentialQuantity>true</exponentialQuantity>
+				<!-- must be lower than 50; default = 15; dll limited -->
+				<exponentialRatioLimit>30</exponentialRatioLimit>
+
+				<spawnVerb>funguzition</spawnVerb>			
+				
+			</li>
+		</comps>
+	</HediffDef>
+
+<!---->	
+	<HediffDef>
+		<defName>Hediff_Steamer</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		<description>A rare condition that forces to puff some steam</description>
+		<label>steam factory</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_Steamer">
+				<MinTicksBetweenSprays>256</MinTicksBetweenSprays>
+				<MaxTicksBetweenSprays>1024</MaxTicksBetweenSprays>
+			</li>
+		</comps>
+	</HediffDef>
+</Defs>

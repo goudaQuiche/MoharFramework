@@ -12,17 +12,16 @@ using Verse;
 
 namespace MoharHediffs
 {
-	public class HediffCompProperties_HediffNullifier : HediffCompProperties
+	public class HeDiffCompProperties_HediffExclusive : HediffCompProperties
 	{
-        // tick
-        public float tickerLimit = 1f;
-
         //what
         public List<string> hediffToNullify;
+        public string hediffToApply;
+        public string bodyPartName;
 
-        public HediffCompProperties_HediffNullifier()
+        public HeDiffCompProperties_HediffExclusive()
 		{
-			this.compClass = typeof(HediffComp_HediffNullifier);
+			this.compClass = typeof(HeDiffComp_HediffExclusive);
 		}
 	}
 }

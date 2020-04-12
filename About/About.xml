@@ -35,7 +35,7 @@ The mod comes with ressources to allow some fast tests :
 
 To allow your pawns to use these hediffs,  you only need : 
 - Dll in the assembly directory
-- Cml hediff definitions
+- Xml hediff definitions
 - A way to give your race the hediff. I used backstories but there are other ways.</description>
 
 
