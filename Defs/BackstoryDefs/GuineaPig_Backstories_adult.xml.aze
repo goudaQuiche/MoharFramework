@@ -1,0 +1,32 @@
+<Defs>
+    <!-- 06 -->
+    <AlienRace.BackstoryDef>
+		<defName>GuineaPig_Backstory_Adult</defName>
+		<title>MoreGuineaPig</title>
+		<titleShort>GuineaPig</titleShort>
+		<baseDescription>[PAWN_nameDef] is MoreGuineaPig</baseDescription>
+		
+		<slot>Adulthood</slot>
+
+		<spawnCategories>
+			<li>GuineaPigBackstory</li>
+		</spawnCategories>
+		
+		<forcedHediffs>
+			<li>Hediff_PlagueImmunity</li>
+			<!-- <li>Hediff_AlcoholImmunity</li> -->
+
+			<!-- <li>Hediff_MaterialProductionFungus</li> -->
+			<!-- <li>Hediff_MaterialProductionPotato</li> -->
+			<!-- <li>Hediff_MaterialProductionCorn</li> -->
+			<!-- <li>Hediff_MaterialProductionInsectMeat</li> -->
+			<!-- <li>Hediff_MaterialProductionYayo</li> -->
+
+			<!-- <li>Hediff_AnimalProductionInsect</li> -->
+			<!-- <li>Hediff_AnimalProductionChicken</li> -->
+			<!-- <li>Hediff_AnimalProductionSnake</li> -->
+			
+			<!-- <li>Hediff_Steamer</li> -->
+		</forcedHediffs>
+    </AlienRace.BackstoryDef>
+</Defs>

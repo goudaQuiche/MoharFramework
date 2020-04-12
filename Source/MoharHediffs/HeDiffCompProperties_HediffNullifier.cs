@@ -12,7 +12,7 @@ using Verse;
 
 namespace MoharHediffs
 {
-	public class HeDiffCompProperties_HediffNullifier : HediffCompProperties
+	public class HediffCompProperties_HediffNullifier : HediffCompProperties
 	{
         // tick
         public float tickerLimit = 1f;
@@ -20,9 +20,9 @@ namespace MoharHediffs
         //what
         public List<string> hediffToNullify;
 
-        public HeDiffCompProperties_HediffNullifier()
+        public HediffCompProperties_HediffNullifier()
 		{
-			this.compClass = typeof(HeDiffComp_HediffNullifier);
+			this.compClass = typeof(HediffComp_HediffNullifier);
 		}
 	}
 }

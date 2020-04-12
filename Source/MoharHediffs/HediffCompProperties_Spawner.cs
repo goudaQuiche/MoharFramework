@@ -10,7 +10,7 @@ using Verse;
 
 namespace MoharHediffs
 {
-	public class HeDiffCompProperties_LTF_Spawner : HediffCompProperties
+	public class HediffCompProperties_Spawner : HediffCompProperties
 	{
         // tick
         public float tickerLimit = 1f;
@@ -41,9 +41,9 @@ namespace MoharHediffs
         public string spawnVerb = "delivery";
 		
 		
-		public HeDiffCompProperties_LTF_Spawner()
+		public HediffCompProperties_Spawner()
 		{
-			this.compClass = typeof(HeDiffComp_LTF_Spawner);
+			this.compClass = typeof(HediffComp_Spawner);
 		}
 	}
 }

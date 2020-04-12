@@ -14,7 +14,7 @@ using Verse;
 
 namespace MoharHediffs
 {
-	public class HeDiffComp_LTF_Spawner : HediffComp
+	public class HediffComp_Spawner : HediffComp
 	{
 		int spawnTicker=0;
 				
@@ -26,11 +26,11 @@ namespace MoharHediffs
 
         Random rand = new Random();
 
-        public HeDiffCompProperties_LTF_Spawner Props
+        public HediffCompProperties_Spawner Props
 		{
 			get
 			{
-				return (HeDiffCompProperties_LTF_Spawner)this.props;
+				return (HediffCompProperties_Spawner)this.props;
 			}
 		}
 
