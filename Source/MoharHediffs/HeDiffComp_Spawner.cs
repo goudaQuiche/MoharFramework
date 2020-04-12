@@ -15,16 +15,16 @@ using System.Linq;
 
 namespace MoharHediffs
 {
-    public class HediffComp_Spawner : HediffComp
-    {
+	public class HediffComp_Spawner : HediffComp
+	{
         private int ticksUntilSpawn;
         private int initialTicksUntilSpawn;
 
-        int hungerReset = 0;
-        int healthReset = 0;
+        int hungerReset=0;
+		int healthReset=0;
         int graceTicks = 0;
 
-        Pawn pawn = null;
+		Pawn pawn = null;
         PawnKindDef myPawnKindDef = null;
 
         float ageWeightedmaxDaysB4Next = 2;
@@ -35,21 +35,21 @@ namespace MoharHediffs
         readonly bool myDebug = true;
 
         public HediffCompProperties_Spawner Props
-        {
-            get
-            {
-                return (HediffCompProperties_Spawner)this.props;
-            }
-        }
+		{
+			get
+			{
+				return (HediffCompProperties_Spawner)this.props;
+			}
+		}
 
 
         public override void CompExposeData()
         {
             Scribe_Values.Look(ref ticksUntilSpawn, "ticksUntilSpawn");
-
+            
             //Scribe_Values.Look(ref hungerReset, "LTF_hungerReset");
             //Scribe_Values.Look(ref healthReset, "LTF_healthReset");
-
+            
             Scribe_Values.Look(ref graceTicks, "graceTicks");
         }
 
@@ -107,8 +107,7 @@ namespace MoharHediffs
                 }
             }
 
-            if (Props.ageWeighted)
-            {
+            if (Props.ageWeighted) {
 
                 // pawn age / pawn life expectany
                 float ageRatio = Tools.GetPawnAgeOverlifeExpectancyRatio(parent.pawn);
@@ -257,7 +256,7 @@ namespace MoharHediffs
             return false;
         }
 
-        PawnKindDef MyPawnKindDefNamed(string myDefName)
+        PawnKindDef MyPawnKindDefNamed (string myDefName)
         {
             PawnKindDef answer = null;
             foreach (PawnKindDef curPawnKindDef in DefDatabase<PawnKindDef>.AllDefs)
@@ -277,8 +276,7 @@ namespace MoharHediffs
                 return false;
             }
 
-            if (this.Props.animalThing)
-            {
+            if (this.Props.animalThing) {
                 Faction animalFaction = (Props.factionOfPlayerAnimal) ? Faction.OfPlayer : null;
 
                 Pawn newAnimal = PawnGenerator.GeneratePawn(myPawnKindDef, animalFaction);
@@ -366,7 +364,7 @@ namespace MoharHediffs
                                 {
                                     Thing thing = thingList[i];
                                     if (thing.def.category == ThingCategory.Item)
-                                        if (thing.def != Props.thingToSpawn || thing.stackCount > this.Props.thingToSpawn.stackLimit - (Props.ageWeighted ? ageWeightedQuantity : Props.spawnCount))
+                                        if (thing.def != Props.thingToSpawn || thing.stackCount > this.Props.thingToSpawn.stackLimit - (Props.ageWeighted ? ageWeightedQuantity : Props.spawnCount) )
                                         {
                                             flag = true;
                                             break;
@@ -389,8 +387,8 @@ namespace MoharHediffs
 
         }
 
-        private void ResetCountdown()
-        {
+		private void ResetCountdown()
+		{
             initialTicksUntilSpawn = (int)(RandomDays2wait() * 60000);
             ticksUntilSpawn = initialTicksUntilSpawn;
         }
@@ -412,94 +410,84 @@ namespace MoharHediffs
         }
 
         private bool IsWounded()
-        {
-            pawn = this.parent.pawn;
-            if (pawn != null)
-            {
-                float num = 0f;
-                List<Hediff> hediffs = pawn.health.hediffSet.hediffs;
-                for (int i = 0; i < hediffs.Count; i++)
-                {
+		{
+			pawn = this.parent.pawn;
+			if (pawn != null)
+			{
+				float num = 0f;
+				List<Hediff> hediffs = pawn.health.hediffSet.hediffs;
+				for (int i = 0; i < hediffs.Count; i++)
+				{
                     //if (hediffs[i] is Hediff_Injury && !hediffs[i].IsOld())
                     if (hediffs[i] is Hediff_Injury && !hediffs[i].IsPermanent())
                     {
-                        num += hediffs[i].Severity;
-                    }
-                }
-                //Log.Warning( pawn.Label + " is wounded ");
-                return (num > 0);
-            }
-            return false;
-        }
+						num += hediffs[i].Severity;
+					}
+				}
+				//Log.Warning( pawn.Label + " is wounded ");
+				return (num>0);
+			}
+			return false;
+		}
+		
+		private bool IsHungry()
+		{
+			string bla = string.Empty;
+			pawn = parent.pawn;
+			
+			if (pawn != null)
+			{
+				if (Props.hungerRelative == true){
+					if (pawn.needs.food != null && pawn.needs.food.CurCategory == HungerCategory.Starving)
+					{
+						return true;
+					}else{
+						return false;
+					}
+				}
+				else{
+					return false;
+				}
+				
+			}else{
+				Log.Warning (" IsHungry Null Error ");
+				return false;
+			}
+			
+		}		
+		
+		private bool IsInjured()
+		{
+			pawn = parent.pawn;
+			if (pawn != null)
+			{
+				if (Props.healthRelative == true){
+					if ( IsWounded() )
+					{
+						return true;
+					}
+					else{
+						
+					}
+					return false;
+				}
+				else
+				{
+					return false;
+				}
+			}else{
+				Log.Warning (" IsInjured Null Error ");
+				return false;	
+			}
+			
+		}	
+		
 
-        private bool IsHungry()
-        {
-            string bla = string.Empty;
-            pawn = parent.pawn;
-
-            if (pawn != null)
-            {
-                if (Props.hungerRelative == true)
-                {
-                    if (pawn.needs.food != null && pawn.needs.food.CurCategory == HungerCategory.Starving)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-
-            }
-            else
-            {
-                Log.Warning(" IsHungry Null Error ");
-                return false;
-            }
-
-        }
-
-        private bool IsInjured()
-        {
-            pawn = parent.pawn;
-            if (pawn != null)
-            {
-                if (Props.healthRelative == true)
-                {
-                    if (IsWounded())
-                    {
-                        return true;
-                    }
-                    else
-                    {
-
-                    }
-                    return false;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                Log.Warning(" IsInjured Null Error ");
-                return false;
-            }
-
-        }
-
-
-        public override string CompTipStringExtra
-        {
-            get
-            {
-                string result = string.Empty;
+		public override string CompTipStringExtra
+		{
+			get
+			{
+				string result = string.Empty;
 
                 if (this.graceTicks > 0)
                 {
@@ -525,8 +513,7 @@ namespace MoharHediffs
                         result += "(why not)";
                     }
                 }
-                else
-                {
+                else{
 
                     result = ticksUntilSpawn.ToStringTicksToPeriod() + " before ";
                     if (this.Props.animalThing)
@@ -538,14 +525,14 @@ namespace MoharHediffs
                         result += Props.thingToSpawn.label;
                     }
 
-                    result += " " + Props.spawnVerb + "(" + (Props.ageWeighted ? ageWeightedQuantity : Props.spawnCount) + "x)";
+                    result += " " + Props.spawnVerb + "(" + (Props.ageWeighted? ageWeightedQuantity : Props.spawnCount) + "x)";
 
                 }
+				
 
+				return result;
+			}
+		}
 
-                return result;
-            }
-        }
-
-    }
+	}
 }

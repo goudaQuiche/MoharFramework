@@ -10,19 +10,19 @@ using Verse;
 
 namespace MoharHediffs
 {
-    public class HediffCompProperties_Spawner : HediffCompProperties
-    {
+	public class HediffCompProperties_Spawner : HediffCompProperties
+	{
         // tick
         //public float tickerLimit = 1f;
 
         //what
-        public ThingDef thingToSpawn; //= "UnfertilizedEgg";
-        public int spawnCount = 1;
+        public ThingDef thingToSpawn ; //= "UnfertilizedEgg";
+		public int spawnCount = 1;
 
         public bool animalThing = false;
         public string animalName = "Chicken";
         public bool factionOfPlayerAnimal = false;
-
+        
         //when
         public float minDaysB4Next = 1f;
         public float maxDaysB4Next = 2f;
@@ -30,7 +30,7 @@ namespace MoharHediffs
 
         //how
         public int spawnMaxAdjacent = -1;
-        public bool spawnForbidden = false;
+		public bool spawnForbidden = false;
 
         // condition
         public bool hungerRelative = false;
@@ -59,8 +59,8 @@ namespace MoharHediffs
         public string spawnVerb = "delivery";
 
         public HediffCompProperties_Spawner()
-        {
-            this.compClass = typeof(HediffComp_Spawner);
-        }
-    }
+		{
+			this.compClass = typeof(HediffComp_Spawner);
+		}
+	}
 }
