@@ -14,13 +14,15 @@
 		</spawnCategories>
 		
 		<forcedHediffs>
-			<li>Hediff_MaterialProductionLow</li>
-			<li>Hediff_MaterialProductionMedium</li>
-			<li>Hediff_MaterialProductionHigh</li>
-			<li>Hediff_InsectMeatProduction</li>
-			<li>Hediff_YayoProduction</li>
+			<li>Hediff_MaterialProductionFungus</li>
+			<li>Hediff_MaterialProductionPotato</li>
+			<li>Hediff_MaterialProductionCorn</li>
+			<li>Hediff_MaterialProductionInsectMeat</li>
+			<li>Hediff_MaterialProductionYayo</li>
 
-			<li>Hediff_InsectProduction</li>
+			<li>Hediff_AnimalProductionInsect</li>
+			<li>Hediff_AnimalProductionChicken</li>
+			<li>Hediff_AnimalProductionSnake</li>
 			
 			<li>Hediff_PlagueImmunity</li>
 			<li>Hediff_AlcoholImmunity</li>

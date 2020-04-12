@@ -15,11 +15,11 @@ namespace MoharHediffs
             parentHediff.Severity = 0;
         }
 
-        public static float GetPawnAgeOverlifeExpectancyRatio(Pawn pawn, bool debug=false)
+        public static float GetPawnAgeOverlifeExpectancyRatio(Pawn pawn, bool debug = false)
         {
             float ratio = 1f;
 
-            if (!OkPawn(pawn))
+            if (pawn == null)
             {
                 Tools.Warn("GetPawnAgeOverlifeExpectancyRatio pawn NOT OK", debug);
                 return ratio;
@@ -27,6 +27,7 @@ namespace MoharHediffs
 
             ratio = (pawn.ageTracker.AgeBiologicalYearsFloat / pawn.RaceProps.lifeExpectancy);
 
+            Tools.Warn(pawn.Name.ToStringShort + " Age: " + pawn.ageTracker.AgeBiologicalYearsFloat + "; lifeExpectancy: " + pawn.RaceProps.lifeExpectancy + "; ratio:" + ratio, debug);
             return ratio;
         }
 

@@ -20,7 +20,7 @@ namespace MoharHediffs
 		public int spawnCount = 1;
 
         public bool animalThing = false;
-        public string animalName = "Chicken";
+        public PawnKindDef animalToSpawn;
         public bool factionOfPlayerAnimal = false;
         
         //when
@@ -36,7 +36,6 @@ namespace MoharHediffs
         public bool hungerRelative = false;
         public bool healthRelative = false;
         public float randomGrace = 0f;
-        public bool mandatoryGrace = false;
 
         //AgeWieghted
         public bool ageWeighted = false;
