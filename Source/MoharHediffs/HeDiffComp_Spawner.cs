@@ -33,7 +33,7 @@ namespace MoharHediffs
 
         bool blockSpawn = false;
 
-        readonly bool myDebug = true;
+        bool myDebug = false;
 
         readonly float worldBurnMinDaysB4Next = .001f;
         readonly int worldBurnExponentialLimit = 20;
@@ -65,6 +65,7 @@ namespace MoharHediffs
         public override void CompPostMake()
         {
             //base.CompPostMake();
+            myDebug = Props.debug;
 
             Tools.Warn(">>> " + parent.pawn.Label + " - " + parent.def.defName + " - CompPostMake start", myDebug);
             Tools.Warn(
@@ -228,6 +229,8 @@ namespace MoharHediffs
 
                 if (Props.exponentialQuantity)
                 {
+                    // 
+                    quantityAgeRatio = 1-ageRatio;
                     if (quantityAgeRatio == 0)
                     {
                         Tools.Warn("quantityAgeRatio is f* up : " + quantityAgeRatio, myDebug);
@@ -235,7 +238,8 @@ namespace MoharHediffs
                         Tools.DestroyParentHediff(parent, myDebug);
                         return;
                     }
-                    float expoFactor = 1 / quantityAgeRatio;
+                    float expoFactor = Props.olderBiggerQuantity ? 1 / quantityAgeRatio : quantityAgeRatio * quantityAgeRatio;
+
                     bool gotLimited = false;
                     bool gotAugmented = false;
                     if(expoFactor > Props.exponentialRatioLimit)
@@ -243,7 +247,7 @@ namespace MoharHediffs
                         expoFactor = Props.exponentialRatioLimit;
                         gotLimited = true;
                     }
-                    calculatedQuantity = (int)Math.Round((double)Props.spawnCount * (1 + expoFactor));
+                    calculatedQuantity = (int)Math.Round((double)Props.spawnCount * (expoFactor));
                     if (calculatedQuantity < 1)
                     {
                         calculatedQuantity = 1;

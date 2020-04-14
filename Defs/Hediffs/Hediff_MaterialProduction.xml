@@ -34,10 +34,12 @@
 				<olderSmallerPeriod>true</olderSmallerPeriod>
 
 				<ageWeightedQuantity>true</ageWeightedQuantity>
-				<olderBiggerQuantity>true</olderBiggerQuantity>
+				<olderBiggerQuantity>false</olderBiggerQuantity>
 				<exponentialQuantity>true</exponentialQuantity>
 				<!-- must be lower than 20; default = 15; dll limited -->
 				<exponentialRatioLimit>15</exponentialRatioLimit>
+
+				<debug>true</debug>
 
 				<spawnVerb>funguzition</spawnVerb>			
 				
@@ -160,34 +162,5 @@
 			</li>
 		</comps>
 	</HediffDef>
-<!---->	
-	<HediffDef>
-		<defName>Hediff_MaterialProduction_Error</defName>
-		<hediffClass>HediffWithComps</hediffClass>
-		
-		<description>A rare condition that forcesan error</description>
-		<label>error factory</label>
-		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
-		
-		<comps>
-			<li Class="MoharHediffs.HediffCompProperties_Spawner">
-				<!-- this in an error  on purpose-->
-				<thingToSpawn>ThisThingDefDoesNotExist</thingToSpawn>
-				<spawnCount>2</spawnCount>
 
-				<minDaysB4Next>.1</minDaysB4Next>
-				<maxDaysB4Next>.2</maxDaysB4Next>
-				
-				<spawnMaxAdjacent>40</spawnMaxAdjacent>
-				<spawnForbidden>true</spawnForbidden>
-				<spawnVerb>synthetization</spawnVerb>
-				
-				<graceDays>.5</graceDays>
-				<randomGrace>.7</randomGrace>
-				
-				<hungerRelative>true</hungerRelative>
-				<healthRelative>true</healthRelative>
-			</li>
-		</comps>
-	</HediffDef>
 </Defs>

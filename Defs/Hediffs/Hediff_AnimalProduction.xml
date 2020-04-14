@@ -119,7 +119,8 @@
 				
 				<ageWeightedPeriod>true</ageWeightedPeriod>
 				<olderSmallerPeriod>false</olderSmallerPeriod>
-
+				
+				<debug>true</debug>
 				
 				<spawnVerb>hatching</spawnVerb>
 			</li>

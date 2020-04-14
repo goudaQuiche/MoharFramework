@@ -57,6 +57,8 @@ namespace MoharHediffs
         //log
         public string spawnVerb = "delivery";
 
+        public bool debug = false;
+
         public HediffCompProperties_Spawner()
 		{
 			this.compClass = typeof(HediffComp_Spawner);
