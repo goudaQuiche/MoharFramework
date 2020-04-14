@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	
+<!---->	
+	<HediffDef>
+		<defName>Hediff_MaterialProduction_Fungus</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		
+		<description>pawn spawns fungus</description>
+		<label>Fungus maker</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_Spawner">
+				<thingToSpawn>RawFungus</thingToSpawn>
+				<!-- must be lower than 200; dll limited -->
+				<spawnCount>75</spawnCount>
+
+				<!-- must be higher than maxDaysB4Next ; must be higher than .001; default = 1; dll limited-->
+				<minDaysB4Next>.1</minDaysB4Next>
+				<!-- default = 2 -->
+				<maxDaysB4Next>.15</maxDaysB4Next>
+				<!-- default = .5 -->
+				<graceDays>.3</graceDays>
+
+				<spawnMaxAdjacent>40</spawnMaxAdjacent>
+				<spawnForbidden>false</spawnForbidden>
+
+				<hungerRelative>true</hungerRelative>
+				<randomGrace>.5</randomGrace>
+				
+				<ageWeightedPeriod>true</ageWeightedPeriod>
+				<olderSmallerPeriod>true</olderSmallerPeriod>
+
+				<ageWeightedQuantity>true</ageWeightedQuantity>
+				<olderBiggerQuantity>true</olderBiggerQuantity>
+				<exponentialQuantity>true</exponentialQuantity>
+				<!-- must be lower than 20; default = 15; dll limited -->
+				<exponentialRatioLimit>15</exponentialRatioLimit>
+
+				<spawnVerb>funguzition</spawnVerb>			
+				
+			</li>
+		</comps>
+	</HediffDef>
+<!---->	
+	<HediffDef>
+		<defName>Hediff_MaterialProduction_Potato</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		
+		<description>pawn spawns potato</description>
+		<label>Potato volonteer</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_Spawner">
+				<thingToSpawn>RawPotatoes</thingToSpawn>
+				<spawnCount>50</spawnCount>
+
+				<minDaysB4Next>.15</minDaysB4Next>
+				<maxDaysB4Next>.2</maxDaysB4Next>
+				<graceDays>.3</graceDays>
+				
+				<spawnMaxAdjacent>40</spawnMaxAdjacent>
+				<spawnForbidden>false</spawnForbidden>
+				
+				<healthRelative>true</healthRelative>
+				<randomGrace>.2</randomGrace>
+				
+				<ageWeightedPeriod>true</ageWeightedPeriod>
+				<olderSmallerPeriod>false</olderSmallerPeriod>
+				
+				<ageWeightedQuantity>true</ageWeightedQuantity>
+				<olderBiggerQuantity>true</olderBiggerQuantity>
+				
+				<spawnVerb>potation</spawnVerb>
+			</li>
+		</comps>
+	</HediffDef>
+<!---->
+	<HediffDef>
+		<defName>Hediff_MaterialProduction_Corn</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		
+		<description>pawn spawns corn</description>
+		<label>corn pooper</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_Spawner">
+				<thingToSpawn>RawCorn</thingToSpawn>
+				<spawnCount>35</spawnCount>
+				
+				<minDaysB4Next>.2</minDaysB4Next>
+				<maxDaysB4Next>.25</maxDaysB4Next>
+
+				<!-- <spawnMaxAdjacent>40</spawnMaxAdjacent> -->
+				<spawnForbidden>false</spawnForbidden>
+				
+				<ageWeightedQuantity>true</ageWeightedQuantity>
+				<olderBiggerQuantity>false</olderBiggerQuantity>
+				
+				
+				<spawnVerb>popin</spawnVerb>
+			</li>
+		</comps>
+	</HediffDef>
+	<!---->	
+	<HediffDef>
+		<defName>Hediff_MaterialProduction_InsectMeat</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		
+		<description>A rare condition that forces the pawn to exudate insect meat</description>
+		<label>Rotting flesh</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_Spawner">
+				<thingToSpawn>Meat_Megaspider</thingToSpawn>
+				<spawnCount>5</spawnCount>
+				<minDaysB4Next>.25</minDaysB4Next>
+				<maxDaysB4Next>.3</maxDaysB4Next>
+
+				<spawnMaxAdjacent>40</spawnMaxAdjacent>
+				<spawnForbidden>false</spawnForbidden>
+				<spawnVerb>molding</spawnVerb>
+				
+				<randomGrace>.1</randomGrace>
+				<graceDays>.2</graceDays>
+			</li>
+		</comps>
+	</HediffDef>
+<!---->	
+	<HediffDef>
+		<defName>Hediff_MaterialProduction_Yayo</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		
+		<description>A rare condition that forces the pawn to exudate drugs</description>
+		<label>Yayo factory</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_Spawner">
+				<thingToSpawn>Yayo</thingToSpawn>
+				<spawnCount>2</spawnCount>
+
+				<minDaysB4Next>.1</minDaysB4Next>
+				<maxDaysB4Next>.2</maxDaysB4Next>
+				
+				<spawnMaxAdjacent>40</spawnMaxAdjacent>
+				<spawnForbidden>true</spawnForbidden>
+				<spawnVerb>synthetization</spawnVerb>
+				
+				<graceDays>.5</graceDays>
+				<randomGrace>.7</randomGrace>
+				
+				<hungerRelative>true</hungerRelative>
+				<healthRelative>true</healthRelative>
+			</li>
+		</comps>
+	</HediffDef>
+<!---->	
+	<HediffDef>
+		<defName>Hediff_MaterialProduction_Error</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		
+		<description>A rare condition that forcesan error</description>
+		<label>error factory</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_Spawner">
+				<!-- this in an error  on purpose-->
+				<thingToSpawn>ThisThingDefDoesNotExist</thingToSpawn>
+				<spawnCount>2</spawnCount>
+
+				<minDaysB4Next>.1</minDaysB4Next>
+				<maxDaysB4Next>.2</maxDaysB4Next>
+				
+				<spawnMaxAdjacent>40</spawnMaxAdjacent>
+				<spawnForbidden>true</spawnForbidden>
+				<spawnVerb>synthetization</spawnVerb>
+				
+				<graceDays>.5</graceDays>
+				<randomGrace>.7</randomGrace>
+				
+				<hungerRelative>true</hungerRelative>
+				<healthRelative>true</healthRelative>
+			</li>
+		</comps>
+	</HediffDef>
+</Defs>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+<!---->	
+	<HediffDef>
+		<defName>Hediff_AlcoholImmunity</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		
+		<description>Alcohol effects immunity. YoU MUst bE fUn At pARTies.</description>
+		<label>no alcohol effect</label>
+		<labelNoun>Hediff_AlcoholImmunity.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_HediffNullifier">
+				<hediffToNullify>
+					<li>AlcoholHigh</li>
+					<!-- <li>AlcoholTolerance</li> -->
+					<li>Hangover</li>
+					<!-- <li>AlcoholAddiction</li> -->
+					<!-- <li>Cirrhosis</li> -->
+				</hediffToNullify>
+			</li>
+		</comps>
+	</HediffDef>
+	
+<!---->	
+	<HediffDef>
+		<defName>Hediff_PlagueImmunityTwice</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		
+		<description>Plague immunity.</description>
+		<label>Plague immune</label>
+		<labelNoun>Hediff_PlagueImmunity.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_HediffNullifier">
+				<limitedUsage>true</limitedUsage>
+				<limitedUsageNumber>2</limitedUsageNumber>
+				<hediffToNullify>
+					<li>Plague</li>	
+				</hediffToNullify>
+			</li>
+		</comps>
+	</HediffDef>
+
+<!---->	
+	<HediffDef>
+		<defName>Hediff_ProdAndSteamerRemoval</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		
+		<description>removes all prod + steamer hediffs and applies immune to plague  twice</description>
+		
+		<label>Plague immune</label>
+		<labelNoun>Hediff_PlagueImmunity.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_HediffExclusive">
+				<hediffToNullify>
+					<li>Hediff_Steamer</li>	
+				</hediffToNullify>
+				
+				<hediffPatternToNullify>
+					<li>Hediff_MaterialProduction</li>
+					<li>Hediff_AnimalProduction</li>
+				</hediffPatternToNullify>
+				
+				<hediffToApply>Hediff_PlagueImmunityTwice</hediffToApply>
+				<bodyPartName>Heart</bodyPartName>
+			</li>
+		</comps>
+	</HediffDef>
+
+</Defs>

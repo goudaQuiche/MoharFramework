@@ -17,7 +17,9 @@ namespace MoharHediffs
     public class HediffComp_HediffNullifier : HediffComp
     {
         const int tickLimiterModulo = 60;
-        bool myDebug = false;
+        private int LimitedUsageNumber = 0;
+
+        readonly bool myDebug = false;
 
         public HediffCompProperties_HediffNullifier Props
         {
@@ -33,6 +35,28 @@ namespace MoharHediffs
             {
                 return (!Props.hediffToNullify.NullOrEmpty());
             }
+        }
+        public bool HasLimitedUsage
+        {
+            get
+            {
+                return (Props.limitedUsage);
+            }
+        }
+
+        public override void CompPostMake()
+        {
+            //base.CompPostMake();
+
+            Tools.Warn(">>>" + parent.def.defName + " - CompPostMake start", myDebug);
+
+            if(HasLimitedUsage)
+                LimitedUsageNumber = Props.limitedUsageNumber;
+        }
+
+        public override void CompExposeData()
+        {
+            Scribe_Values.Look(ref LimitedUsageNumber, "LimitedUsageNumber");
         }
 
         public override void CompPostTick(ref float severityAdjustment)
@@ -64,10 +88,15 @@ namespace MoharHediffs
                     
                     if (curHediff.def.defName == curHediffToNullify)
                     {
-                        //if((curHediff.Severity != 0) && (curHediff.ageTicks > 5))
+                        
                         curHediff.Severity = 0;
                         Tools.Warn(curHediff.def.defName + " severity = 0", myDebug);
-                        
+
+                        if (HasLimitedUsage)
+                            LimitedUsageNumber--;
+
+                        if (LimitedUsageNumber <= 0)
+                            Tools.DestroyParentHediff(parent, myDebug);
                     }
                     j++;
                 }
@@ -87,6 +116,11 @@ namespace MoharHediffs
                 {
                     result += hediffName + "; ";
                 }
+
+                if (!HasLimitedUsage)
+                    result += (" for ever");
+                else
+                    result += (" - " + LimitedUsageNumber + " left");
 
                 return result;
             }

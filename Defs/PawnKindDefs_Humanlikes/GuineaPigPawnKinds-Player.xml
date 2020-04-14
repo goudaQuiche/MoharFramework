@@ -9,21 +9,6 @@
 		<isFighter>false</isFighter>
 		<apparelIgnoreSeasons>false</apparelIgnoreSeasons>
 		<forceNormalGearQuality>true</forceNormalGearQuality>
-	</PawnKindDef>
-
-	<PawnKindDef ParentName="BaseGuineaPigPawnKind">
-		<defName>MoharGuineaPig</defName>
-		<label>whatever</label>
-		
-		<defaultFactionType>PlayerColony</defaultFactionType>
-		
-		<backstoryFiltersOverride>
-			<li>
-				<categories>
-					<li>GuineaPigBackstory</li>
-				</categories>
-			</li>
-		</backstoryFiltersOverride>
 		
 		<apparelTags>
 			<li>Neolithic</li>
@@ -37,9 +22,53 @@
 			<max>300</max>
 		</apparelMoney>
 		
-		<minGenerationAge>39</minGenerationAge>
+		<minGenerationAge>20</minGenerationAge>
 		
 	</PawnKindDef>
 
+	<PawnKindDef ParentName="BaseGuineaPigPawnKind">
+		<defName>MoharHediff_immunity</defName>
+		<label>whatever</label>
+		
+		<defaultFactionType>PlayerColony</defaultFactionType>
+		
+		<backstoryFiltersOverride>
+			<li>
+				<categories>
+					<li>ImmuneBS</li>
+				</categories>
+			</li>
+		</backstoryFiltersOverride>
+	</PawnKindDef>
+
+	<PawnKindDef ParentName="BaseGuineaPigPawnKind">
+		<defName>MoharHediff_material</defName>
+		<label>whatever</label>
+		
+		<defaultFactionType>PlayerColony</defaultFactionType>
+		
+		<backstoryFiltersOverride>
+			<li>
+				<categories>
+					<li>MaterialProductionBS</li>
+				</categories>
+			</li>
+		</backstoryFiltersOverride>
+	</PawnKindDef>
+	
+	<PawnKindDef ParentName="BaseGuineaPigPawnKind">
+		<defName>MoharHediff_animal</defName>
+		<label>whatever</label>
+		
+		<defaultFactionType>PlayerColony</defaultFactionType>
+		
+		<backstoryFiltersOverride>
+			<li>
+				<categories>
+					<li>AnimalProductionBS</li>
+				</categories>
+			</li>
+		</backstoryFiltersOverride>
+	</PawnKindDef>
 	
 </Defs>

@@ -7,7 +7,41 @@
 		<slot>Childhood</slot>
 
 		<spawnCategories>
-			<li>GuineaPigBackstory</li>
+			<li>ImmuneBS</li>
+		</spawnCategories>
+		
+		<skillGains>
+			<li><defName>Plants</defName><amount>1</amount></li>
+			<li><defName>Animals</defName><amount>1</amount></li>
+		</skillGains>
+    </AlienRace.BackstoryDef>
+	
+	<AlienRace.BackstoryDef>
+		<defName>GuineaPigBS02</defName>
+		<title>GuineaPig</title>
+		<titleShort>GuineaPig</titleShort>
+		<baseDescription>[PAWN_nameDef] is GuineaPig.</baseDescription>
+		<slot>Childhood</slot>
+
+		<spawnCategories>
+			<li>MaterialProductionBS</li>
+		</spawnCategories>
+		
+		<skillGains>
+			<li><defName>Plants</defName><amount>1</amount></li>
+			<li><defName>Animals</defName><amount>1</amount></li>
+		</skillGains>
+    </AlienRace.BackstoryDef>
+	
+	<AlienRace.BackstoryDef>
+		<defName>GuineaPigBS03</defName>
+		<title>GuineaPig</title>
+		<titleShort>GuineaPig</titleShort>
+		<baseDescription>[PAWN_nameDef] is GuineaPig.</baseDescription>
+		<slot>Childhood</slot>
+
+		<spawnCategories>
+			<li>AnimalProductionBS</li>
 		</spawnCategories>
 		
 		<skillGains>

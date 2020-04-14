@@ -35,6 +35,13 @@ namespace MoharHediffs
                 return (!Props.hediffToNullify.NullOrEmpty());
             }
         }
+        public bool HasHediffPatternToNullify
+        {
+            get
+            {
+                return (!Props.hediffPatternToNullify.NullOrEmpty());
+            }
+        }
         public bool HasHediffToApply
         {
             get
@@ -43,28 +50,38 @@ namespace MoharHediffs
             }
         }
 
+        private bool PatternMatch(string MyHediffDefname)
+        {
+            foreach(string cur in Props.hediffPatternToNullify)
+            {
+                if (MyHediffDefname.Contains(cur))
+                    return true;
+            }
+            return false;
+        }
+
         public override void CompPostTick(ref float severityAdjustment)
         {
             Pawn pawn = parent.pawn;
             if (!Tools.OkPawn(pawn))
                 return;
 
+            /*
             if (HasHediffToApply && HasHediffToNullify)
             {
-                /*IEnumerable<string> myIntersection = Props.hediffToApply.Intersect(Props.hediffToNullify);
-                if (!myIntersection.EnumerableNullOrEmpty())*/
                 if (Props.hediffToNullify.Contains(Props.hediffToApply))
                 {
-                    Tools.Warn("Same hediff in both lists, hediff autokill", true);
-                    parent.Severity = 0;
+                    Tools.Warn("Same hediff in both lists, hediff autokill", myDebug);
+                    Tools.DestroyParentHediff(parent, myDebug);
                 }
             }
+            */
 
 
             //Tools.Warn("hediff Nullifier - Working", myDebug);
 
             int i = 0;
-            if (HasHediffToNullify)
+            if (HasHediffToNullify || HasHediffPatternToNullify)
                 foreach (Hediff curHediff in pawn.health.hediffSet.hediffs)
                 {
                     //Tools.Warn(pawn.NameShortColored + " hediff #" + i + ": " + curHediff.def.defName, myDebug);
@@ -74,7 +91,7 @@ namespace MoharHediffs
                     {
                         //Tools.Warn(" hediff to nullify #" + j + ": " + curHediffToNullify, myDebug);
 
-                        if (curHediff.def.defName == curHediffToNullify)
+                        if ( (curHediff.def.defName == curHediffToNullify) || PatternMatch(curHediff.def.defName))
                         {
                             //if((curHediff.Severity != 0) && (curHediff.ageTicks > 5))
                             curHediff.Severity = 0;
@@ -122,7 +139,7 @@ namespace MoharHediffs
 
             pawn.health.AddHediff(hediff2apply, myBP, null);
 
-            parent.Severity = 0;
+            Tools.DestroyParentHediff(parent, myDebug);
         }
 
         public override string CompTipStringExtra

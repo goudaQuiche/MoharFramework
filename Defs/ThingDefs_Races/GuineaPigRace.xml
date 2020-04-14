@@ -134,7 +134,7 @@
 		
 		<makesFootprints>true</makesFootprints>
 		
-		<lifeExpectancy>50</lifeExpectancy>
+		<lifeExpectancy>100</lifeExpectancy>
 		<!-- <leatherColor>(196,128,164)</leatherColor> -->
 		<leatherDef>Leather_Human</leatherDef>
 		
@@ -166,33 +166,28 @@
 			</points>
 		</litterSizeCurve>
 		
-		<lifeStageAges>
-			<li>
-				<def>HumanlikeBaby</def>
-				<minAge>0</minAge>
-			</li>
-			<li>
-				<def>HumanlikeToddler</def>
-				<minAge>1.2</minAge>
-			</li>
-			<li>
-				<def>HumanlikeChild</def>
-				<minAge>6</minAge>
-			</li>
-			<li>
-				<def>HumanlikeTeenager</def>
-				<minAge>14</minAge>
-			</li>
-			<li>
-				<def>HumanlikeAdult</def>
-				<minAge>18</minAge>
-
-				<soundWounded>Pawn_Bear_Injured</soundWounded>
-				<soundDeath>Pawn_Bear_Death</soundDeath>
-				<soundCall>Pawn_Bear_Call</soundCall>
-				<soundAngry>Pawn_Bear_Angry</soundAngry>
-			</li>
-		</lifeStageAges>
+      <lifeStageAges>
+        <li>
+          <def>HumanlikeBaby</def>
+          <minAge>0</minAge>
+        </li>
+        <li>
+          <def>HumanlikeToddler</def>
+          <minAge>1.2</minAge>
+        </li>
+        <li>
+          <def>HumanlikeChild</def>
+          <minAge>4</minAge>
+        </li>
+        <li>
+          <def>HumanlikeTeenager</def>
+          <minAge>13</minAge>
+        </li>
+        <li>
+          <def>HumanlikeAdult</def>
+          <minAge>18</minAge>
+        </li>
+      </lifeStageAges>
 		
 		<soundMeleeHitPawn>Pawn_Melee_BigBash_HitPawn</soundMeleeHitPawn>
 		<soundMeleeHitBuilding>Pawn_Melee_BigBash_HitBuilding</soundMeleeHitBuilding>
@@ -203,16 +198,17 @@
 				<li>(7,0)</li>
 				<li>(8,100)</li>
 				<li>(25,100)</li>
-				<li>(30,30)</li>
-				<li>(35,18)</li>
-				<li>(40,10)</li>
-				<li>(45,3)</li>
-				<li>(50,0)</li>
+				<li>(60,30)</li>
+				<li>(70,18)</li>
+				<li>(80,10)</li>
+				<li>(90,3)</li>
+				<li>(100,0)</li>
 			</points>
 		</ageGenerationCurve>
 		
 		<hediffGiverSets>
 			<li>OrganicStandard</li>
+			<li>Human</li>
 		</hediffGiverSets>
 	</race>
     

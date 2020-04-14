@@ -1,5 +1,5 @@
 ﻿using RimWorld;
-
+using System.Collections.Generic;
 using System.Linq;
 using Verse;
 
@@ -10,8 +10,9 @@ namespace MoharHediffs
     {
         public static void DestroyParentHediff(Hediff parentHediff, bool debug=false)
         {
-            if (OkPawn(parentHediff.pawn) && parentHediff.def.defName != null)
-                Tools.Warn(parentHediff.pawn.Name.ToStringShort + "'s Hediff called " + parentHediff.def.defName + " says goodbye.", debug);
+            if (parentHediff.pawn != null && parentHediff.def.defName != null)
+                Warn(parentHediff.pawn.Label + "'s Hediff: " + parentHediff.def.defName + " says goodbye.", debug);
+
             parentHediff.Severity = 0;
         }
 
@@ -27,7 +28,7 @@ namespace MoharHediffs
 
             ratio = (pawn.ageTracker.AgeBiologicalYearsFloat / pawn.RaceProps.lifeExpectancy);
 
-            Tools.Warn(pawn.Name.ToStringShort + " Age: " + pawn.ageTracker.AgeBiologicalYearsFloat + "; lifeExpectancy: " + pawn.RaceProps.lifeExpectancy + "; ratio:" + ratio, debug);
+            Tools.Warn(pawn.Label + " Age: " + pawn.ageTracker.AgeBiologicalYearsFloat + "; lifeExpectancy: " + pawn.RaceProps.lifeExpectancy + "; ratio:" + ratio, debug);
             return ratio;
         }
 
@@ -49,6 +50,43 @@ namespace MoharHediffs
 
             return ratio;
         }
+
+        public static bool IsInjured(Pawn pawn, bool debug = false)
+        {
+            if (pawn == null)
+            {
+                Warn("pawn is null - wounded ", debug);
+                return false;
+            }
+
+            float num = 0f;
+            List<Hediff> hediffs = pawn.health.hediffSet.hediffs;
+            for (int i = 0; i < hediffs.Count; i++)
+            {
+                if (hediffs[i] is Hediff_Injury && !hediffs[i].IsPermanent())
+                {
+                    num += hediffs[i].Severity;
+                }
+            }
+
+            Warn(pawn.Label + " is wounded ", debug && (num>0));
+            return (num > 0);
+        }
+
+        public static bool IsHungry(Pawn pawn, bool debug = false)
+        {
+            if (pawn == null)
+            {
+                Warn("pawn is null - IsHungry ", debug);
+                return false;
+            }
+
+            bool answer = pawn.needs.food != null && pawn.needs.food.CurCategory == HungerCategory.Starving;
+            Warn(pawn.Label + " is hungry ", debug && answer);
+
+            return answer;
+        }
+
 
         public static bool OkPawn(Pawn pawn)
         {

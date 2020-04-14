@@ -14,11 +14,10 @@ namespace MoharHediffs
 {
 	public class HediffCompProperties_HediffNullifier : HediffCompProperties
 	{
-        // tick
-        public float tickerLimit = 1f;
-
         //what
         public List<string> hediffToNullify;
+        public bool limitedUsage = false;
+        public int limitedUsageNumber = -99;
 
         public HediffCompProperties_HediffNullifier()
 		{

@@ -26,6 +26,8 @@ namespace MoharHediffs
         //when
         public float minDaysB4Next = 1f;
         public float maxDaysB4Next = 2f;
+
+        public float randomGrace = 0f;
         public float graceDays = .5f;
 
         //how
@@ -35,22 +37,20 @@ namespace MoharHediffs
         // condition
         public bool hungerRelative = false;
         public bool healthRelative = false;
-        public float randomGrace = 0f;
 
         //AgeWieghted
-        public bool ageWeighted = false;
+        public bool ageWeightedQuantity = false;
+        public bool ageWeightedPeriod = false;
         //normal behavior = the older, the less often, the smaller quantities
         // normal 
-        public bool olderMoreOften = false;
+        public bool olderSmallerPeriod = false;
         public bool olderBiggerQuantity = false;
 
-        // if relativeQuantity false, quantity to spawn goes from spawnCount to ageRatio*spawnCount (often less than 2)
+        // quantity to spawn goes from spawnCount to spawnCount*(1+ageRatio) (almost always < 2*spawnCount)
         // [spawnCount; 2*spawnCount]
-        // if relativeQuantity true, quantity = spawnCount*ageRatio, quantity will always be lower than spawnCount
-        // [spawnCount*ageRatio;spawnCount] 
         // pawns always have a positive age and are often adult
-        public bool relativeQuantity = false;
-        // if true, quantity goes from spawnCount to spawnCount * (1/ageRatio) (meaning if ageRatio == .2 => quantity = spawnCount*5)
+
+        // if exponentialQuantity, quantity goes from spawnCount to spawnCount * (1 + 1/ageRatio) (meaning if ageRatio == .2 => quantity = spawnCount*6)
         public bool exponentialQuantity = false;
         public int exponentialRatioLimit = 15;
 
