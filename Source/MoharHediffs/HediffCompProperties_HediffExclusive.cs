@@ -19,8 +19,10 @@ namespace MoharHediffs
         public List<string> hediffPatternToNullify;
 
         public string hediffToApply;
-
+        public BodyDef bodyDef;
         public string bodyPartName;
+
+        public bool debug = false;
 
         public HeDiffCompProperties_HediffExclusive()
 		{

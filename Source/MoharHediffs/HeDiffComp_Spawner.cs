@@ -35,9 +35,9 @@ namespace MoharHediffs
 
         bool myDebug = false;
 
-        readonly float worldBurnMinDaysB4Next = .001f;
-        readonly int worldBurnExponentialLimit = 20;
-        readonly int worldBurnSpawnCount = 750;
+        readonly float errorMinDaysB4Next = .001f;
+        readonly int errorExponentialLimit = 20;
+        readonly int errorSpawnCount = 750;
 
         public HediffCompProperties_Spawner Props
 		{
@@ -46,7 +46,6 @@ namespace MoharHediffs
 				return (HediffCompProperties_Spawner)this.props;
 			}
 		}
-
 
         public override void CompExposeData()
         {
@@ -68,6 +67,73 @@ namespace MoharHediffs
             myDebug = Props.debug;
 
             Tools.Warn(">>> " + parent.pawn.Label + " - " + parent.def.defName + " - CompPostMake start", myDebug);
+
+            TraceProps();
+            CheckProps();
+            CalculateValues();
+            CheckCalculatedValues();
+            TraceCalculatedValues();
+
+            // Only on first spawn ?
+            if (initialTicksUntilSpawn == 0)
+            {
+                Tools.Warn("Reseting countdown bc initialTicksUntilSpawn == 0 (comppostmake)", myDebug);
+                ResetCountdown();
+            }
+        }
+
+        public override void CompPostTick(ref float severityAdjustment)
+        {
+            pawn = parent.pawn;
+            if (!Tools.OkPawn(pawn))
+            {
+                return;
+            }
+
+            if (blockSpawn)
+                return;
+
+            if (graceTicks > 0)
+            {
+                graceTicks--;
+                return;
+            }
+            
+            if (Props.hungerRelative && Tools.IsHungry(pawn, myDebug))
+            {
+                int randomGraceTicks2wait = (int)(RandomGraceDays() * 60000);
+                hungerReset++;
+                graceTicks = randomGraceTicks2wait;
+                return;
+            }
+            else if (Props.healthRelative && Tools.IsInjured(pawn, myDebug))
+            {
+                int randomGraceTicks2wait = (int)(RandomGraceDays() * 60000);
+                healthReset++;
+                graceTicks = randomGraceTicks2wait;
+                return;
+            }
+
+            hungerReset = healthReset = 0;
+
+            if (CheckShouldSpawn())
+            {
+                Tools.Warn("Reseting countdown bc spawned thing", myDebug);
+
+                CalculateValues();
+                CheckCalculatedValues();
+                ResetCountdown();
+
+                if (Rand.Chance(Props.randomGrace))
+                {
+                    int randomGraceTicks2wait = (int)(RandomGraceDays() * 60000);
+                    graceTicks = randomGraceTicks2wait;
+                }
+            }
+        }
+
+        private void TraceProps()
+        {
             Tools.Warn(
             "Props => " +
             "minDaysB4Next: " + Props.minDaysB4Next + "; " +
@@ -92,22 +158,169 @@ namespace MoharHediffs
                 "olderBiggerQuantity:" + Props.olderBiggerQuantity + "; " +
                 myDebug);
                 if (Props.exponentialQuantity)
-                Tools.Warn(
-                "exponentialQuantity:" + Props.exponentialQuantity + "; " +
-                "exponentialRatioLimit:" + Props.exponentialRatioLimit + "; ",
-                myDebug);
+                    Tools.Warn(
+                    "exponentialQuantity:" + Props.exponentialQuantity + "; " +
+                    "exponentialRatioLimit:" + Props.exponentialRatioLimit + "; ",
+                    myDebug);
             }
 
             if (Props.ageWeightedPeriod) { }
-                Tools.Warn(
-                "ageWeightedPeriod:" + Props.ageWeightedPeriod + "; " +
-                "olderSmallerPeriod:" + Props.olderSmallerPeriod + "; " +
-                myDebug);
+            Tools.Warn(
+            "ageWeightedPeriod:" + Props.ageWeightedPeriod + "; " +
+            "olderSmallerPeriod:" + Props.olderSmallerPeriod + "; " +
+            myDebug);
+        }
 
-            // Logical checks
-            if (Props.spawnCount > worldBurnSpawnCount)
+        private void CalculateValues()
+        {
+            // pawn age / pawn life expectany
+            float ageRatio = Tools.GetPawnAgeOverlifeExpectancyRatio(parent.pawn, myDebug);
+            // lifeexpectancy can be > 1
+            ageRatio = (ageRatio > 1) ? 1 : ageRatio;
+
+            //default behavior
+            calculatedMinDaysB4Next = Props.minDaysB4Next;
+            calculatedMaxDaysB4Next = Props.maxDaysB4Next;
+            if (Props.ageWeightedPeriod)
             {
-                Tools.Warn("SpawnCount is too high: " + Props.spawnCount + "(>" + worldBurnSpawnCount + "),  some people just want to see the world burn", myDebug);
+                /* weighted days depending on age */
+                float daysAgeRatio = Props.olderSmallerPeriod ? -ageRatio : ageRatio;
+
+                // apllying ratio to days range
+                calculatedMinDaysB4Next = Props.minDaysB4Next * (1 + daysAgeRatio);
+                calculatedMaxDaysB4Next = Props.maxDaysB4Next * (1 + daysAgeRatio);
+
+                Tools.Warn(
+                " ageWeightedPeriod: " + Props.ageWeightedPeriod +
+                " ageRatio: " + ageRatio +
+                " minDaysB4Next: " + Props.minDaysB4Next +
+                " maxDaysB4Next: " + Props.maxDaysB4Next +
+                " daysAgeRatio: " + daysAgeRatio +
+                " calculatedMinDaysB4Next: " + calculatedMinDaysB4Next + "; " +
+                " calculatedMaxDaysB4Next: " + calculatedMaxDaysB4Next + "; "
+                , myDebug);
+            }
+
+            if (calculatedMinDaysB4Next < errorMinDaysB4Next)
+            {
+                Tools.Warn("calculatedMinDaysB4Next is too low: " + calculatedMinDaysB4Next + "(<" + errorMinDaysB4Next + "), some people just want to see the world burn", myDebug);
+                blockSpawn = true;
+                Tools.DestroyParentHediff(parent, myDebug);
+                return;
+            }
+            if (calculatedMinDaysB4Next >= calculatedMaxDaysB4Next)
+            {
+                Tools.Warn("calculatedMinDaysB4Next should be lower than calculatedMaxDaysB4Next", myDebug);
+                blockSpawn = true;
+                Tools.DestroyParentHediff(parent, myDebug);
+                return;
+            }
+
+            calculatedQuantity = Props.spawnCount;
+            if (Props.ageWeightedQuantity)
+            {
+                /* weighted quantity depending on age */
+                float quantityAgeRatio = Props.olderBiggerQuantity ? ageRatio : -ageRatio;
+
+                Tools.Warn("quantityAgeRatio: " + quantityAgeRatio, myDebug);
+
+                if (Props.exponentialQuantity && (Props.exponentialRatioLimit > errorExponentialLimit))
+                {
+                    Tools.Warn("expoRatioLimit too low while expoQuantity is set: " + Props.exponentialRatioLimit + "(>" + errorExponentialLimit + "), some people just want to see the world burn", myDebug);
+                    blockSpawn = true;
+                    Tools.DestroyParentHediff(parent, myDebug);
+                    return;
+                }
+
+                calculatedQuantity = (int)Math.Round((double)Props.spawnCount * (1 + quantityAgeRatio));
+
+                if (Props.exponentialQuantity)
+                {
+                    // 
+                    quantityAgeRatio = 1 - ageRatio;
+                    if (quantityAgeRatio == 0)
+                    {
+                        Tools.Warn("quantityAgeRatio is f* up : " + quantityAgeRatio, myDebug);
+                        blockSpawn = true;
+                        Tools.DestroyParentHediff(parent, myDebug);
+                        return;
+                    }
+                    float expoFactor = Props.olderBiggerQuantity ? 1 / quantityAgeRatio : quantityAgeRatio * quantityAgeRatio;
+
+                    bool gotLimited = false;
+                    bool gotAugmented = false;
+                    if (expoFactor > Props.exponentialRatioLimit)
+                    {
+                        expoFactor = Props.exponentialRatioLimit;
+                        gotLimited = true;
+                    }
+                    calculatedQuantity = (int)Math.Round((double)Props.spawnCount * (expoFactor));
+                    if (calculatedQuantity < 1)
+                    {
+                        calculatedQuantity = 1;
+                        gotAugmented = true;
+                    }
+
+                    Tools.Warn(
+                    " exponentialQuantity: " + Props.exponentialQuantity +
+                    "; expoFactor: " + expoFactor +
+                    "; gotLimited: " + gotLimited +
+                    "; gotAugmented: " + gotAugmented
+                    , myDebug);
+                }
+                Tools.Warn(
+                "; Props.spawnCount: " + Props.spawnCount +
+                "; calculatedQuantity: " + calculatedQuantity
+                , myDebug);
+            }
+        }
+
+        private void CheckCalculatedValues()
+        {
+            if (calculatedQuantity > errorSpawnCount)
+            {
+                Tools.Warn("calculatedQuantity is too high: " + Props.spawnCount + "(>" + errorSpawnCount + "),  some people just want to see the world burn", myDebug);
+                blockSpawn = true;
+                Tools.DestroyParentHediff(parent, myDebug);
+                return;
+            }
+            if (calculatedMinDaysB4Next >= calculatedMaxDaysB4Next)
+            {
+                Tools.Warn("calculatedMinDaysB4Next should be lower than calculatedMaxDaysB4Next", myDebug);
+                blockSpawn = true;
+                Tools.DestroyParentHediff(parent, myDebug);
+                return;
+            }
+            if (calculatedMinDaysB4Next < errorMinDaysB4Next)
+            {
+                Tools.Warn("calculatedMinDaysB4Next is too low: " + Props.minDaysB4Next + "(<" + errorMinDaysB4Next + "), some people just want to see the world burn", myDebug);
+                blockSpawn = true;
+                Tools.DestroyParentHediff(parent, myDebug);
+                return;
+            }
+        }
+
+        private void TraceCalculatedValues()
+        {
+
+            Tools.Warn(
+            "<<< " +
+            ((Props.ageWeightedPeriod) ? ("Props.olderMoreOften: " + Props.olderSmallerPeriod + "; ") : ("")) +
+            ((Props.ageWeightedQuantity) ? ("Props.olderBiggerquantities: " + Props.olderBiggerQuantity + "; ") : ("")) +
+            /*((Props.ageWeightedQuantity || Props.ageWeightedPeriod) ? (" ageRatio: " + ageRatio + "; ") : ("")) + */
+            " Props.minDaysB4Next: " + Props.minDaysB4Next + "; Props.maxDaysB4Next: " + Props.maxDaysB4Next + "; " +
+            " calculatedMinDaysB4Next: " + calculatedMinDaysB4Next + "; calculatedMaxDaysB4Next: " + calculatedMaxDaysB4Next + "; " +
+            " Props.spawnCount: " + Props.spawnCount + "; CalculatedQuantity: " + calculatedQuantity + "; "
+            , myDebug
+            );
+        }
+
+        private void CheckProps()
+        {
+            // Logical checks
+            if (Props.spawnCount > errorSpawnCount)
+            {
+                Tools.Warn("SpawnCount is too high: " + Props.spawnCount + "(>" + errorSpawnCount + "),  some people just want to see the world burn", myDebug);
                 blockSpawn = true;
                 Tools.DestroyParentHediff(parent, myDebug);
                 return;
@@ -120,9 +333,9 @@ namespace MoharHediffs
                 Tools.DestroyParentHediff(parent, myDebug);
                 return;
             }
-            if (Props.minDaysB4Next < worldBurnMinDaysB4Next)
+            if (Props.minDaysB4Next < errorMinDaysB4Next)
             {
-                Tools.Warn("minDaysB4Next is too low: " + Props.minDaysB4Next + "(<" + worldBurnMinDaysB4Next + "), some people just want to see the world burn", myDebug);
+                Tools.Warn("minDaysB4Next is too low: " + Props.minDaysB4Next + "(<" + errorMinDaysB4Next + "), some people just want to see the world burn", myDebug);
                 blockSpawn = true;
                 Tools.DestroyParentHediff(parent, myDebug);
                 return;
@@ -160,185 +373,19 @@ namespace MoharHediffs
                 }
             }
 
-            // pawn age / pawn life expectany
-            float ageRatio = Tools.GetPawnAgeOverlifeExpectancyRatio(parent.pawn, myDebug);
-            // lifeexpectancy can be > 1
-            ageRatio = (ageRatio > 1) ? 1 : ageRatio;
+            if (!Props.ageWeightedPeriod) {
+                if(Props.olderSmallerPeriod)
+                    Tools.Warn("olderSmallerPeriod ignored since ageWeightedPeriod is false ", myDebug);
+                if (Props.olderBiggerQuantity)
+                    Tools.Warn("olderBiggerQuantity ignored since ageWeightedQuantity is false ", myDebug);
+                if (Props.exponentialQuantity)
+                    Tools.Warn("exponentialQuantity ignored since ageWeightedQuantity is false ", myDebug);
 
-            if (!Props.ageWeightedPeriod && Props.olderSmallerPeriod)
-                Tools.Warn("olderSmallerPeriod ignored since ageWeightedPeriod is false ", myDebug);
-
-            //default behavior
-            calculatedMinDaysB4Next = Props.minDaysB4Next;
-            calculatedMaxDaysB4Next = Props.maxDaysB4Next;
-            if (Props.ageWeightedPeriod) {
-                /* weighted days depending on age */
-                float daysAgeRatio = Props.olderSmallerPeriod ? -ageRatio : ageRatio;
-
-                // apllying ratio to days range
-                calculatedMinDaysB4Next = Props.minDaysB4Next * (1 + daysAgeRatio);
-                calculatedMaxDaysB4Next = Props.maxDaysB4Next * (1 + daysAgeRatio);
-
-                Tools.Warn(
-                " ageWeightedPeriod: " + Props.ageWeightedPeriod +
-                " ageRatio: " + ageRatio +
-                " minDaysB4Next: " + Props.minDaysB4Next +
-                " maxDaysB4Next: " + Props.maxDaysB4Next +
-                " daysAgeRatio: " + daysAgeRatio +
-                " calculatedMinDaysB4Next: " + calculatedMinDaysB4Next + "; " +
-                " calculatedMaxDaysB4Next: " + calculatedMaxDaysB4Next + "; "
-                , myDebug);
-            }
-
-            if (calculatedMinDaysB4Next < worldBurnMinDaysB4Next)
-            {
-                Tools.Warn("calculatedMinDaysB4Next is too low: " + calculatedMinDaysB4Next + "(<" + worldBurnMinDaysB4Next + "), some people just want to see the world burn", myDebug);
-                blockSpawn = true;
-                Tools.DestroyParentHediff(parent, myDebug);
-                return;
-            }
-            if (calculatedMinDaysB4Next >= calculatedMaxDaysB4Next)
-            {
-                Tools.Warn("calculatedMinDaysB4Next should be lower than calculatedMaxDaysB4Next", myDebug);
-                blockSpawn = true;
-                Tools.DestroyParentHediff(parent, myDebug);
-                return;
-            }
-
-            if (!Props.ageWeightedQuantity && Props.olderBiggerQuantity)
-                Tools.Warn("olderBiggerQuantity ignored since ageWeightedQuantity is false ", myDebug);
-            if (!Props.ageWeightedQuantity && Props.exponentialQuantity)
-                Tools.Warn("exponentialQuantity ignored since ageWeightedQuantity is false ", myDebug);
-
-            calculatedQuantity = Props.spawnCount;
-            if (Props.ageWeightedQuantity) {
-                /* weighted quantity depending on age */
-                float quantityAgeRatio = Props.olderBiggerQuantity ? ageRatio : -ageRatio;
-
-                Tools.Warn("quantityAgeRatio: " + quantityAgeRatio, myDebug);
-
-                if (Props.exponentialQuantity && (Props.exponentialRatioLimit > worldBurnExponentialLimit))
+                if(Props.olderSmallerPeriod || Props.olderBiggerQuantity || Props.exponentialQuantity)
                 {
-                    Tools.Warn("expoRatioLimit too low while expoQuantity is set: " + Props.exponentialRatioLimit + "(>" + worldBurnExponentialLimit + "), some people just want to see the world burn", myDebug);
                     blockSpawn = true;
                     Tools.DestroyParentHediff(parent, myDebug);
                     return;
-                }
-
-                calculatedQuantity = (int)Math.Round((double)Props.spawnCount * (1 + quantityAgeRatio));
-
-                if (Props.exponentialQuantity)
-                {
-                    // 
-                    quantityAgeRatio = 1-ageRatio;
-                    if (quantityAgeRatio == 0)
-                    {
-                        Tools.Warn("quantityAgeRatio is f* up : " + quantityAgeRatio, myDebug);
-                        blockSpawn = true;
-                        Tools.DestroyParentHediff(parent, myDebug);
-                        return;
-                    }
-                    float expoFactor = Props.olderBiggerQuantity ? 1 / quantityAgeRatio : quantityAgeRatio * quantityAgeRatio;
-
-                    bool gotLimited = false;
-                    bool gotAugmented = false;
-                    if(expoFactor > Props.exponentialRatioLimit)
-                    {
-                        expoFactor = Props.exponentialRatioLimit;
-                        gotLimited = true;
-                    }
-                    calculatedQuantity = (int)Math.Round((double)Props.spawnCount * (expoFactor));
-                    if (calculatedQuantity < 1)
-                    {
-                        calculatedQuantity = 1;
-                        gotAugmented = true;
-                    }
-
-                    Tools.Warn(
-                    " exponentialQuantity: " + Props.exponentialQuantity +
-                    "; expoFactor: " + expoFactor +
-                    "; gotLimited: " + gotLimited +
-                    "; gotAugmented: " + gotAugmented
-                    , myDebug);
-                }
-                Tools.Warn(
-                "; Props.spawnCount: " + Props.spawnCount +
-                "; calculatedQuantity: " + calculatedQuantity
-                , myDebug);
-            }
-
-            if (calculatedQuantity > worldBurnSpawnCount)
-            {
-                Tools.Warn("calculatedQuantity is too high: " + Props.spawnCount + "(>" + worldBurnSpawnCount + "),  some people just want to see the world burn", myDebug);
-                blockSpawn = true;
-                Tools.DestroyParentHediff(parent, myDebug);
-                return;
-            }
-
-            // Only on first spawn ?
-            if (initialTicksUntilSpawn == 0)
-            {
-                Tools.Warn("Reseting countdown bc initialTicksUntilSpawn == 0 (comppostmake)", myDebug);
-                ResetCountdown();
-            }
-
-            Tools.Warn(
-            "<<< " +
-            ((Props.ageWeightedPeriod) ? ("Props.olderMoreOften: " + Props.olderSmallerPeriod + "; ") : ("")) +
-            ((Props.ageWeightedQuantity) ? ("Props.olderBiggerquantities: " + Props.olderBiggerQuantity + "; ") : ("")) +
-            ((Props.ageWeightedQuantity || Props.ageWeightedPeriod) ? (" ageRatio: " + ageRatio + "; ") : ("")) +
-            " Props.minDaysB4Next: " + Props.minDaysB4Next + "; Props.maxDaysB4Next: " + Props.maxDaysB4Next + "; " +
-            " calculatedMinDaysB4Next: " + calculatedMinDaysB4Next + "; calculatedMaxDaysB4Next: " + calculatedMaxDaysB4Next + "; " +
-            " Props.spawnCount: " + Props.spawnCount + "; CalculatedQuantity: " + calculatedQuantity + "; "
-            , myDebug
-            );
-        }
-
-        public override void CompPostTick(ref float severityAdjustment)
-        {
-
-            pawn = parent.pawn;
-            if (!Tools.OkPawn(pawn))
-            {
-                return;
-            }
-
-            if (blockSpawn)
-                return;
-
-            if (graceTicks > 0)
-            {
-                graceTicks--;
-                return;
-            }
-
-            
-            if (Props.hungerRelative && Tools.IsHungry(pawn, myDebug))
-            {
-                int randomGraceTicks2wait = (int)(RandomGraceDays() * 60000);
-                hungerReset++;
-                graceTicks = randomGraceTicks2wait;
-                return;
-            }
-            else if (Props.healthRelative && Tools.IsInjured(pawn, myDebug))
-            {
-                int randomGraceTicks2wait = (int)(RandomGraceDays() * 60000);
-                healthReset++;
-                graceTicks = randomGraceTicks2wait;
-                return;
-            }
-
-            hungerReset = healthReset = 0;
-
-            if (CheckShouldSpawn())
-            {
-                Tools.Warn("Reseting countdown bc spawned thing", myDebug);
-                ResetCountdown();
-
-                if (Rand.Chance(Props.randomGrace))
-                {
-                    int randomGraceTicks2wait = (int)(RandomGraceDays() * 60000);
-                    graceTicks = randomGraceTicks2wait;
                 }
             }
         }
