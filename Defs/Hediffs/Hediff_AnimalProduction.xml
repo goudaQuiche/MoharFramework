@@ -57,6 +57,8 @@
 				<olderBiggerQuantity>true</olderBiggerQuantity>
 				
 				<spawnVerb>laying</spawnVerb>
+				
+				<debug>true</debug>
 			</li>
 		</comps>
 	</HediffDef>
@@ -120,7 +122,7 @@
 				<ageWeightedPeriod>true</ageWeightedPeriod>
 				<olderSmallerPeriod>false</olderSmallerPeriod>
 				
-				<debug>true</debug>
+				<!-- <debug>true</debug> -->
 				
 				<spawnVerb>hatching</spawnVerb>
 			</li>

@@ -201,21 +201,6 @@ namespace MoharHediffs
                 , myDebug);
             }
 
-            if (calculatedMinDaysB4Next < errorMinDaysB4Next)
-            {
-                Tools.Warn("calculatedMinDaysB4Next is too low: " + calculatedMinDaysB4Next + "(<" + errorMinDaysB4Next + "), some people just want to see the world burn", myDebug);
-                blockSpawn = true;
-                Tools.DestroyParentHediff(parent, myDebug);
-                return;
-            }
-            if (calculatedMinDaysB4Next >= calculatedMaxDaysB4Next)
-            {
-                Tools.Warn("calculatedMinDaysB4Next should be lower than calculatedMaxDaysB4Next", myDebug);
-                blockSpawn = true;
-                Tools.DestroyParentHediff(parent, myDebug);
-                return;
-            }
-
             calculatedQuantity = Props.spawnCount;
             if (Props.ageWeightedQuantity)
             {
@@ -223,14 +208,6 @@ namespace MoharHediffs
                 float quantityAgeRatio = Props.olderBiggerQuantity ? ageRatio : -ageRatio;
 
                 Tools.Warn("quantityAgeRatio: " + quantityAgeRatio, myDebug);
-
-                if (Props.exponentialQuantity && (Props.exponentialRatioLimit > errorExponentialLimit))
-                {
-                    Tools.Warn("expoRatioLimit too low while expoQuantity is set: " + Props.exponentialRatioLimit + "(>" + errorExponentialLimit + "), some people just want to see the world burn", myDebug);
-                    blockSpawn = true;
-                    Tools.DestroyParentHediff(parent, myDebug);
-                    return;
-                }
 
                 calculatedQuantity = (int)Math.Round((double)Props.spawnCount * (1 + quantityAgeRatio));
 
@@ -240,7 +217,7 @@ namespace MoharHediffs
                     quantityAgeRatio = 1 - ageRatio;
                     if (quantityAgeRatio == 0)
                     {
-                        Tools.Warn("quantityAgeRatio is f* up : " + quantityAgeRatio, myDebug);
+                        Tools.Warn(">ERROR< quantityAgeRatio is f* up : " + quantityAgeRatio, myDebug);
                         blockSpawn = true;
                         Tools.DestroyParentHediff(parent, myDebug);
                         return;
@@ -279,21 +256,21 @@ namespace MoharHediffs
         {
             if (calculatedQuantity > errorSpawnCount)
             {
-                Tools.Warn("calculatedQuantity is too high: " + Props.spawnCount + "(>" + errorSpawnCount + "),  some people just want to see the world burn", myDebug);
+                Tools.Warn(">ERROR< calculatedQuantity is too high: " + calculatedQuantity + "(>" + errorSpawnCount + "), check and adjust your hediff props", myDebug);
                 blockSpawn = true;
                 Tools.DestroyParentHediff(parent, myDebug);
                 return;
             }
             if (calculatedMinDaysB4Next >= calculatedMaxDaysB4Next)
             {
-                Tools.Warn("calculatedMinDaysB4Next should be lower than calculatedMaxDaysB4Next", myDebug);
+                Tools.Warn(">ERROR< calculatedMinDaysB4Next should be lower than calculatedMaxDaysB4Next", myDebug);
                 blockSpawn = true;
                 Tools.DestroyParentHediff(parent, myDebug);
                 return;
             }
             if (calculatedMinDaysB4Next < errorMinDaysB4Next)
             {
-                Tools.Warn("calculatedMinDaysB4Next is too low: " + Props.minDaysB4Next + "(<" + errorMinDaysB4Next + "), some people just want to see the world burn", myDebug);
+                Tools.Warn(">ERROR< calculatedMinDaysB4Next is too low: " + Props.minDaysB4Next + "(<" + errorMinDaysB4Next + "), check and adjust your hediff props", myDebug);
                 blockSpawn = true;
                 Tools.DestroyParentHediff(parent, myDebug);
                 return;
@@ -374,19 +351,34 @@ namespace MoharHediffs
             }
 
             if (!Props.ageWeightedPeriod) {
-                if(Props.olderSmallerPeriod)
+                if (Props.olderSmallerPeriod) { 
                     Tools.Warn("olderSmallerPeriod ignored since ageWeightedPeriod is false ", myDebug);
+                    blockSpawn = true;
+                    Tools.DestroyParentHediff(parent, myDebug);
+                    return;
+                }
+            }
+
+            if (!Props.ageWeightedQuantity)
+            {
                 if (Props.olderBiggerQuantity)
                     Tools.Warn("olderBiggerQuantity ignored since ageWeightedQuantity is false ", myDebug);
                 if (Props.exponentialQuantity)
                     Tools.Warn("exponentialQuantity ignored since ageWeightedQuantity is false ", myDebug);
-
-                if(Props.olderSmallerPeriod || Props.olderBiggerQuantity || Props.exponentialQuantity)
+                if (Props.olderBiggerQuantity || Props.exponentialQuantity)
                 {
                     blockSpawn = true;
                     Tools.DestroyParentHediff(parent, myDebug);
                     return;
                 }
+            }
+
+            if (Props.exponentialQuantity && (Props.exponentialRatioLimit > errorExponentialLimit))
+            {
+                Tools.Warn("expoRatioLimit too low while expoQuantity is set: " + Props.exponentialRatioLimit + "(>" + errorExponentialLimit + "), some people just want to see the world burn", myDebug);
+                blockSpawn = true;
+                Tools.DestroyParentHediff(parent, myDebug);
+                return;
             }
         }
 

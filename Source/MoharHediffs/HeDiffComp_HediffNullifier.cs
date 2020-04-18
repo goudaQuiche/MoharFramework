@@ -87,11 +87,12 @@ namespace MoharHediffs
 
             foreach (Hediff curHediff in pawn.health.hediffSet.hediffs)
             {
-                foreach (string curHediffToNullify in Props.hediffToNullify)
+                Tools.Warn(pawn.Label + " - " + curHediff.def.defName, myDebug);
+                foreach (HediffDef curHediffToNullify in Props.hediffToNullify)
                 {
-                    if (curHediff.def.defName == curHediffToNullify)
+                    if (curHediff.def == curHediffToNullify)
                     {
-                        
+
                         curHediff.Severity = 0;
                         Tools.Warn(curHediff.def.defName + " severity = 0", myDebug);
 
@@ -117,15 +118,15 @@ namespace MoharHediffs
                 if (!HasHediffToNullify)
                     return result;
                 result += "Immune to: ";
-                foreach (string hediffName in Props.hediffToNullify)
+                foreach (HediffDef hediffName in Props.hediffToNullify)
                 {
-                    result += hediffName + "; ";
+                    result += hediffName.label + "; ";
                 }
 
                 if (!HasLimitedUsage)
                     result += (" for ever");
                 else
-                    result += (" - " + LimitedUsageNumber + " left");
+                    result += (" " + LimitedUsageNumber + " left");
 
                 return result;
             }

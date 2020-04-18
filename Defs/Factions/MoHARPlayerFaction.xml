@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<FactionDef Abstract="True" Name="MoHARFactionBase">
+		<factionIconPath>World/WorldObjects/Defaultbase</factionIconPath>
+		<!-- https://www.color-hex.com/color-palette/90530 -->
+		<colorSpectrum>
+			<li>(237,227,150)</li>
+			<li>(241,170,127)</li>
+			<li>(231,132,193)</li>
+		</colorSpectrum>
+	</FactionDef>
+
+	<FactionDef ParentName="MoHARFactionBase">
+		<defName>MoHARPlayerColony</defName>
+		<label>MoHAR test</label>
+		<description>Your test factory</description>
+		<isPlayer>true</isPlayer>
+		
+		<basicMemberKind>MoharHediff_basicMemberKind</basicMemberKind>
+		<pawnsPlural>MoHARs</pawnsPlural>
+		
+		<factionNameMaker>NamerFactionOutlander</factionNameMaker>
+		<settlementNameMaker>NamerSettlementOutlander</settlementNameMaker>
+		<playerInitialSettlementNameMaker>NamerSettlementOutlander</playerInitialSettlementNameMaker>
+		
+		<backstoryFilters>
+		  <li>
+			<categories>
+			  <li>Outlander</li>
+			</categories>
+		  </li>
+		</backstoryFilters>
+		
+		<factionIconPath>Human/npc</factionIconPath>
+		<settlementTexturePath>Human/npcZoom</settlementTexturePath>
+<!-- techLevel : Industrial Medieval Neolithic -->		
+<!-- StartingResearchTag : TribalStart ClassicStart -->
+		<techLevel>Medieval</techLevel>
+		<startingResearchTags>
+			<li>TribalStart</li>
+		</startingResearchTags>		
+		
+		<hairTags>
+			<li>Tribal</li>
+			<li>Urban</li>
+		</hairTags>
+						
+		<apparelStuffFilter>
+			<thingDefs>
+				<li>Cloth</li>
+				<!-- <li>Hyperweave</li> -->
+				<li>Synthread</li>
+				<!-- <li>DevilstrandCloth</li> -->
+			</thingDefs>
+		</apparelStuffFilter>
+	</FactionDef>
+	
+</Defs>

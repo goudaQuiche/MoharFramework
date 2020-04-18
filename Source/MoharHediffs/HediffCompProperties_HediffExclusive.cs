@@ -15,12 +15,13 @@ namespace MoharHediffs
 	public class HeDiffCompProperties_HediffExclusive : HediffCompProperties
 	{
         //what
-        public List<string> hediffToNullify;
+        public List<HediffDef> hediffToNullify;
         public List<string> hediffPatternToNullify;
 
-        public string hediffToApply;
+        public HediffDef hediffToApply = null;
+
         public BodyDef bodyDef;
-        public string bodyPartName;
+        public BodyPartDef bodyPartDef;
 
         public bool debug = false;
 

@@ -27,6 +27,23 @@
 	</PawnKindDef>
 
 	<PawnKindDef ParentName="BaseGuineaPigPawnKind">
+		<defName>MoharHediff_basicMemberKind</defName>
+		<label>whatever</label>
+		
+		<defaultFactionType>PlayerColony</defaultFactionType>
+		
+		<backstoryFiltersOverride>
+			<li>
+				<categories>
+					<li>ImmuneBS</li>
+					<li>MaterialProductionBS</li>
+					<li>AnimalProductionBS</li>
+				</categories>
+			</li>
+		</backstoryFiltersOverride>
+	</PawnKindDef>
+
+	<PawnKindDef ParentName="BaseGuineaPigPawnKind">
 		<defName>MoharHediff_immunity</defName>
 		<label>whatever</label>
 		

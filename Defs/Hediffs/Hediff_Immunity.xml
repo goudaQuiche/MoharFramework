@@ -36,6 +36,7 @@
 				<limitedUsageNumber>2</limitedUsageNumber>
 				<hediffToNullify>
 					<li>Plague</li>	
+					<li>Animal_Plague</li>	
 				</hediffToNullify>
 			</li>
 		</comps>
@@ -53,6 +54,7 @@
 			<li Class="MoharHediffs.HediffCompProperties_HediffNullifier">
 				<hediffToNullify>
 					<li>Flu</li>	
+					<li>Animal_Flu</li>
 				</hediffToNullify>
 			</li>
 		</comps>
@@ -79,7 +81,9 @@
 				</hediffPatternToNullify>
 				
 				<hediffToApply>Hediff_PlagueImmunityTwice</hediffToApply>
-				<bodyPartName>Heart</bodyPartName>
+				
+				<bodyDef>Human</bodyDef>
+				<bodyPartDef>Heart</bodyPartDef>
 				
 				<debug>true</debug>
 			</li>

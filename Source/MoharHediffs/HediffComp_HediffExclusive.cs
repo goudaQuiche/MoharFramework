@@ -52,7 +52,7 @@ namespace MoharHediffs
         {
             get
             {
-                return (!Props.hediffToApply.NullOrEmpty());
+                return Props.hediffToApply != null;
             }
         }
 
@@ -75,11 +75,11 @@ namespace MoharHediffs
                     Tools.Warn(pawn.Label + " hediff #" + i + ": " + curHediff.def.defName, myDebug);
 
                     int j = 0;
-                    foreach (string curHediffToNullify in Props.hediffToNullify)
+                    foreach (HediffDef curHediffToNullify in Props.hediffToNullify)
                     {
                         Tools.Warn(" Props.hediffToNullify #" + j + ": " + curHediffToNullify, myDebug);
 
-                        if (curHediff.def.defName == curHediffToNullify)
+                        if (curHediff.def == curHediffToNullify)
                         {
                             curHediff.Severity = 0;
                             Tools.Warn(curHediff.def.defName + " severity = 0", myDebug);
@@ -123,31 +123,31 @@ namespace MoharHediffs
                     return;
                 }
 
-            HediffDef hediff2use = HediffDef.Named(Props.hediffToApply);
+            HediffDef hediff2use = Props.hediffToApply;
             if (hediff2use == null)
             {
                 Tools.Warn("cant find hediff called: " + Props.hediffToApply, true);
                 return;
             }
 
-            BodyPartDef myBPDef = DefDatabase<BodyPartDef>.AllDefs.Where((BodyPartDef b) => b.defName == Props.bodyPartName).RandomElement();
+            BodyPartDef myBPDef = DefDatabase<BodyPartDef>.AllDefs.Where((BodyPartDef b) => b == Props.bodyPartDef).RandomElement();
             if (myBPDef == null)
             {
-                Tools.Warn("cant find body part def called: " + Props.bodyPartName, true);
+                Tools.Warn("cant find body part def called: " + Props.bodyPartDef.defName, true);
                 return;
             }
             
             BodyPartRecord myBP = pawn.RaceProps.body.GetPartsWithDef(myBPDef).RandomElement();
             if (myBP == null)
             {
-                Tools.Warn("cant find body part record called: " + Props.bodyPartName, true);
+                Tools.Warn("cant find body part record called: " + Props.bodyPartDef.defName, true);
                 return;
             }
 
             Hediff hediff2apply = HediffMaker.MakeHediff(hediff2use, pawn, myBP);
             if (hediff2apply == null)
             {
-                Tools.Warn("cant create hediff to apply: " + Props.bodyPartName, true);
+                Tools.Warn("cant create hediff "+ hediff2use.defName + " to apply on " + Props.bodyPartDef.defName, true);
                 return;
             }
 

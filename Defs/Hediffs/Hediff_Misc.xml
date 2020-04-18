@@ -12,6 +12,7 @@
 			<li Class="MoharHediffs.HediffCompProperties_Steamer">
 				<MinTicksBetweenSprays>256</MinTicksBetweenSprays>
 				<MaxTicksBetweenSprays>1024</MaxTicksBetweenSprays>
+				<!-- <debug>true</debug> -->
 			</li>
 		</comps>
 	</HediffDef>

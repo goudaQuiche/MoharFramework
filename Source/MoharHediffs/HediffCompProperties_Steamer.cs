@@ -23,6 +23,8 @@ namespace MoharHediffs
 
         public float puffingChance = 1f;
 
+        public bool debug = false;
+
         public HediffCompProperties_Steamer()
         {
             this.compClass = typeof(HediffComp_Steamer);

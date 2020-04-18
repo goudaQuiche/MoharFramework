@@ -2,8 +2,8 @@
     <!-- 06 -->
     <AlienRace.BackstoryDef>
 		<defName>GuineaPig_Adult_ImmuneBS</defName>
-		<title>MoreGuineaPig</title>
-		<titleShort>GuineaPig</titleShort>
+		<title>Immune</title>
+		<titleShort>immune</titleShort>
 		<baseDescription>[PAWN_nameDef] is MoreGuineaPig</baseDescription>
 		
 		<slot>Adulthood</slot>
@@ -22,8 +22,8 @@
 	
 	<AlienRace.BackstoryDef>
 		<defName>GuineaPig_Adult_MaterialProductionBS</defName>
-		<title>MoreGuineaPig</title>
-		<titleShort>GuineaPig</titleShort>
+		<title>MatProd</title>
+		<titleShort>MatProd</titleShort>
 		<baseDescription>[PAWN_nameDef] is MoreGuineaPig</baseDescription>
 		
 		<slot>Adulthood</slot>
@@ -45,8 +45,8 @@
 	
 	<AlienRace.BackstoryDef>
 		<defName>GuineaPig_Adult_AnimalProductionBS</defName>
-		<title>MoreGuineaPig</title>
-		<titleShort>GuineaPig</titleShort>
+		<title>AnimalProd</title>
+		<titleShort>AnimalProd</titleShort>
 		<baseDescription>[PAWN_nameDef] is MoreGuineaPig</baseDescription>
 		
 		<slot>Adulthood</slot>

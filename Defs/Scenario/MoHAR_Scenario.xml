@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+<ScenarioDef>
+	<defName>MoHARTribeScenario</defName>
+    <label>MoHAR - hediffs for race mod creators</label>
+    <description>This is a test</description>
+	<scenario>
+	<summary>This is a test</summary>
+	
+	<playerFaction>
+		<def>PlayerFaction</def>
+		<factionDef>MoHARPlayerColony</factionDef>
+	</playerFaction>
+	
+	<parts>
+
+	<!-- Config pages -->
+	<li Class="ScenPart_ConfigPage_ConfigureStartingPawns">
+		<def>ConfigPage_ConfigureStartingPawns</def>
+		<pawnCount>6</pawnCount>
+		<pawnChoiceCount>9</pawnChoiceCount>
+	</li>
+
+	<!-- Player starting stuff spawn method-->
+	<li Class="ScenPart_PlayerPawnsArriveMethod">
+		<def>PlayerPawnsArriveMethod</def>
+		<method>DropPods</method>
+		<visible>false</visible>
+	</li>
+
+	<!-- Starting research -->
+	<li Class="ScenPart_StartingResearch">
+		<def>StartingResearch</def>
+		<project>Electricity</project>
+	</li>
+	
+	<!-- Player starting things -->
+	<li Class="ScenPart_StartingThing_Defined">
+		<def>StartingThing_Defined</def>
+		<thingDef>MoharHediff_Antiprod</thingDef>
+		<count>50</count>
+	</li>
+	<li Class="ScenPart_StartingThing_Defined">
+		<def>StartingThing_Defined</def>
+		<thingDef>Beer</thingDef>
+		<count>50</count>
+	</li>
+	<li Class="ScenPart_StartingThing_Defined">
+		<def>StartingThing_Defined</def>
+		<thingDef>SmokeleafJoint</thingDef>
+		<count>50</count>
+	</li>
+	<li Class="ScenPart_StartingThing_Defined">
+		<def>StartingThing_Defined</def>
+		<thingDef>MedicineIndustrial</thingDef>
+		<count>8</count>
+	</li>
+
+	<li Class="ScenPart_StartingThing_Defined">
+		<def>StartingThing_Defined</def>
+		<thingDef>MeleeWeapon_Club</thingDef>
+		<stuff>Jade</stuff>
+	</li>
+	<li Class="ScenPart_StartingThing_Defined">
+		<def>StartingThing_Defined</def>
+		<thingDef>MeleeWeapon_Spear</thingDef>
+		<stuff>Jade</stuff>
+	</li>
+	<li Class="ScenPart_StartingThing_Defined">
+		<def>StartingThing_Defined</def>
+		<thingDef>MeleeWeapon_Knife</thingDef>
+		<stuff>Jade</stuff>
+	</li>
+	<li Class="ScenPart_StartingThing_Defined">
+		<def>StartingThing_Defined</def>
+		<thingDef>Bow_Short</thingDef>
+		<count>1</count>
+	</li>
+	
+	<!-- Scatter some things near player start -->
+	<li Class="ScenPart_ScatterThingsNearPlayerStart">
+		<def>ScatterThingsNearPlayerStart</def>
+		<thingDef>WoodLog</thingDef>
+		<count>500</count>
+	</li>
+
+	<!-- Game start dialog -->
+	<li Class="ScenPart_GameStartDialog">
+		<def>GameStartDialog</def>
+		<text>This is ScenPart_GameStartDialog GameStartDialog</text>
+		<closeSound>GameStartSting</closeSound>
+	</li>
+
+	</parts>
+	</scenario>
+	
+</ScenarioDef>
+</Defs>
