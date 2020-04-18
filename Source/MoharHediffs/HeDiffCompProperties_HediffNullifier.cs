@@ -16,7 +16,6 @@ namespace MoharHediffs
 	{
         //what
         public List<string> hediffToNullify;
-        public bool limitedUsage = false;
         public int limitedUsageNumber = -99;
 
         public HediffCompProperties_HediffNullifier()

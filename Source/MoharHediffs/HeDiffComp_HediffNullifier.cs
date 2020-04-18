@@ -19,6 +19,8 @@ namespace MoharHediffs
         const int tickLimiterModulo = 60;
         private int LimitedUsageNumber = 0;
 
+        bool BlockPostTick = false;
+
         readonly bool myDebug = false;
 
         public HediffCompProperties_HediffNullifier Props
@@ -40,7 +42,7 @@ namespace MoharHediffs
         {
             get
             {
-                return (Props.limitedUsage);
+                return (Props.limitedUsageNumber != -99);
             }
         }
 
@@ -50,7 +52,14 @@ namespace MoharHediffs
 
             Tools.Warn(">>>" + parent.def.defName + " - CompPostMake start", myDebug);
 
-            if(HasLimitedUsage)
+            if (!HasHediffToNullify)
+            {
+                Tools.Warn(parent.def.defName + " has no hediff to nullify, autokill", myDebug);
+                Tools.DestroyParentHediff(parent, myDebug);
+                BlockPostTick = true;
+            }
+                
+            if (HasLimitedUsage)
                 LimitedUsageNumber = Props.limitedUsageNumber;
         }
 
@@ -67,7 +76,7 @@ namespace MoharHediffs
                 return;
             }
 
-            if (!HasHediffToNullify)
+            if (BlockPostTick)
                 return;
 
             Pawn pawn = parent.pawn;
@@ -76,16 +85,10 @@ namespace MoharHediffs
 
             //Tools.Warn("hediff Nullifier - Working", myDebug);
 
-            int i = 0;
             foreach (Hediff curHediff in pawn.health.hediffSet.hediffs)
             {
-                //Tools.Warn(pawn.NameShortColored + " hediff #" + i + ": " + curHediff.def.defName, myDebug);
-
-                int j = 0;
                 foreach (string curHediffToNullify in Props.hediffToNullify)
                 {
-                    //Tools.Warn(" hediff to nullify #" + j + ": " + curHediffToNullify, myDebug);
-                    
                     if (curHediff.def.defName == curHediffToNullify)
                     {
                         
@@ -93,14 +96,16 @@ namespace MoharHediffs
                         Tools.Warn(curHediff.def.defName + " severity = 0", myDebug);
 
                         if (HasLimitedUsage)
+                        {
                             LimitedUsageNumber--;
-
-                        if (LimitedUsageNumber <= 0)
-                            Tools.DestroyParentHediff(parent, myDebug);
+                            if (LimitedUsageNumber <= 0)
+                            {
+                                Tools.Warn(parent.def.defName + " has reached its limit usage, autokill", myDebug);
+                                Tools.DestroyParentHediff(parent, myDebug);
+                            }
+                        }
                     }
-                    j++;
                 }
-                i++;
             }
         }
 

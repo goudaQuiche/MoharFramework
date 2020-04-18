@@ -13,7 +13,7 @@
 		</spawnCategories>
 		
 		<forcedHediffs>
-			<li>Hediff_PlagueImmunityTwice</li>
+			<li>Hediff_FluImmunityForever</li>
 			<li>Hediff_AlcoholImmunity</li>
 			
 			<li>Hediff_Steamer</li>

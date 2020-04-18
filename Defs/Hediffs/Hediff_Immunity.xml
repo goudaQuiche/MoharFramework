@@ -27,13 +27,12 @@
 		<defName>Hediff_PlagueImmunityTwice</defName>
 		<hediffClass>HediffWithComps</hediffClass>
 		
-		<description>Plague immunity.</description>
-		<label>Plague immune</label>
-		<labelNoun>Hediff_PlagueImmunity.labelNoun</labelNoun>
+		<description>Plague immunity twice</description>
+		<label>Plague immune twice</label>
+		<labelNoun>Hediff_PlagueImmunityTwice.labelNoun</labelNoun>
 		
 		<comps>
 			<li Class="MoharHediffs.HediffCompProperties_HediffNullifier">
-				<limitedUsage>true</limitedUsage>
 				<limitedUsageNumber>2</limitedUsageNumber>
 				<hediffToNullify>
 					<li>Plague</li>	
@@ -41,7 +40,23 @@
 			</li>
 		</comps>
 	</HediffDef>
-
+<!---->	
+	<HediffDef>
+		<defName>Hediff_FluImmunityForever</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		
+		<description>For ever Flu immune.</description>
+		<label>Flu immune</label>
+		<labelNoun>Hediff_FluImmunityForever.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_HediffNullifier">
+				<hediffToNullify>
+					<li>Flu</li>	
+				</hediffToNullify>
+			</li>
+		</comps>
+	</HediffDef>
 <!---->	
 	<HediffDef>
 		<defName>Hediff_ProdAndSteamerRemoval</defName>
