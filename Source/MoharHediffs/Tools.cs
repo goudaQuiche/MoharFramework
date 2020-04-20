@@ -6,7 +6,7 @@ using Verse;
 
 namespace MoharHediffs
 {
-    public class Tools
+    public static class Tools
     {
         public static void DestroyParentHediff(Hediff parentHediff, bool debug=false)
         {
@@ -32,7 +32,6 @@ namespace MoharHediffs
             
             return ratio;
         }
-
         public static float GetPawnAdultRatio(Pawn pawn, bool debug = false)
         {
             float ratio = 1f;
@@ -51,7 +50,6 @@ namespace MoharHediffs
 
             return ratio;
         }
-
         public static bool IsInjured(Pawn pawn, bool debug = false)
         {
             if (pawn == null)
@@ -73,7 +71,6 @@ namespace MoharHediffs
             Warn(pawn.Label + " is wounded ", debug && (num>0));
             return (num > 0);
         }
-
         public static bool IsHungry(Pawn pawn, bool debug = false)
         {
             if (pawn == null)
@@ -88,53 +85,30 @@ namespace MoharHediffs
             return answer;
         }
 
+        public static BodyPartRecord GetBPRecord(this Pawn pawn, BodyPartDef bodyPartDef, bool myDebug = false)
+        {
+            IEnumerable<BodyPartDef> BPDefIE = DefDatabase<BodyPartDef>.AllDefs.Where((BodyPartDef b) => b == bodyPartDef);
+            if (BPDefIE.EnumerableNullOrEmpty())
+            {
+                Tools.Warn(pawn.Label + " - GetBPRecord - did not find any " + bodyPartDef.defName, myDebug);
+                return null;
+            }
+
+            BodyPartDef BPDef = BPDefIE.RandomElement();
+            pawn.RaceProps.body.GetPartsWithDef(BPDef).TryRandomElement(out BodyPartRecord bodyPart);
+
+            Tools.Warn(pawn.Label + "GetBPRecord - DID find " + bodyPartDef.defName, myDebug);
+            return bodyPart;
+        }
 
         public static bool OkPawn(Pawn pawn)
         {
             return ((pawn != null) && (pawn.Map != null));
         }
-
-        public static string OkStr(bool boolean=false)
-        {
-            return "[" + ((boolean) ? ("OK") : ("KO")) + "]";
-        }
-
         public static void Warn(string warning, bool debug = false)
         {
             if(debug)
                 Log.Warning(warning);
-        }
-        public static void WarnRare(string warning, int period=300, bool debug = false)
-        {
-            if (debug)
-            {
-                bool display = ((Find.TickManager.TicksGame % period)==0);
-                if (display)
-                    Log.Warning(warning);
-            }
-        }
-        
-        public static string PawnResumeString(Pawn pawn)
-        {
-            return (pawn?.LabelShort.CapitalizeFirst() +
-                    ", " +
-                    (int)pawn?.ageTracker?.AgeBiologicalYears + " y/o" +
-                    //" " + pawn?.gender.ToString()?.Translate()?.ToLower() +
-                    " " + pawn?.gender.GetLabel() + 
-                    ", " + pawn?.def?.label + "("+pawn.kindDef+")"
-                    );
-        }
-
-        //debug Toggle kinda pointless
-        public static string DebugStatus(bool debug)
-        {
-            return (debug+ "->" + !debug);
-        }
-
-        //PauseOnError for debug purpose
-        public static void PauseOnErrorToggle()
-        {
-            Prefs.PauseOnError = !Prefs.PauseOnError;
         }
 
     }

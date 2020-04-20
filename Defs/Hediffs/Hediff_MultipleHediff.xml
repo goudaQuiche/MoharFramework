@@ -17,10 +17,10 @@
 					<li>Plague</li>	
 					<li>Flu</li>	
 				</hediffToApply>
-				<bodyPartDefName>
+				<bodyPartDef>
 					<li>Stomach</li>
 					<li>Brain</li>
-				</bodyPartDefName>
+				</bodyPartDef>
 			</li>
 		</comps>
 	</HediffDef>

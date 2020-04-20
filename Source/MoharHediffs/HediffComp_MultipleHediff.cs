@@ -31,7 +31,7 @@ namespace MoharHediffs
         public void CheckProps()
         {
             string fctN = "CheckProps";
-            if(Props.hediffToApply.Count != Props.bodyPartDefName.Count)
+            if(Props.hediffToApply.Count != Props.bodyPartDef.Count)
             {
                 Tools.Warn(fctN + "- Props.hediffToApply.Count != Props.bodyPartDef.Count", myDebug);
                 Tools.DestroyParentHediff(parent, myDebug);
@@ -62,40 +62,28 @@ namespace MoharHediffs
                     return;
                 }
 
-            for(int i =0; i < Props.hediffToApply.Count; i++)
+            for (int i = 0; i < Props.hediffToApply.Count; i++)
             {
                 HediffDef curHD = Props.hediffToApply[i];
-                string curBPDN = Props.bodyPartDefName[i];
+                BodyPartDef curBPD = Props.bodyPartDef[i];
 
                 if (curHD == null)
                 {
                     Tools.Warn("cant find hediff; i=" + i, true);
                     return;
                 }
-                if (curBPDN.NullOrEmpty())
+                if (curBPD == null)
                 {
                     Tools.Warn("cant find body part def; i=" + i, true);
                     return;
                 }
 
-                //BodyPartRecord myBPR = pawn.RaceProps.body.GetPartsWithDef(curBPD).RandomElement();
-                BodyPartDef myBPD = DefDatabase<BodyPartDef>.AllDefs.Where((BodyPartDef b) => b.defName == curBPDN).RandomElement();
-                if(myBPD == null)
-                {
-                    Tools.Warn("cant find body part def called: " + curBPDN, true);
-                    return;
-                }
-                BodyPartRecord myBPR = pawn.RaceProps.body.GetPartsWithDef(myBPD).RandomElement();
-                if (myBPR == null)
-                {
-                    Tools.Warn("cant find body part record called: " + curBPDN, true);
-                    return;
-                }
+                BodyPartRecord myBPR = pawn.GetBPRecord(curBPD, myDebug);
 
                 Hediff hediff2apply = HediffMaker.MakeHediff(curHD, pawn, myBPR);
                 if (hediff2apply == null)
                 {
-                    Tools.Warn("cant create hediff " + curHD.defName + " to apply on " + curBPDN, true);
+                    Tools.Warn("cant create hediff " + curHD.defName + " to apply on " + curBPD.defName, true);
                     return;
                 }
 
