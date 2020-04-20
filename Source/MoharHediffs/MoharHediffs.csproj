@@ -54,10 +54,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="HediffCompProperties_MultipleHediff.cs" />
     <Compile Include="HediffCompProperties_HediffExclusive.cs" />
     <Compile Include="HediffCompProperties_HediffNullifier.cs" />
     <Compile Include="HediffCompProperties_Spawner.cs" />
     <Compile Include="HediffCompProperties_Steamer.cs" />
+    <Compile Include="HediffComp_MultipleHediff.cs" />
     <Compile Include="HediffComp_HediffExclusive.cs" />
     <Compile Include="HediffComp_HediffNullifier.cs" />
     <Compile Include="HediffComp_Spawner.cs" />
