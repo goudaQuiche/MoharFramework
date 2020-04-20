@@ -19,7 +19,7 @@ namespace MoharHediffs
         //what
         public List<HediffDef> hediffToApply;
         // where is it applied
-        public List<BodyPartDef> bodyPartDef;
+        public List<string> bodyPartDefName;
 
         public bool debug = false;
 

@@ -36,11 +36,20 @@
 	</li>
 	
 	<!-- Player starting things -->
+	
+	<!-- Drugs -->
 	<li Class="ScenPart_StartingThing_Defined">
 		<def>StartingThing_Defined</def>
 		<thingDef>MoharHediff_Antiprod</thingDef>
 		<count>50</count>
 	</li>
+	<li Class="ScenPart_StartingThing_Defined">
+		<def>StartingThing_Defined</def>
+		<thingDef>MoharHediff_TwoDiseases</thingDef>
+		<count>50</count>
+	</li>
+	
+	<!-- More Drugs -->
 	<li Class="ScenPart_StartingThing_Defined">
 		<def>StartingThing_Defined</def>
 		<thingDef>Beer</thingDef>
@@ -51,6 +60,8 @@
 		<thingDef>SmokeleafJoint</thingDef>
 		<count>50</count>
 	</li>
+	
+	
 	<li Class="ScenPart_StartingThing_Defined">
 		<def>StartingThing_Defined</def>
 		<thingDef>MedicineIndustrial</thingDef>

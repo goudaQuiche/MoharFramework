@@ -31,10 +31,10 @@ namespace MoharHediffs
         public void CheckProps()
         {
             string fctN = "CheckProps";
-            if(Props.hediffToApply.Count != Props.bodyPartDef.Count)
+            if(Props.hediffToApply.Count != Props.bodyPartDefName.Count)
             {
                 Tools.Warn(fctN + "- Props.hediffToApply.Count != Props.bodyPartDef.Count", myDebug);
-                parent.Severity = 0;
+                Tools.DestroyParentHediff(parent, myDebug);
                 blockAction = true;
             }
         }
@@ -43,6 +43,7 @@ namespace MoharHediffs
         {
             //base.CompPostMake();
             myDebug = Props.debug;
+            CheckProps();
         }
 
         public bool HasHediffToApply
@@ -61,49 +62,61 @@ namespace MoharHediffs
                     return;
                 }
 
-            foreach(HediffDef curH in Props.hediffToApply)
+            for(int i =0; i < Props.hediffToApply.Count; i++)
             {
-                if (curH == null)
+                HediffDef curHD = Props.hediffToApply[i];
+                string curBPDN = Props.bodyPartDefName[i];
+
+                if (curHD == null)
                 {
-                    Tools.Warn("cant find hediff called: " + Props.hediffToApply, true);
+                    Tools.Warn("cant find hediff; i=" + i, true);
                     return;
                 }
+                if (curBPDN.NullOrEmpty())
+                {
+                    Tools.Warn("cant find body part def; i=" + i, true);
+                    return;
+                }
+
+                //BodyPartRecord myBPR = pawn.RaceProps.body.GetPartsWithDef(curBPD).RandomElement();
+                BodyPartDef myBPD = DefDatabase<BodyPartDef>.AllDefs.Where((BodyPartDef b) => b.defName == curBPDN).RandomElement();
+                if(myBPD == null)
+                {
+                    Tools.Warn("cant find body part def called: " + curBPDN, true);
+                    return;
+                }
+                BodyPartRecord myBPR = pawn.RaceProps.body.GetPartsWithDef(myBPD).RandomElement();
+                if (myBPR == null)
+                {
+                    Tools.Warn("cant find body part record called: " + curBPDN, true);
+                    return;
+                }
+
+                Hediff hediff2apply = HediffMaker.MakeHediff(curHD, pawn, myBPR);
+                if (hediff2apply == null)
+                {
+                    Tools.Warn("cant create hediff " + curHD.defName + " to apply on " + curBPDN, true);
+                    return;
+                }
+
+                pawn.health.AddHediff(hediff2apply, myBPR, null);
             }
-
-
-
-            BodyPartDef myBPDef = DefDatabase<BodyPartDef>.AllDefs.Where((BodyPartDef b) => b == Props.bodyPartDef).RandomElement();
-            if (myBPDef == null)
-            {
-                Tools.Warn("cant find body part def called: " + Props.bodyPartDef.defName, true);
-                return;
-            }
-            
-            BodyPartRecord myBP = pawn.RaceProps.body.GetPartsWithDef(myBPDef).RandomElement();
-            if (myBP == null)
-            {
-                Tools.Warn("cant find body part record called: " + Props.bodyPartDef.defName, true);
-                return;
-            }
-
-            Hediff hediff2apply = HediffMaker.MakeHediff(hediff2use, pawn, myBP);
-            if (hediff2apply == null)
-            {
-                Tools.Warn("cant create hediff "+ hediff2use.defName + " to apply on " + Props.bodyPartDef.defName, true);
-                return;
-            }
-
-            pawn.health.AddHediff(hediff2apply, myBP, null);
         }
 
         public override void CompPostTick(ref float severityAdjustment)
         {
             Pawn pawn = parent.pawn;
             if (!Tools.OkPawn(pawn))
+            {
+                Tools.DestroyParentHediff(parent, myDebug);
                 return;
-
-            NullifyHediff(pawn);
-            PatternNullifyHediff(pawn);
+            }
+                
+            if (blockAction)
+            {
+                Tools.DestroyParentHediff(parent, myDebug);
+                return;
+            }
 
             if (HasHediffToApply)
             {

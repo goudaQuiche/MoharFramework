@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	
+<!---->	
+	<HediffDef>
+		<defName>Hediff_Twodiseases</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		
+		<description>plague in stomach, flu in brain</description>
+		<label>MultipleHediffs</label>
+		<labelNoun>Hediff_Wraper_FondlingVestigialShell.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_MultipleHediff">
+				<bodyDef>Human</bodyDef>
+				<hediffToApply>
+					<li>Plague</li>	
+					<li>Flu</li>	
+				</hediffToApply>
+				<bodyPartDefName>
+					<li>Stomach</li>
+					<li>Brain</li>
+				</bodyPartDefName>
+			</li>
+		</comps>
+	</HediffDef>
+
+
+</Defs>
