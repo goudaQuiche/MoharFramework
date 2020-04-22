@@ -54,6 +54,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GfxEffects.cs" />
     <Compile Include="HediffCompProperties_HediffRandom.cs" />
     <Compile Include="HediffCompProperties_RainbowTrail.cs" />
     <Compile Include="HediffCompProperties_TrailLeaver.cs" />
@@ -74,10 +75,19 @@
     <Compile Include="HediffComp_Spawner.cs" />
     <Compile Include="HediffComp_Filther.cs" />
     <Compile Include="HediffComp_Steamer.cs" />
+    <Compile Include="MyGfx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.1\Assemblies\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AlienRace">
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.1\Assemblies\AlienRace.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>

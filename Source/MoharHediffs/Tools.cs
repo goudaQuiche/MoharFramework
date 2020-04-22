@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
+using AlienRace;
 
 
 namespace MoharHediffs
@@ -111,5 +112,12 @@ namespace MoharHediffs
                 Log.Warning(warning);
         }
 
+        public static AlienPartGenerator.AlienComp GetAlien(Pawn pawn = null)
+        {
+            AlienPartGenerator.AlienComp alienComp = null;
+            alienComp = pawn?.TryGetComp<AlienPartGenerator.AlienComp>();
+
+            return alienComp;
+        }
     }
 }

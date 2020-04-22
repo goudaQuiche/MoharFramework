@@ -28,8 +28,26 @@ namespace MoharHediffs
             orange = 4,
             [Description("red")]
             red = 5,
-
         }
+        public enum ColorChoice
+        {
+            [Description("pawnColor")]
+            pawnColor = 0,
+            [Description("complementary")]
+            complementary = 1,
+            [Description("random")]
+            random = 2,
+        }
+        public enum CycleKind
+        {
+            [Description("circular")]
+            circular = 0,
+            [Description("bouncing")]
+            bouncing = 1,
+            [Description("random")]
+            random = 2,
+        }
+
 
         Pawn myPawn = null;
         Map myMap = null;
@@ -41,6 +59,11 @@ namespace MoharHediffs
         List<ThingDef> moteDef = null;
         RainbowColor curColor = RainbowColor.purple;
         int sameColorInRow = 0;
+
+        public RainbowColor bottomColor;
+        public RainbowColor pivotColor;
+        public RainbowColor topColor;
+        int variation = 1;
 
         private bool blockAction = false;
         private bool myDebug = false;
@@ -64,8 +87,10 @@ namespace MoharHediffs
         {
             Scribe_Values.Look(ref ticksLeft, "ticksLeft");
             Scribe_Values.Look(ref curColor, "curColor");
+            Scribe_Values.Look(ref variation, "variation");
 
             Scribe_Values.Look(ref myDebug, "debug");
+            
         }
 
         public override void CompPostTick(ref float severityAdjustment)
@@ -81,14 +106,15 @@ namespace MoharHediffs
                     , myDebug);
                 return;
             }
+
             if (moteDef.NullOrEmpty())
             {
                 Tools.Warn("empty moteDef", myDebug);
-                SetMoteDef();
+                Init(myDebug);
             }
 
             TerrainDef terrain = myPawn.Position.GetTerrain(myPawn.Map);
-            if (terrain == null || terrain.IsWater || myPawn.Map.snowGrid.GetDepth(myPawn.Position) >= 0.4f)
+            if (terrain == null || terrain.IsWater || myPawn.Map.snowGrid.GetDepth(myPawn.Position) >= 0.4f || !myPawn.Position.InBounds(myMap))
             {
                 Tools.Warn(myPawn + "'s " + parent.def.defName + " is blocked by terrain", myDebug);
                 return;
@@ -97,20 +123,25 @@ namespace MoharHediffs
             // puddle
             if (ticksLeft <= 0)
             {
-                Tools.Warn(myPawn + "'s " + parent.def.defName + " wants to puddle", myDebug);
+                //Tools.Warn(myPawn + "'s " + parent.def.defName + " wants to puddle", myDebug);
                 //Action and rainbow colors
                 if (TryPlaceMote())
                 {
                     sameColorInRow++;
 
-                    if (sameColorInRow >= Props.minTimesSameColor)
-                        if (sameColorInRow > Props.maxTimesSameColor || !Rand.Chance(Props.staySameColorChance) || !myPawn.Position.InBounds(myMap))
-                        {
-                            Tools.Warn(myPawn + "'s " + parent.def.defName + " wants to change of color", myDebug);
-                            NextColor();
-                            SetMoteDef();
-                            sameColorInRow = 0;
-                        }
+                    if (sameColorInRow >= Props.minTimesSameColor || sameColorInRow > Props.maxTimesSameColor || !Rand.Chance(Props.staySameColorChance))
+                    {
+                        //Tools.Warn(myPawn + "'s " + parent.def.defName + " wants to change of color", myDebug);
+                        if (Props.threeColorsGradient)
+                            NextColorThreeColors();
+                        else
+                            NextColorRainbow();
+
+                        Tools.Warn(myPawn + "'s " + parent.def.defName + " now uses " + curColor + "after " + sameColorInRow + "puddles", myDebug);
+
+                        SetMoteDef();
+                        sameColorInRow = 0;
+                    }
 
                     //Reset tick count
                     Reset();
@@ -153,11 +184,70 @@ namespace MoharHediffs
             }
         }
 
-        public void NextColor()
+        public void NextColorRainbow()
         {
-                curColor++;
+            curColor += variation;
+            if (Props.cycleKind == CycleKind.circular)
+            {
                 if (curColor > RainbowColor.red)
                     curColor = RainbowColor.purple;
+                else if (curColor < RainbowColor.purple)
+                    curColor = RainbowColor.red;
+            }
+            else if (Props.cycleKind == CycleKind.bouncing)
+            {
+                if (curColor > RainbowColor.red)
+                {
+                    variation = -1;
+                    curColor = RainbowColor.orange;
+                }
+                else if (curColor < RainbowColor.purple)
+                {
+                    variation = 1;
+                    curColor = RainbowColor.blue;
+                }
+            }
+            else if(Props.cycleKind == CycleKind.random)
+            {
+                curColor = (RainbowColor)Rand.Range(0, 6);
+            }
+        }
+
+        public void NextColorThreeColors()
+        {
+            curColor += variation;
+            if (Props.cycleKind == CycleKind.circular)
+            {
+                if (curColor > topColor)
+                    curColor = bottomColor;
+                else if (curColor < bottomColor)
+                    curColor = topColor;
+            }
+            else if (Props.cycleKind == CycleKind.bouncing)
+            {
+                if (curColor > topColor)
+                {
+                    variation = -1;
+                    curColor = pivotColor;
+                }
+                else if (curColor < RainbowColor.purple)
+                {
+                    variation = 1;
+                    curColor = pivotColor;
+                }
+            }
+            else if (Props.cycleKind == CycleKind.random)
+            {
+                if (Rand.Chance(.33f))
+                    curColor = pivotColor;
+                else
+                {
+                    if (Rand.Chance(.5f))
+                        curColor = topColor;
+                    else
+                        curColor = bottomColor;
+                }
+            }
         }
 
         private void SetPawnAndMap()
@@ -166,31 +256,80 @@ namespace MoharHediffs
             myMap = myPawn.Map;
         }
 
+        public RainbowColor ColorTranslation(Color myColor)
+        {
+            if (myColor == MyGfx.Purple)
+                return RainbowColor.purple;
+            else if (myColor == MyGfx.Blue)
+                return RainbowColor.blue;
+            else if (myColor == MyGfx.Green)
+                return RainbowColor.green;
+            else if (myColor == MyGfx.Yellow)
+                return RainbowColor.yellow;
+            else if (myColor == MyGfx.Orange)
+                return RainbowColor.orange;
+            else if (myColor == MyGfx.Red)
+                return RainbowColor.red;
+
+            Tools.Warn(myPawn.LabelShort+ " could not ColorTranslation, default value", myDebug);
+            return RainbowColor.blue;
+        }
+
         public void Init(bool myDebug = false)
         {
             SetPawnAndMap();
 
             Tools.Warn(myPawn + "'s " + parent.def.defName + " Init", myDebug);
 
+            // If we dont have full rainbow motes, we leave
             if (
-                Props.motePurpleDef.NullOrEmpty() 
-                || Props.moteBlueDef.NullOrEmpty() 
-                || Props.moteGreenDef.NullOrEmpty() 
-                || Props.moteYellowDef.NullOrEmpty() 
-                || Props.moteOrangeDef.NullOrEmpty() 
+                Props.motePurpleDef.NullOrEmpty()
+                || Props.moteBlueDef.NullOrEmpty()
+                || Props.moteGreenDef.NullOrEmpty()
+                || Props.moteYellowDef.NullOrEmpty()
+                || Props.moteOrangeDef.NullOrEmpty()
                 || Props.moteRedDef.NullOrEmpty())
             {
                 blockAction = true;
                 parent.Severity = 0;
             }
 
-            curColor = (RainbowColor)Rand.Range(0, 6);
+            // Calculating pivot Color depending on props
+            switch (Props.colorChoice)
+            {
+                case ColorChoice.pawnColor:
+                    Color pawnColor = GfxEffects.ClosestColor(myPawn, false, myDebug);
+                    pivotColor = curColor = ColorTranslation(pawnColor);
+                    break;
+                case ColorChoice.complementary:
+                    Color complementary = GfxEffects.ClosestColor(myPawn, true, myDebug);
+                    pivotColor = curColor = ColorTranslation(complementary);
+                    break;
+                case ColorChoice.random:
+                    pivotColor = curColor = (RainbowColor)Rand.Range(0, 6);
+                    break;
+            }
+
+            // Calculatin bottom and top colors
+            bottomColor = pivotColor - 1;
+            topColor = pivotColor + 1;
+            if (topColor > RainbowColor.red)
+                topColor = RainbowColor.purple;
+            if (bottomColor < RainbowColor.purple)
+                bottomColor = RainbowColor.red;
+
+            Tools.Warn(
+                myPawn + "'s " + parent.def.defName +
+                " bottom: " + bottomColor +
+                " pivot: " + pivotColor +
+                " top: " + topColor
+                , myDebug);
+
             SetMoteDef();
 
-            Tools.Warn(myPawn + "'s " + parent.def.defName + " Init success", myDebug);
         }
 
-        public static void PlaceFootprint(Vector3 loc, Map map, float rot, float scale, ThingDef Mote_FootprintDef)
+        public static void PlacePuddle(Vector3 loc, Map map, float rot, float scale, ThingDef Mote_FootprintDef)
         {
             if (!loc.ShouldSpawnMotesAt(map) || map.moteCounter.SaturatedLowPriority)
             {
@@ -218,7 +357,7 @@ namespace MoharHediffs
                 TerrainDef terrain = c.GetTerrain(myPawn.Map);
                 if (terrain != null)
                 {
-                    PlaceFootprint(vector, myMap, rot, Props.scale.RandomInRange, moteDef.RandomElement());
+                    PlacePuddle(vector, myMap, rot, Props.scale.RandomInRange, moteDef.RandomElement());
                     return true;
                 }
             }

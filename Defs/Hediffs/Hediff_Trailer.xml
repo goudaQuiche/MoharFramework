@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+<!---->	
+
+	<!-- blue-->	
+	<HediffDef>
+		<defName>Hediff_IntensePurpleTrail</defName>
+		
+		<hediffClass>HediffWithComps</hediffClass>
+		<description>trail leaver</description>
+		<label>trail intense purple</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_TrailLeaver">
+				<period>10</period>
+				
+				<moteDef>
+					<li>Mote_PuddlePA</li>
+					<li>Mote_PuddlePB</li>
+					<li>Mote_PuddlePC</li>
+				</moteDef>
+
+				<scale>.6~.9</scale>
+			</li>
+		</comps>
+	</HediffDef>
+	
+	<!-- blue-->	
+	<HediffDef>
+		<defName>Hediff_IntenseBlueTrail</defName>
+		
+		<hediffClass>HediffWithComps</hediffClass>
+		<description>trail leaver</description>
+		<label>trail intense blue</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_TrailLeaver">
+				<period>10</period>
+				
+				<moteDef>
+					<li>Mote_PuddleBA</li>
+					<li>Mote_PuddleBB</li>
+					<li>Mote_PuddleBC</li>
+				</moteDef>
+
+				<scale>.6~.9</scale>
+			</li>
+		</comps>
+	</HediffDef>
+
+		<!--green-->	
+	<HediffDef>
+		<defName>Hediff_IntenseGreenTrail</defName>
+		
+		<hediffClass>HediffWithComps</hediffClass>
+		<description>trail leaver</description>
+		<label>trail intense green</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_TrailLeaver">
+				<period>10</period>
+				
+				<moteDef>
+					<li>Mote_PuddleGA</li>
+					<li>Mote_PuddleGB</li>
+					<li>Mote_PuddleGC</li>
+				</moteDef>
+
+				<scale>.6~.9</scale>
+			</li>
+		</comps>
+	</HediffDef>
+
+			<!--yellow-->	
+	<HediffDef>
+		<defName>Hediff_IntenseYellowTrail</defName>
+		
+		<hediffClass>HediffWithComps</hediffClass>
+		<description>trail leaver</description>
+		<label>trail intense yellow</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_TrailLeaver">
+				<period>10</period>
+				
+				<moteDef>
+					<li>Mote_PuddleYA</li>
+					<li>Mote_PuddleYB</li>
+					<li>Mote_PuddleYC</li>
+				</moteDef>
+
+				<scale>.6~.9</scale>
+			</li>
+		</comps>
+	</HediffDef>
+		<!--orange-->	
+	<HediffDef>
+		<defName>Hediff_IntenseOrangeTrail</defName>
+		
+		<hediffClass>HediffWithComps</hediffClass>
+		<description>trail leaver</description>
+		<label>trail intense orange</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_TrailLeaver">
+				<period>10</period>
+				
+				<moteDef>
+					<li>Mote_PuddleOA</li>
+					<li>Mote_PuddleOB</li>
+					<li>Mote_PuddleOC</li>
+				</moteDef>
+
+				<scale>.6~.9</scale>
+			</li>
+		</comps>
+	</HediffDef>
+		<!--red-->	
+	<HediffDef>
+		<defName>Hediff_IntenseRedTrail</defName>
+		
+		<hediffClass>HediffWithComps</hediffClass>
+		<description>trail leaver</description>
+		<label>trail intense red</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_TrailLeaver">
+				<period>10</period>
+				
+				<moteDef>
+					<li>Mote_PuddleRA</li>
+					<li>Mote_PuddleRB</li>
+					<li>Mote_PuddleRC</li>
+				</moteDef>
+
+				<scale>.6~.9</scale>
+			</li>
+		</comps>
+	</HediffDef>
+
+			<!-- rainbow -->	
+	<HediffDef>
+		<defName>Hediff_RainbowRandTrail</defName>
+		
+		<hediffClass>HediffWithComps</hediffClass>
+		<description>trail leaver</description>
+		<label>trail rainbow rand</label>
+		<labelNoun>Tell me if you see this slugHeDiff.labelNoun</labelNoun>
+		
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_RainbowTrail">
+				<period>10</period>
+				
+				<motePurpleDef>
+					<li>Mote_PuddlePA</li>
+					<li>Mote_PuddlePB</li>
+					<li>Mote_PuddlePC</li>
+				</motePurpleDef>
+				<moteBlueDef>
+					<li>Mote_PuddleBA</li>
+					<li>Mote_PuddleBB</li>
+					<li>Mote_PuddleBC</li>
+				</moteBlueDef>
+				<moteGreenDef>
+					<li>Mote_PuddleGA</li>
+					<li>Mote_PuddleGB</li>
+					<li>Mote_PuddleGC</li>
+				</moteGreenDef>
+				<moteYellowDef>					
+					<li>Mote_PuddleYA</li>
+					<li>Mote_PuddleYB</li>
+					<li>Mote_PuddleYC</li>
+				</moteYellowDef>
+				<moteOrangeDef>
+					<li>Mote_PuddleOA</li>
+					<li>Mote_PuddleOB</li>
+					<li>Mote_PuddleOC</li>
+				</moteOrangeDef>
+				<moteRedDef>
+					<li>Mote_PuddleRA</li>
+					<li>Mote_PuddleRB</li>
+					<li>Mote_PuddleRC</li>
+				</moteRedDef>
+
+				<staySameColorChance>.7</staySameColorChance>
+				<maxTimesSameColor>4</maxTimesSameColor>
+				<minTimesSameColor>2</minTimesSameColor>
+				
+				<scale>.6~.9</scale>
+				
+				<debug>true</debug>
+			</li>
+		</comps>
+	</HediffDef>
+</Defs>

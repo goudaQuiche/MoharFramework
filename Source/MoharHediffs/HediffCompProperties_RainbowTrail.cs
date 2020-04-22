@@ -30,6 +30,10 @@ namespace MoharHediffs
 
         public FloatRange scale = new FloatRange(.5f, .8f);
 
+        public bool threeColorsGradient = false;
+        public HediffComp_RainbowTrail.ColorChoice colorChoice = HediffComp_RainbowTrail.ColorChoice.random;
+        public HediffComp_RainbowTrail.CycleKind cycleKind = HediffComp_RainbowTrail.CycleKind.circular;
+
         public bool debug = false;
         public bool hideBySeverity = true;
 

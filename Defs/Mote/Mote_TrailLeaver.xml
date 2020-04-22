@@ -168,23 +168,42 @@
 		
 <!-- end clean -->
 	
-<!-- red	 -->
+	<!-- purple -->
 	<ThingDef ParentName="PuddleBase">
-		<defName>Mote_PuddleR_A</defName>
+		<defName>Mote_PuddleP_A</defName>
 		<graphicData>
-			<texPath>Mote/Puddle/stretched/PuddleR_A</texPath>
+			<texPath>Mote/Puddle/stretched/PuddleP_A</texPath>
 		</graphicData>
 	</ThingDef>
 	<ThingDef ParentName="PuddleBase">
-		<defName>Mote_PuddleR_B</defName>
+		<defName>Mote_PuddleP_B</defName>
 		<graphicData>
-			<texPath>Mote/Puddle/stretched/PuddleR_B</texPath>
+			<texPath>Mote/Puddle/stretched/PuddleP_B</texPath>
 		</graphicData>
 	</ThingDef>
 	<ThingDef ParentName="PuddleBase">
-		<defName>Mote_PuddleR_C</defName>
+		<defName>Mote_PuddleP_C</defName>
 		<graphicData>
-			<texPath>Mote/Puddle/stretched/PuddleR_C</texPath>
+			<texPath>Mote/Puddle/stretched/PuddleP_C</texPath>
+		</graphicData>
+	</ThingDef>
+	<!-- blue -->
+	<ThingDef ParentName="PuddleBase">
+		<defName>Mote_PuddleB_A</defName>
+		<graphicData>
+			<texPath>Mote/Puddle/stretched/PuddleB_A</texPath>
+		</graphicData>
+	</ThingDef>
+	<ThingDef ParentName="PuddleBase">
+		<defName>Mote_PuddleB_B</defName>
+		<graphicData>
+			<texPath>Mote/Puddle/stretched/PuddleB_B</texPath>
+		</graphicData>
+	</ThingDef>
+	<ThingDef ParentName="PuddleBase">
+		<defName>Mote_PuddleB_C</defName>
+		<graphicData>
+			<texPath>Mote/Puddle/stretched/PuddleB_C</texPath>
 		</graphicData>
 	</ThingDef>
 <!-- green	 -->
@@ -206,25 +225,7 @@
 			<texPath>Mote/Puddle/stretched/PuddleG_C</texPath>
 		</graphicData>
 	</ThingDef>
-<!-- blue -->
-	<ThingDef ParentName="PuddleBase">
-		<defName>Mote_PuddleB_A</defName>
-		<graphicData>
-			<texPath>Mote/Puddle/stretched/PuddleB_A</texPath>
-		</graphicData>
-	</ThingDef>
-	<ThingDef ParentName="PuddleBase">
-		<defName>Mote_PuddleB_B</defName>
-		<graphicData>
-			<texPath>Mote/Puddle/stretched/PuddleB_B</texPath>
-		</graphicData>
-	</ThingDef>
-	<ThingDef ParentName="PuddleBase">
-		<defName>Mote_PuddleB_C</defName>
-		<graphicData>
-			<texPath>Mote/Puddle/stretched/PuddleB_C</texPath>
-		</graphicData>
-	</ThingDef>
+
 	<!-- yellow -->
 		<ThingDef ParentName="PuddleBase">
 		<defName>Mote_PuddleY_A</defName>
@@ -242,6 +243,46 @@
 		<defName>Mote_PuddleY_C</defName>
 		<graphicData>
 			<texPath>Mote/Puddle/stretched/PuddleY_C</texPath>
+		</graphicData>
+	</ThingDef>
+	
+	<!-- orange	 -->
+	<ThingDef ParentName="PuddleBase">
+		<defName>Mote_PuddleO_A</defName>
+		<graphicData>
+			<texPath>Mote/Puddle/stretched/PuddleO_A</texPath>
+		</graphicData>
+	</ThingDef>
+	<ThingDef ParentName="PuddleBase">
+		<defName>Mote_PuddleO_B</defName>
+		<graphicData>
+			<texPath>Mote/Puddle/stretched/PuddleO_B</texPath>
+		</graphicData>
+	</ThingDef>
+	<ThingDef ParentName="PuddleBase">
+		<defName>Mote_PuddleO_C</defName>
+		<graphicData>
+			<texPath>Mote/Puddle/stretched/PuddleO_C</texPath>
+		</graphicData>
+	</ThingDef>
+	
+	<!-- red	 -->
+	<ThingDef ParentName="PuddleBase">
+		<defName>Mote_PuddleR_A</defName>
+		<graphicData>
+			<texPath>Mote/Puddle/stretched/PuddleR_A</texPath>
+		</graphicData>
+	</ThingDef>
+	<ThingDef ParentName="PuddleBase">
+		<defName>Mote_PuddleR_B</defName>
+		<graphicData>
+			<texPath>Mote/Puddle/stretched/PuddleR_B</texPath>
+		</graphicData>
+	</ThingDef>
+	<ThingDef ParentName="PuddleBase">
+		<defName>Mote_PuddleR_C</defName>
+		<graphicData>
+			<texPath>Mote/Puddle/stretched/PuddleR_C</texPath>
 		</graphicData>
 	</ThingDef>
 </Defs>
