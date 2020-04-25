@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="GfxEffects.cs" />
     <Compile Include="HediffCompProperties_HediffRandom.cs" />
+    <Compile Include="HediffCompProperties_PostRemoveTrigger_HediffAdd.cs" />
     <Compile Include="HediffCompProperties_RainbowTrail.cs" />
     <Compile Include="HediffCompProperties_TrailLeaver.cs" />
     <Compile Include="HediffCompProperties_FootPrinter.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="HediffCompProperties_Filther.cs" />
     <Compile Include="HediffCompProperties_Steamer.cs" />
     <Compile Include="HediffComp_HediffRandom.cs" />
+    <Compile Include="HediffComp_PostRemoveTrigger_HediffAdd.cs" />
     <Compile Include="HediffComp_RainbowTrail.cs" />
     <Compile Include="HediffComp_TrailLeaver.cs" />
     <Compile Include="HediffComp_FootPrinter.cs" />
