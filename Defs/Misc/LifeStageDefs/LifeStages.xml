@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<LifeStageDef>
+		<defName>HumanlikeMature</defName>
+		<label>adult</label>
+		<visible>false</visible>
+		<reproductive>true</reproductive>
+	</LifeStageDef>
+
+	<LifeStageDef>
+		<defName>HumanlikeOld</defName>
+		<label>adult</label>
+		<visible>false</visible>
+		<reproductive>true</reproductive>
+	</LifeStageDef>
+
+	<LifeStageDef>
+		<defName>HumanlikeElder</defName>
+		<label>adult</label>
+		<visible>false</visible>
+		<reproductive>false</reproductive>
+	</LifeStageDef>
+	
+</Defs>

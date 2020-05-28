@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+	<Operation  Class="PatchOperationSequence">
+		<success>Normal</success>
+		<operations>
+			<li Class="PatchOperationAdd">
+				<xpath>/Defs/AlienRace.ThingDef_AlienRace[defName="Alien_GuineaPig"]/race/hediffGiverSets</xpath>
+				<value>
+					<li>Alien_GuineaPig_LifeStage_HediffGiverSet</li>
+				</value>
+			</li>
+
+			<li Class="PatchOperationAdd">
+				<xpath>/Defs/AlienRace.ThingDef_AlienRace[defName="Alien_GuineaPig"]/alienRace/generalSettings/alienPartGenerator/bodyAddons</xpath>
+				<value>
+					<li>
+						<path>horns/horns</path>
+						<bodyPart>Nose</bodyPart>
+						<inFrontOfBody>true</inFrontOfBody>
+						<useSkinColor>true</useSkinColor>
+
+						<offsets>
+							<!-- front -->
+							<south>
+								<bodyTypes>
+									<Male>(-.42,	.5)</Male>
+									<Female>(-.42,	.5)</Female>
+									<Thin>(-.42,	.5)</Thin>
+									<Hulk>(-.42,	.5)</Hulk>
+									<Fat>(-.42,	.5)</Fat>
+								</bodyTypes>
+							</south>
+							<!-- side -->
+							<east>
+								<bodyTypes>
+									<Male>(-.42,	.5)</Male>
+									<Female>(-.48,	.5)</Female>
+									<Thin>(-.48,	.5)</Thin>
+									<Hulk>(-.42,	.5)</Hulk>
+									<Fat>(-.42,	.5)</Fat>
+								</bodyTypes>
+							</east>
+							<!-- back -->
+							<north>
+								<bodyTypes>
+									<Male>(0,	.85)</Male>
+									<Female>(0, .87)</Female>
+									<Thin>(0,	.85)</Thin>
+									<Hulk>(0,	.85)</Hulk>
+									<Fat>(0,	.85)</Fat>
+								</bodyTypes>
+							</north>
+						</offsets>
+
+						<hediffGraphics>
+							<Alien_GuineaPig_OHPLS_adult>horns/hornsAdult</Alien_GuineaPig_OHPLS_adult>
+							<Alien_GuineaPig_OHPLS_mature>horns/hornsMature</Alien_GuineaPig_OHPLS_mature>
+							<Alien_GuineaPig_OHPLS_old>horns/hornsOld</Alien_GuineaPig_OHPLS_old>
+							<Alien_GuineaPig_OHPLS_elder>horns/hornsElder</Alien_GuineaPig_OHPLS_elder>
+						</hediffGraphics>
+					</li>
+				</value>
+			</li>
+		</operations>
+	</Operation>
+</Patch>

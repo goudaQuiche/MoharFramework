@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<HediffGiverSetDef>
+		<defName>Alien_GuineaPig_LifeStage_HediffGiverSet</defName>
+		<hediffGivers>
+			<li Class="OHPLS.CustomRace_HediffGiver_OHPLS">
+				<hediff>Alien_GuineaPig_OneHediffPerLifeStage</hediff>
+				<partsToAffect>
+					<li>Nose</li>
+				</partsToAffect>
+				<!-- <race>Alien_GuineaPig</race> -->
+			</li>
+		</hediffGivers>
+	</HediffGiverSetDef>
+
+</Defs>

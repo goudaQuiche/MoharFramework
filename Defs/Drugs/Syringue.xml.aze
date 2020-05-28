@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <!-- natural -->
+
+		
+
+
+  <ThingDef Name="Syringue_WhiteBase" ParentName="MakeableDrugPillBase" Abstract="True">
+  
+    <defName>Syringue_WhiteBase</defName>
+    <label>Syringue_WhiteBase</label>
+    <description>A drug.</description>
+	
+	<!--
+    <graphicData>
+		<texPath>NullTex</texPath>
+		<graphicClass>Graphic_Simple</graphicClass>
+		<shaderType>CutoutComplex</shaderType>
+    </graphicData>
+	-->
+	
+    <socialPropernessMatters>false</socialPropernessMatters>
+    <rotatable>false</rotatable>
+    <statBases>
+		<WorkToMake>600</WorkToMake>
+		<MarketValue>18</MarketValue>
+		<Mass>0.005</Mass>
+		<Flammability>0.7</Flammability>
+    </statBases>
+	
+    <techLevel>Industrial</techLevel>
+	
+    <ingestible>
+		<drugCategory>Medical</drugCategory>
+		<outcomeDoers>
+        <li Class="IngestionOutcomeDoer_GiveHediff">
+			<hediffDef>Hediff_ProdAndSteamerRemoval</hediffDef>
+			<severity>1.0</severity>
+        </li>
+		</outcomeDoers>
+    </ingestible>
+	
+    <recipeMaker>
+		<recipeUsers>
+			<li>DrugLab</li>
+		</recipeUsers>
+    </recipeMaker>
+	
+	<costStuffCount>100</costStuffCount>
+	
+    <costList>
+		<Neutroamine>1</Neutroamine>
+    </costList>
+	
+	<stuffCategories>
+      <li>Fluid</li>
+    </stuffCategories>
+	
+    <comps>
+		<li Class="CompProperties_Drug">
+			<listOrder>1000</listOrder>
+			<overdoseSeverityOffset>0.08~0.14</overdoseSeverityOffset>
+		</li>
+		<!-- <li><compClass>CompColorable</compClass></li> -->
+    </comps>
+	
+  </ThingDef>
+
+<ThingDef ParentName="Syringue_WhiteBase">
+    <defName>SyringueRegular</defName>
+    <label>SyringueNormal</label>
+    <description>A drug.</description>
+
+    <graphicData>
+		<texPath>Things/Item/Drug/Syringue_White</texPath>
+		<graphicClass>Graphic_Single</graphicClass>
+		<shaderType>Cutout</shaderType>
+    </graphicData>
+</ThingDef>
+
+<ThingDef ParentName="Syringue_WhiteBase">
+    <defName>SyringueRegularplus</defName>
+    <label>SyringueNormalplus</label>
+    <description>A drug.</description>
+
+    <graphicData>
+		<texPath>Things/Item/Drug/Syringue_White</texPath>
+		<graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+</ThingDef>
+
+<ThingDef ParentName="Syringue_WhiteBase">
+    <defName>SyringueRed_White</defName>
+    <label>SyringueRed_White</label>
+    <description>A drug.</description>
+
+    <graphicData>
+		<texPath>Things/Item/Drug/Syringue_White</texPath>
+		<!-- <graphicClass>Graphic_Mote</graphicClass> -->
+		<graphicClass>Graphic_Single</graphicClass>
+		<shaderType>Cutout</shaderType>
+    </graphicData>
+
+	<colorGenerator Class="ColorGenerator_Options">
+		<options>
+			<li><weight>1</weight><only>RGB(255,0,0)</only></li>
+		</options>
+	</colorGenerator>
+</ThingDef>
+
+<ThingDef ParentName="Syringue_WhiteBase">
+    <defName>SyringueGreen_White</defName>
+    <label>SyringueGreen_White</label>
+    <description>A drug.</description>
+
+	<graphicData>
+		<texPath>Things/Item/Drug/Syringue_White</texPath>
+		<!-- <graphicClass>Graphic_Mote</graphicClass> -->
+		<graphicClass>Graphic_Single</graphicClass>
+		<shaderType>CutoutPlant</shaderType>
+	</graphicData>
+	
+	<colorGenerator Class="ColorGenerator_Options">
+		<options>
+			<li><weight>1</weight><only>RGB(0,255,0)</only></li>
+		</options>
+	</colorGenerator>
+</ThingDef>
+
+<ThingDef ParentName="Syringue_WhiteBase">
+    <defName>SyringueGreen_White_another</defName>
+    <label>SyringueGreen_White_another</label>
+    <description>A drug.</description>
+
+	<graphicData>
+		<texPath>Things/Item/Drug/Syringue_White</texPath>
+		<!-- <graphicClass>Graphic_Mote</graphicClass> -->
+		<graphicClass>Graphic_Single</graphicClass>
+		<shaderType>CutoutSkin</shaderType>
+	</graphicData>
+	
+	<colorGenerator Class="ColorGenerator_Options">
+		<options>
+			<li><weight>1</weight><only>RGB(0,255,0)</only></li>
+		</options>
+	</colorGenerator>
+</ThingDef>
+
+<ThingDef ParentName="Syringue_WhiteBase">
+    <defName>SyringueBlue_White</defName>
+    <label>SyringueBlue_White</label>
+    <description>A drug.</description>
+
+	<graphicData>
+		<texPath>Things/Item/Drug/Syringue_White</texPath>
+		<!-- <graphicClass>Graphic_Mote</graphicClass> -->
+		<graphicClass>Graphic_Single</graphicClass>
+		<shaderType>CutoutComplex</shaderType>
+	</graphicData>
+	
+	<colorGenerator Class="ColorGenerator_Options">
+		<options>
+			<li><weight>1</weight><only>RGB(0,0,255)</only></li>
+		</options>
+	</colorGenerator>
+</ThingDef>
+  
+<ThingDef ParentName="Syringue_WhiteBase">
+    <defName>SyringueBlue_White_another</defName>
+    <label>SyringueBlue_White_another</label>
+    <description>A drug.</description>
+
+	<graphicData>
+		<texPath>Things/Item/Drug/Syringue_White</texPath>
+		<!-- <graphicClass>Graphic_Mote</graphicClass> -->
+		<graphicClass>Graphic_Single</graphicClass>
+		<color>(0, 0, 1, 1)</color>
+	</graphicData>
+</ThingDef>
+
+<ThingDef ParentName="Syringue_WhiteBase">
+    <defName>SyringueBlue_White_another_plus</defName>
+    <label>SyringueBlue_White_plus</label>
+    <description>A drug.</description>
+
+	<graphicData>
+		<texPath>Things/Item/Drug/Syringue_White</texPath>
+		<!-- <graphicClass>Graphic_Mote</graphicClass> -->
+		<graphicClass>Graphic_Single</graphicClass>
+		<shaderType>CutoutSkin</shaderType>
+		<color>(0, 0, 1, 1)</color>
+	</graphicData>
+</ThingDef>
+  
+  <ThingDef ParentName="Syringue_WhiteBase">
+    <defName>SyringueBlue_White_another_ultra</defName>
+    <label>SyringueBlue_White_ultra</label>
+    <description>A drug.</description>
+
+	<graphicData>
+		<texPath>Things/Item/Drug/Syringue_White</texPath>
+		<!-- <graphicClass>Graphic_Mote</graphicClass> -->
+		<graphicClass>Graphic_Single</graphicClass>
+		<shaderType>CutoutPlant</shaderType>
+		<color>(0, 0, 1, 1)</color>
+	</graphicData>
+</ThingDef>
+  
+</Defs>

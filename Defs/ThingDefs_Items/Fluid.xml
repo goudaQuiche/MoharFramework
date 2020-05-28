@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<Defs>
+	<ThingDef Name="FluidBase" ParentName="ResourceBase" Abstract="True">
+    <defName>FluidBase</defName>
+    <label>fluid</label>
+    <description>An alien fluid</description>
+	
+    <graphicData>
+		<texPath>Things/Item/Resource/Fluid</texPath>
+		<graphicClass>Graphic_Random</graphicClass>
+		<color>(1, 1, 1, .8)</color>
+    </graphicData>
+	
+    <soundInteract>Metal_Drop</soundInteract>
+    <soundDrop>Metal_Drop</soundDrop>
+	
+    <statBases>
+		<MarketValue>2.37</MarketValue>
+		<Mass>0.6</Mass>
+		<Flammability>1.5</Flammability>
+		<MaxHitPoints>50</MaxHitPoints>
+    </statBases>
+
+    <slagDef>Filth_Blood</slagDef>
+	
+	<deepCommonality>0.01</deepCommonality>
+	<deepCountPerPortion>3</deepCountPerPortion>
+	<deepLumpSizeRange>2</deepLumpSizeRange>
+	
+	<scatterableOnMapGen>false</scatterableOnMapGen>
+	<smeltable>true</smeltable>
+	
+	<stuffProps>
+		<stuffAdjective>fluid adjective</stuffAdjective>
+		<categories>
+			<li>Fluid</li>
+		</categories>
+		<appearance>Liquid</appearance>
+		<commonality>0.01</commonality>
+		
+		<color>(1, 1, 1, .8)</color>
+		
+		<constructEffect>ConstructMetal</constructEffect>
+		<soundImpactStuff>BulletImpact_Metal</soundImpactStuff>
+		<soundMeleeHitSharp>MeleeHit_Metal_Sharp</soundMeleeHitSharp>
+		<soundMeleeHitBlunt>MeleeHit_Metal_Blunt</soundMeleeHitBlunt>
+		<statOffsets>
+			<Beauty>-3</Beauty>
+		</statOffsets>
+		<statFactors>
+			<!--
+			<Beauty>.5</Beauty>
+			<ArmorRating_Blunt>.8</ArmorRating_Blunt>
+			<ArmorRating_Electric>.8</ArmorRating_Electric>
+			<ArmorRating_Heat>.8</ArmorRating_Heat>
+			<ArmorRating_Sharp>.8</ArmorRating_Sharp>
+			
+			<ConstructionSpeed>.8</ConstructionSpeed>
+
+			<Flammability>1.5</Flammability>
+
+			<Insulation_Cold>.8</Insulation_Cold>
+			<Insulation_Heat>.8</Insulation_Heat>
+			
+			<MaxHitPoints>.7</MaxHitPoints>
+
+			<MeleeWeapon_CooldownMultiplier>.95</MeleeWeapon_CooldownMultiplier>
+			<MeleeWeapon_DamageMultiplier>.95</MeleeWeapon_DamageMultiplier>
+			
+			<SellPriceFactor>.8</SellPriceFactor>
+			<SharpDamageMultiplier>1.2</SharpDamageMultiplier>
+
+			<TrapMeleeDamage>1.1</TrapMeleeDamage>
+			<TrapSpringChance>.8</TrapSpringChance>
+
+			<WorkTableWorkSpeedFactor>.95</WorkTableWorkSpeedFactor>
+			
+			<WorkToBuild>1.5</WorkToBuild>
+			<WorkToMake>1.5</WorkToMake>
+			-->
+		</statFactors>
+	</stuffProps>
+
+	<thingCategories>
+		<li>ResourcesRaw</li>
+	</thingCategories>
+	
+	<isTechHediff>true</isTechHediff>
+	<techHediffsTags>
+		<li>Poor</li>
+	</techHediffsTags>
+	
+</ThingDef>
+
+<ThingDef ParentName="FluidBase">
+	<defName>RedFluid</defName>
+	<label>fluid</label>
+    <description>An alien fluid</description>
+	
+    <graphicData>
+		<texPath>Things/Item/Resource/Fluid</texPath>
+		<graphicClass>Graphic_Single</graphicClass>
+		<color>(1, 0, 0, .8)</color>
+    </graphicData>
+	
+	<stuffProps>
+		<color>(1, 0, 0, .8)</color>
+	</stuffProps>
+	
+</ThingDef>
+
+<ThingDef ParentName="FluidBase">
+	<defName>BlueFluid</defName>
+	<label>fluid</label>
+    <description>An alien fluid</description>
+	
+    <graphicData>
+		<texPath>Things/Item/Resource/Fluid</texPath>
+		<graphicClass>Graphic_Single</graphicClass>
+		<color>(0, 0, 1, .8)</color>
+    </graphicData>
+	
+	<stuffProps>
+		<color>(0, 0, 1, .8)</color>
+	</stuffProps>
+	
+</ThingDef>
+
+<ThingDef ParentName="FluidBase">
+	<defName>GreenFluid</defName>
+	<label>fluid</label>
+    <description>An alien fluid</description>
+	
+    <graphicData>
+		<texPath>Things/Item/Resource/Fluid</texPath>
+		<graphicClass>Graphic_Single</graphicClass>
+		<color>(0, 1, 0, .8)</color>
+    </graphicData>
+	
+	<stuffProps>
+		<color>(0, 1, 0, .8)</color>
+	</stuffProps>
+	
+</ThingDef>
+	
+</Defs>

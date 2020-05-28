@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+	<Operation  Class="PatchOperationSequence">
+		<success>Normal</success>
+		<operations>
+			<li Class="PatchOperationAdd">
+				<xpath>/Defs/ThingDef[defName="Human"]/race/hediffGiverSets</xpath>
+				<value>
+					<li>Human_LifeStage_HediffGiverSet</li>
+				</value>
+			</li>
+		</operations>
+	</Operation >
+	
+</Patch>

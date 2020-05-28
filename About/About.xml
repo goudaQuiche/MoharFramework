@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-	<name>MoHAR hediffs src</name>
+	<name>MoHAR hediffs</name>
 	<author>Gouda quiche</author>
 	<url>https://github.com/goudaQuiche</url>
 	<supportedVersions>
 			<li>1.1</li>
 	</supportedVersions>
-	<packageId>goudaquiche.MoharHediffs.src</packageId>
+	<packageId>goudaquiche.MoharHediffs</packageId>
 	
 	<modDependencies>
       <li>
@@ -22,6 +22,7 @@
 - Make a pawn a spawner of animals or materials
 - Destroy (x) hediffs based on their HediffDef or on a HediffDef.defName pattern, then apply 1 hediff on a bodyPart
 - make the pawn puff some steam
+- Adds one hediff per lifestage to customize bodyaddons graphics depending on pawn lifestage
 
 To test :
 - Use dev mode; Spawn pawn; choose a Mohar pawnkind

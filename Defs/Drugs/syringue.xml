@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<!-- <ThingDef ParentName="MakeableDrugPillBase"> -->
+	<ThingDef>
+
+		<defName>Syringue_Test</defName>
+		<label>Syringue_Test</label>
+		<description>A drug.</description>
+
+		<thingClass>ThingWithComps</thingClass>
+		<category>Item</category>
+
+
+		<socialPropernessMatters>false</socialPropernessMatters>
+		<rotatable>false</rotatable>
+		<statBases>
+			<WorkToMake>300</WorkToMake>
+			<MarketValue>18</MarketValue>
+			<Mass>0.005</Mass>
+			<Flammability>0.7</Flammability>
+		</statBases>
+
+		<techLevel>Industrial</techLevel>
+		<!--
+		<recipeMaker>
+			<recipeUsers>
+				<li>DrugLab</li>
+			</recipeUsers>
+		</recipeMaker>
+		<costList>
+			<Neutroamine>1</Neutroamine>
+		</costList>
+-->
+		<ingestible>
+			<preferability>NeverForNutrition</preferability>
+			<maxNumToIngestAtOnce>1</maxNumToIngestAtOnce>
+
+			<drugCategory>Medical</drugCategory>
+			<outcomeDoers>
+				<li Class="IngestionOutcomeDoer_GiveHediff">
+					<hediffDef>AlcoholHigh</hediffDef>
+					<severity>1.0</severity>
+				</li>
+			</outcomeDoers>
+			<foodType>Processed</foodType>
+			<baseIngestTicks>120</baseIngestTicks>
+			<chairSearchRadius>0</chairSearchRadius>
+			<ingestSound>Ingest_Pill</ingestSound>
+			<ingestHoldUsesTable>false</ingestHoldUsesTable>
+			<ingestCommandString>Take {0}</ingestCommandString>
+			<ingestReportString>Taking {0}.</ingestReportString>
+		</ingestible>
+
+		<randomizeRotationOnSpawn>true</randomizeRotationOnSpawn>
+		<designateHaulable>true</designateHaulable>
+
+		<graphicData>
+			<texPath>Things/Item/Drug/Syringue_White</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<shaderType>CutoutComplex</shaderType>
+			<drawSize>(.85,.85)</drawSize>
+			<flipExtraRotation>80</flipExtraRotation>
+		</graphicData>
+
+		<soundInteract>Stone_Drop</soundInteract>
+		<soundDrop>Stone_Drop</soundDrop>
+
+		<comps>
+			<li Class="CompProperties_Drug">
+				<listOrder>1000</listOrder>
+				<overdoseSeverityOffset>0.08~0.14</overdoseSeverityOffset>
+			</li>
+			<li>
+				<compClass>CompColorable</compClass>
+			</li>
+		</comps>
+
+		<colorGenerator Class="ColorGenerator_Options">
+			<options>
+				<!-- red -->
+				<li>
+					<weight>1</weight>
+					<only>RGBA(1,	.5,	.5,	1)</only>
+				</li>
+				<!-- yellow -->
+				<li>
+					<weight>2</weight>
+					<only>RGBA(1,	1, .4,	1)</only>
+				</li>
+				<li>
+					<weight>2</weight>
+					<only>RGBA(1,	1, .3,	1)</only>
+				</li>
+
+				<!-- green blue -->
+				<li>
+					<weight>2</weight>
+					<only>RGBA(.4,1, .5,	1)</only>
+				</li>
+				<li>
+					<weight>2</weight>
+					<only>RGBA(.5,1, 1,	1)</only>
+				</li>
+				<li>
+					<weight>2</weight>
+					<only>RGBA(.3,.4,	1,	1)</only>
+				</li>
+				<!-- blue -->
+				<li>
+					<weight>20</weight>
+					<only>RGBA(.5, 1,	1,	1)</only>
+				</li>
+				<li>
+					<weight>20</weight>
+					<only>RGBA(.4, .5,	1,	1)</only>
+				</li>
+				<li>
+					<weight>5</weight>
+					<only>RGBA(.3, .4,	1,	1)</only>
+				</li>
+				<li>
+					<weight>5</weight>
+					<only>RGBA(.3,.3,	1,	1)</only>
+				</li>
+				<li>
+					<weight>5</weight>
+					<only>RGBA(.4,.4,1,	1)</only>
+				</li>
+
+				<!-- pink -->
+				<li>
+					<weight>3</weight>
+					<only>RGBA(.4,.3,	1,	1)</only>
+				</li>
+				<li>
+					<weight>2</weight>
+					<only>RGBA(.8,	.4, 1,	1)</only>
+				</li>
+				<li>
+					<weight>1</weight>
+					<only>RGBA(1,	.3, 38,	1)</only>
+				</li>
+			</options>
+		</colorGenerator>
+
+
+	</ThingDef>
+
+</Defs>
