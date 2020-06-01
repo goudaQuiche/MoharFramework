@@ -194,7 +194,7 @@
 				
 				<scale>.6~.9</scale>
 				
-				<debug>true</debug>
+				<debug>false</debug>
 			</li>
 		</comps>
 	</HediffDef>

@@ -2,55 +2,55 @@
 <Defs>
 
 	<!-- baby -->
-	<HediffDef parent="HiddenHediff">
+	<HediffDef ParentName="HiddenHediffBase">
 		<defName>Alien_GuineaPig_OHPLS_baby</defName>
 		<description>baby hediff</description>
 		<label>baby hediff</label>
 	</HediffDef>
 	<!-- toddler -->
-	<HediffDef parent="HiddenHediff">
+	<HediffDef ParentName="HiddenHediffBase">
 		<defName>Alien_GuineaPig_OHPLS_toddler</defName>
 		<description>toddler hediff</description>
 		<label>toddler hediff</label>
 	</HediffDef>
 	<!-- child -->
-	<HediffDef parent="HiddenHediff">
+	<HediffDef ParentName="HiddenHediffBase">
 		<defName>Alien_GuineaPig_OHPLS_child</defName>
 		<description>child hediff</description>
 		<label>child hediff</label>
 	</HediffDef>
 	<!-- teenager -->
-	<HediffDef parent="HiddenHediff">
+	<HediffDef ParentName="HiddenHediffBase">
 		<defName>Alien_GuineaPig_OHPLS_teenager</defName>
 		<description>teenager hediff</description>
 		<label>teenager hediff</label>
 	</HediffDef>
 	<!-- adult -->
-	<HediffDef parent="HiddenHediff">
+	<HediffDef ParentName="HiddenHediffBase">
 		<defName>Alien_GuineaPig_OHPLS_adult</defName>
 		<description>adult hediff</description>
 		<label>adult hediff</label>
 	</HediffDef>
 	<!-- mature -->
-	<HediffDef parent="HiddenHediff">
+	<HediffDef ParentName="HiddenHediffBase">
 		<defName>Alien_GuineaPig_OHPLS_mature</defName>
 		<description>mature hediff</description>
 		<label>mature hediff</label>
 	</HediffDef>
 		<!-- old -->
-	<HediffDef parent="HiddenHediff">
+	<HediffDef ParentName="HiddenHediffBase">
 		<defName>Alien_GuineaPig_OHPLS_old</defName>
 		<description>old hediff</description>
 		<label>old hediff</label>
 	</HediffDef>
 		<!-- elder -->
-	<HediffDef parent="HiddenHediff">
+	<HediffDef ParentName="HiddenHediffBase">
 		<defName>Alien_GuineaPig_OHPLS_elder</defName>
 		<description>elder hediff</description>
 		<label>elder hediff</label>
 	</HediffDef>
 	<!---->	
-	<HediffDef parent="HiddenHediff">
+	<HediffDef ParentName="HiddenHediffBase">
 		<defName>Alien_GuineaPig_OneHediffPerLifeStage</defName>
 		<hediffClass>HediffWithComps</hediffClass>
 
@@ -100,7 +100,7 @@
 					</li>
 				</associations>
 				
-				<debug>true</debug>
+				<debug>false</debug>
 			</li>
 		</comps>
 	</HediffDef>

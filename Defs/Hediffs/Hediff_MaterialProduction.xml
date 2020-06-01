@@ -39,7 +39,7 @@
 				<!-- must be lower than 20; default = 15; dll limited -->
 				<exponentialRatioLimit>15</exponentialRatioLimit>
 
-				<debug>true</debug>
+				<debug>false</debug>
 
 				<spawnVerb>funguzition</spawnVerb>			
 				

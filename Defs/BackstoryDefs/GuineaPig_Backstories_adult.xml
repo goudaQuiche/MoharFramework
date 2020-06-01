@@ -1,37 +1,37 @@
 <Defs>
-    <!-- 06 -->
-    <AlienRace.BackstoryDef>
+	<!-- 01 -->
+	<AlienRace.BackstoryDef>
 		<defName>GuineaPig_Adult_ImmuneBS</defName>
 		<title>Immune</title>
 		<titleShort>immune</titleShort>
 		<baseDescription>[PAWN_nameDef] is MoreGuineaPig</baseDescription>
-		
+
 		<slot>Adulthood</slot>
 
 		<spawnCategories>
 			<li>ImmuneBS</li>
 		</spawnCategories>
-		
+
 		<forcedHediffs>
 			<li>Hediff_FluImmunityForever</li>
 			<li>Hediff_AlcoholImmunity</li>
-			
+
 			<li>Hediff_Filther</li>
 		</forcedHediffs>
-    </AlienRace.BackstoryDef>
-	
+	</AlienRace.BackstoryDef>
+	<!-- 02 -->
 	<AlienRace.BackstoryDef>
 		<defName>GuineaPig_Adult_MaterialProductionBS</defName>
 		<title>MatProd</title>
 		<titleShort>MatProd</titleShort>
 		<baseDescription>[PAWN_nameDef] is MoreGuineaPig</baseDescription>
-		
+
 		<slot>Adulthood</slot>
 
 		<spawnCategories>
 			<li>MaterialProductionBS</li>
 		</spawnCategories>
-		
+
 		<forcedHediffs>
 			<li>Hediff_MaterialProduction_Fungus</li>
 			<li>Hediff_MaterialProduction_Potato</li>
@@ -41,29 +41,43 @@
 
 			<li>Hediff_Steamer</li>
 		</forcedHediffs>
-    </AlienRace.BackstoryDef>
-	
+	</AlienRace.BackstoryDef>
+	<!-- 03 -->
 	<AlienRace.BackstoryDef>
 		<defName>GuineaPig_Adult_AnimalProductionBS</defName>
 		<title>AnimalProd</title>
 		<titleShort>AnimalProd</titleShort>
 		<baseDescription>[PAWN_nameDef] is MoreGuineaPig</baseDescription>
-		
+
 		<slot>Adulthood</slot>
 
 		<spawnCategories>
 			<li>AnimalProductionBS</li>
 		</spawnCategories>
-		
+
 		<forcedHediffs>
 			<li>Hediff_AnimalProduction_Insect</li>
 			<li>Hediff_AnimalProduction_Chicken</li>
 			<li>Hediff_AnimalProduction_Rat</li>
 			<li>Hediff_AnimalProduction_Snake</li>
 			<li>Hediff_AnimalProduction_Thrumbo</li>
-			
-			
+
+
 			<li>Hediff_Steamer</li>
 		</forcedHediffs>
-    </AlienRace.BackstoryDef>
+	</AlienRace.BackstoryDef>
+	<!-- 04 -->
+	<AlienRace.BackstoryDef>
+		<defName>GuineaPig_Adult_NoHediff</defName>
+		<title>nothingSpecial</title>
+		<titleShort>regular</titleShort>
+		<baseDescription>[PAWN_nameDef] is MoreGuineaPig</baseDescription>
+
+		<slot>Adulthood</slot>
+
+		<spawnCategories>
+			<li>RegularBS</li>
+		</spawnCategories>
+
+	</AlienRace.BackstoryDef>
 </Defs>

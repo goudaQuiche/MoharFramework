@@ -2,10 +2,10 @@
 <Defs>
 
 	<HediffGiverSetDef>
-		<defName>Alien_GuineaPig_LifeStage_HediffGiverSet</defName>
+		<defName>YourOwnRace_HediffGiverSet</defName>
 		<hediffGivers>
-			<li Class="OHPLS.CustomRace_HediffGiver_OHPLS">
-				<hediff>Alien_GuineaPig_OneHediffPerLifeStage</hediff>
+			<li Class="YORHG.YourOwnRace_HediffGiver">
+				<hediff>YORHG_example</hediff>
 				<partsToAffect>
 					<li>Nose</li>
 				</partsToAffect>

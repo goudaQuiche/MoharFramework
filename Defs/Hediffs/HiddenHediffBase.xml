@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<HediffDef Name="HiddenHediffBase" Abstract="True">
+		<!-- <defName>HiddenHediffBase</defName> -->
+		<!-- <label>HiddenHediffBase.label</label> -->
+		<!-- <description>hidden desc</description> -->
+
+		<initialSeverity>.001</initialSeverity>
+		<scenarioCanAdd>false</scenarioCanAdd>
+
+		<stages>
+			<li>
+				<label>minor</label>
+				<becomeVisible>false</becomeVisible>
+			</li>
+			<li>
+				<minSeverity>0.9</minSeverity>
+				<label>major</label>
+			</li>
+		</stages>
+	</HediffDef>
+</Defs>

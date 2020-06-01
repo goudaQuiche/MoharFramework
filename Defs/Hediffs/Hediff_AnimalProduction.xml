@@ -58,7 +58,7 @@
 				
 				<spawnVerb>laying</spawnVerb>
 				
-				<debug>true</debug>
+				<debug>false</debug>
 			</li>
 		</comps>
 	</HediffDef>

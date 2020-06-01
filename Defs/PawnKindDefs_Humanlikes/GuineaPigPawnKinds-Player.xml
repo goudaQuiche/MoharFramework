@@ -3,13 +3,13 @@
 
 	<PawnKindDef Abstract="True" Name="BaseGuineaPigPawnKind">
 		<race>Alien_GuineaPig</race>
-		
+
 		<combatPower>40</combatPower>
 		<baseRecruitDifficulty>0.50</baseRecruitDifficulty>
 		<isFighter>false</isFighter>
 		<apparelIgnoreSeasons>false</apparelIgnoreSeasons>
 		<forceNormalGearQuality>true</forceNormalGearQuality>
-		
+
 		<apparelTags>
 			<li>Neolithic</li>
 		</apparelTags>
@@ -21,23 +21,24 @@
 			<min>200</min>
 			<max>300</max>
 		</apparelMoney>
-		
+
 		<minGenerationAge>20</minGenerationAge>
-		
+
 	</PawnKindDef>
 
 	<PawnKindDef ParentName="BaseGuineaPigPawnKind">
 		<defName>MoharHediff_basicMemberKind</defName>
 		<label>whatever</label>
-		
+
 		<defaultFactionType>PlayerColony</defaultFactionType>
-		
+
 		<backstoryFiltersOverride>
 			<li>
 				<categories>
 					<li>ImmuneBS</li>
 					<li>MaterialProductionBS</li>
 					<li>AnimalProductionBS</li>
+					<li>RegularBS</li>
 				</categories>
 			</li>
 		</backstoryFiltersOverride>
@@ -46,9 +47,9 @@
 	<PawnKindDef ParentName="BaseGuineaPigPawnKind">
 		<defName>MoharHediff_immunity</defName>
 		<label>whatever</label>
-		
+
 		<defaultFactionType>PlayerColony</defaultFactionType>
-		
+
 		<backstoryFiltersOverride>
 			<li>
 				<categories>
@@ -61,9 +62,9 @@
 	<PawnKindDef ParentName="BaseGuineaPigPawnKind">
 		<defName>MoharHediff_material</defName>
 		<label>whatever</label>
-		
+
 		<defaultFactionType>PlayerColony</defaultFactionType>
-		
+
 		<backstoryFiltersOverride>
 			<li>
 				<categories>
@@ -72,13 +73,13 @@
 			</li>
 		</backstoryFiltersOverride>
 	</PawnKindDef>
-	
+
 	<PawnKindDef ParentName="BaseGuineaPigPawnKind">
 		<defName>MoharHediff_animal</defName>
 		<label>whatever</label>
-		
+
 		<defaultFactionType>PlayerColony</defaultFactionType>
-		
+
 		<backstoryFiltersOverride>
 			<li>
 				<categories>
@@ -87,5 +88,20 @@
 			</li>
 		</backstoryFiltersOverride>
 	</PawnKindDef>
-	
+
+	<PawnKindDef ParentName="BaseGuineaPigPawnKind">
+		<defName>MoharHediff_regular</defName>
+		<label>whatever</label>
+
+		<defaultFactionType>PlayerColony</defaultFactionType>
+
+		<backstoryFiltersOverride>
+			<li>
+				<categories>
+					<li>RegularBS</li>
+				</categories>
+			</li>
+		</backstoryFiltersOverride>
+	</PawnKindDef>
+
 </Defs>

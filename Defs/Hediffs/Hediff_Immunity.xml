@@ -85,7 +85,7 @@
 				<bodyDef>Human</bodyDef>
 				<bodyPartDef>Heart</bodyPartDef>
 				
-				<debug>true</debug>
+				<debug>false</debug>
 			</li>
 		</comps>
 	</HediffDef>
