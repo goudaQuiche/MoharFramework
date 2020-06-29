@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<ThingDef ParentName="BaseInsect">
+		<defName>Megascarab_LifeSpan</defName>
+		<label>megascarab_lifespan</label>
+		<description>A large, genetically-engineered beetle. Once the worker caste of an artifical ecosystem of insectoids designed to fight mechanoid invasions, it is now often seen without its deadlier insectoid cousins. Still, its size and hard shell make it dangerous when it attacks. A eusocial creature, it cannot reproduce individually.</description>
+		<statBases>
+			<MoveSpeed>3.75</MoveSpeed>
+			<ArmorRating_Blunt>0.18</ArmorRating_Blunt>
+			<ArmorRating_Sharp>0.72</ArmorRating_Sharp>
+			<ComfyTemperatureMin>0</ComfyTemperatureMin>
+			<MarketValue>100</MarketValue>
+			<LeatherAmount>0</LeatherAmount>
+		</statBases>
+		<uiIconScale>2</uiIconScale>
+		<tools>
+			<li>
+				<label>mandibles</label>
+				<capacities>
+					<li>Bite</li>
+				</capacities>
+				<power>5</power>
+				<cooldownTime>2</cooldownTime>
+				<linkedBodyPartsGroup>Mouth</linkedBodyPartsGroup>
+			</li>
+			<li>
+				<label>head</label>
+				<capacities>
+					<li>Blunt</li>
+				</capacities>
+				<power>4</power>
+				<cooldownTime>2</cooldownTime>
+				<linkedBodyPartsGroup>HeadAttackTool</linkedBodyPartsGroup>
+				<ensureLinkedBodyPartsGroupAlwaysUsable>true</ensureLinkedBodyPartsGroupAlwaysUsable>
+				<chanceFactor>0.1</chanceFactor>
+			</li>
+		</tools>
+		<race>
+			<body>BeetleLike</body>
+			<baseBodySize>0.2</baseBodySize>
+			<baseHungerRate>0.10</baseHungerRate>
+			<baseHealthScale>0.4</baseHealthScale>
+			<useMeatFrom>Megaspider</useMeatFrom>
+			<wildness>0.95</wildness>
+			<lifeExpectancy>10</lifeExpectancy>
+			<lifeStageAges>
+				<li>
+					<def>EusocialInsectLarva</def>
+					<minAge>0</minAge>
+				</li>
+				<li>
+					<def>EusocialInsectJuvenile</def>
+					<minAge>0.03</minAge>
+				</li>
+				<li>
+					<def>EusocialInsectAdult</def>
+					<minAge>0.4</minAge>
+					<soundWounded>Pawn_Megascarab_Wounded</soundWounded>
+					<soundDeath>Pawn_Megascarab_Death</soundDeath>
+					<soundCall>Pawn_Megascarab_Call</soundCall>
+					<soundAngry>Pawn_Megascarab_Angry</soundAngry>
+				</li>
+			</lifeStageAges>
+			<soundMeleeHitPawn>Pawn_Melee_SmallScratch_HitPawn</soundMeleeHitPawn>
+			<soundMeleeHitBuilding>Pawn_Melee_SmallScratch_HitBuilding</soundMeleeHitBuilding>
+			<soundMeleeMiss>Pawn_Melee_SmallScratch_Miss</soundMeleeMiss>
+		</race>
+		<comps>
+			<li Class="CustomLifeSpan.CompProperties_Lifespan">
+				<spawnMeat>true</spawnMeat>
+				<relativeMeatAmount>true</relativeMeatAmount>
+				<fixedMeatAmount>50</fixedMeatAmount>
+				<meatPilesIntRange>3~5</meatPilesIntRange>
+				<meatRadius>3</meatRadius>
+
+				<spawnThing>true</spawnThing>
+				<thingToSpawn>RawPotatoes</thingToSpawn>
+				<relativeThingAmount>true</relativeThingAmount>
+				<thingPilesIntRange>3~5</thingPilesIntRange>
+				<thingNumIfFullBody>75</thingNumIfFullBody>
+
+				<spawnIntervalRange>100~100</spawnIntervalRange>
+				<spawnMaxAdjacent>3</spawnMaxAdjacent>
+				<spawnForbidden>true</spawnForbidden>
+				<showMessageIfOwned>false</showMessageIfOwned>
+				<inheritFaction>false</inheritFaction>
+				<tryToUnstack>true</tryToUnstack>
+
+				<spawnFilth>true</spawnFilth>
+				<filthDef>Filth_Slime</filthDef>
+				<filthIntRange>7~12</filthIntRange>
+				<filthRadius>2</filthRadius>
+
+				<spawnMote>true</spawnMote>
+        <!-- public ThingDef moteDef = ThingDef.Named("Mote_Smoke"); -->
+				<moteNumRange>3~5</moteNumRange>
+				<moteRadius>2</moteRadius>
+				<moteScale>1~2.5</moteScale>
+				
+				<lifeSpanTicks>180</lifeSpanTicks>
+			</li>
+		</comps>
+		<tradeTags>
+			<li>AnimalInsect</li>
+		</tradeTags>
+	</ThingDef>
+
+	<PawnKindDef ParentName="AnimalKindBase">
+		<defName>Megascarab_LifeSpan</defName>
+		<label>Megascarab_LifeSpan</label>
+		<race>Megascarab_LifeSpan</race>
+		<combatPower>40</combatPower>
+		<canArriveManhunter>false</canArriveManhunter>
+		<ecoSystemWeight>0.15</ecoSystemWeight>
+		<lifeStages>
+			<li>
+				<bodyGraphicData>
+					<texPath>Things/Pawn/Animal/Megascarab/Megascarab</texPath>
+					<drawSize>1</drawSize>
+					<color>(114,107,84)</color>
+				</bodyGraphicData>
+				<dessicatedBodyGraphicData>
+					<texPath>Things/Pawn/Animal/Megascarab/Dessicated_Megascarab</texPath>
+					<drawSize>1</drawSize>
+				</dessicatedBodyGraphicData>
+			</li>
+			<li>
+				<bodyGraphicData>
+					<texPath>Things/Pawn/Animal/Megascarab/Megascarab</texPath>
+					<drawSize>1.25</drawSize>
+					<color>(114,107,84)</color>
+				</bodyGraphicData>
+				<dessicatedBodyGraphicData>
+					<texPath>Things/Pawn/Animal/Megascarab/Dessicated_Megascarab</texPath>
+					<drawSize>1.25</drawSize>
+				</dessicatedBodyGraphicData>
+			</li>
+			<li>
+				<bodyGraphicData>
+					<texPath>Things/Pawn/Animal/Megascarab/Megascarab</texPath>
+					<drawSize>1.5</drawSize>
+					<color>(114,107,84)</color>
+					<shadowData>
+						<volume>(0.2, 0.3, 0.2)</volume>
+						<offset>(0,0,0)</offset>
+					</shadowData>
+				</bodyGraphicData>
+				<dessicatedBodyGraphicData>
+					<texPath>Things/Pawn/Animal/Megascarab/Dessicated_Megascarab</texPath>
+					<drawSize>1.5</drawSize>
+				</dessicatedBodyGraphicData>
+			</li>
+		</lifeStages>
+	</PawnKindDef>
+</Defs>
