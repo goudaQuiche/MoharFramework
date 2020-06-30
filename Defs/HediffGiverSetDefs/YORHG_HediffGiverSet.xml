@@ -6,9 +6,11 @@
 		<hediffGivers>
 			<li Class="YORHG.YourOwnRace_HediffGiver">
 				<hediff>YORHG_example</hediff>
+				<!-- if no partsToAffect specified, will be affect whole body -->
 				<partsToAffect>
 					<li>Nose</li>
 				</partsToAffect>
+				
 			</li>
 		</hediffGivers>
 	</HediffGiverSetDef>

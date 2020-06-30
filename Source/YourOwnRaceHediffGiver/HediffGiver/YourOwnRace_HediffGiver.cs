@@ -46,13 +46,31 @@ namespace YORHG
             if (RequiresBodyPartCheck(conditionnalBodyPart))
             {
                 BodyPartRecord BPR = pawn.GetBPRecord(conditionnalBodyPart.defName) ?? null;
+                bool missingBPR = pawn.health.hediffSet.PartIsMissing(BPR);
+                bool artificialBPR = pawn.health.hediffSet.AncestorHasDirectlyAddedParts(BPR);
 
-                if (BPR == null)
+                if (BPR == null || missingBPR || artificialBPR)
                 {
-                    Hediff removeH = HediffMaker.MakeHediff(this.hediff, pawn, null);
+                    Hediff removeH = HediffMaker.MakeHediff(hediffDef, pawn, null);
                     if (removeH != null)
+                    {
                         pawn.health.RemoveHediff(removeH);
-                    Tools.Warn(pawn.LabelShort + " got hediff " + hediffDef.defName + " removed bc no " + conditionnalBodyPart.defName, myDebug);
+                        Hediff oldMethod = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+                        bool StillHasHediff =  oldMethod != null;
+                        Tools.Warn(pawn.LabelShort + " still has " + hediffDef.defName + " while should not; trying oldMethod", myDebug);
+
+                        oldMethod.Severity = 0;
+                    }
+                    else
+                    {
+                        Tools.Warn("Could not create removeH", myDebug);
+                    }
+                        
+                    Tools.Warn(
+                        pawn.LabelShort + " got hediff " + hediffDef.defName + " removed bc " + conditionnalBodyPart.defName +
+                        "- null:" + (BPR == null) + "; missingBPR:" + missingBPR + "; artificialBPR:" + artificialBPR
+                        , myDebug);
+
                     return false;
                 }
             }
@@ -61,8 +79,7 @@ namespace YORHG
 
             if (appliedHediff)
             {
-                if (pawn.Spawned)
-                    Tools.Warn(pawn.LabelShort + "'s YourOwnRace_HediffGiver applied " + hediffDef.defName, myDebug);
+                Tools.Warn(pawn.LabelShort + "'s YourOwnRace_HediffGiver applied " + hediffDef.defName, myDebug);
                 return true;
             }
 
