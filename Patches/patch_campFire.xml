@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+	<Operation  Class="PatchOperationAdd">
+		<success>Normal</success>
+
+		<!-- all mechanoids -->
+		<xpath>/Defs/ThingDef[defName="Campfire"]/comps</xpath>
+		<value>
+			<li Class="OLB.CompProperties_Decorate">
+				<moteDecorations>
+					<li>
+						<moteDef>MyMote_Smoke</moteDef>
+						<whenFueled>true</whenFueled>
+						<buildingCentered>true</buildingCentered>
+
+						<!--
+						<offset>
+						<North>0,0</North>
+						<East>1,0</East>
+						<South></South>
+						<West></West>
+						</offset>
+						<randomOffset></randomOffset>
+						-->
+
+
+						<rotationRate>-30~30</rotationRate>
+						<!-- <exactRotation></exactRotation> -->
+						<xVelocity>30~40</xVelocity>
+						<yVelocity>.5~.7</yVelocity>
+
+						<scale>1.5~2.5</scale>
+						<graceTime>60</graceTime>
+					</li>
+					<li>
+						<moteDef>MyMote_DarkSmoke</moteDef>
+						<whenWorker>true</whenWorker>
+						<buildingCentered>true</buildingCentered>
+
+						<rotationRate>-40~40</rotationRate>
+
+						<xVelocity>40~50</xVelocity>
+						<yVelocity>1~2</yVelocity>
+
+						<scale>1.5~2.5</scale>
+						<graceTime>15</graceTime>
+						
+						<multipleMotesCoexisting>true</multipleMotesCoexisting>
+					</li>
+				</moteDecorations>
+
+				<workerReservationUpdateFrequency>10</workerReservationUpdateFrequency>
+				<debug>true</debug>
+			</li>
+		</value>
+
+	</Operation >
+
+</Patch>

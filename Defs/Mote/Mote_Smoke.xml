@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<ThingDef ParentName="MoteBase">
+		<defName>MyMote_Smoke</defName>
+		<graphicData>
+			<texPath>Things/Mote/Smoke</texPath>
+		</graphicData>
+		<altitudeLayer>MoteOverhead</altitudeLayer>
+		<mote>
+			<!-- <fadeInTime>0.50</fadeInTime> -->
+			<!-- <solidTime>6</solidTime> -->
+			<!-- <fadeOutTime>3.2</fadeOutTime> -->
+			<fadeInTime>0.50</fadeInTime>
+			<solidTime>3</solidTime>
+			<fadeOutTime>1.5</fadeOutTime>
+			<growthRate>0.005</growthRate>
+		</mote>
+	</ThingDef>
+
+	<ThingDef ParentName="MoteBase">
+		<defName>MyMote_DarkSmoke</defName>
+		<graphicData>
+			<texPath>Things/Mote/Smoke</texPath>
+			<color>(35, 35, 35)</color>
+		</graphicData>
+		<altitudeLayer>MoteOverhead</altitudeLayer>
+		<mote>
+			<fadeInTime>0.50</fadeInTime>
+			<solidTime>4</solidTime>
+			<fadeOutTime>.6</fadeOutTime>
+			<growthRate>0.01</growthRate>
+		</mote>
+	</ThingDef>	
+</Defs>

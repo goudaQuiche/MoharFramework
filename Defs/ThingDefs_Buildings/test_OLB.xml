@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThingDef ParentName="BuildingBase">
+		<defName>MoHarCampfire</defName>
+		<label>MoHar_campfire</label>
+		<description>Cooks meals and produces heat, and burns out after a few days. As with all heat sources, it must be placed indoors so it has a closed space to heat. Refuelable.</description>    
+		<thingClass>Building_WorkTable</thingClass>
+		<category>Building</category>
+		<graphicData>
+			<texPath>Things/Building/Misc/Campfire</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawRotated>false</drawRotated>
+			<allowFlip>false</allowFlip>
+			<damageData>
+				<rect>(0.2,0,0.6,0.1)</rect>
+			</damageData>
+		</graphicData>
+		<uiIconPath>Things/Building/Misc/Campfire_MenuIcon</uiIconPath>
+		<altitudeLayer>Building</altitudeLayer>
+		<passability>PassThroughOnly</passability>
+		<pathCost>50</pathCost>
+		<constructEffect>ConstructDirt</constructEffect>
+		<tickerType>Normal</tickerType>
+		<drawerType>RealtimeOnly</drawerType>
+		<fillPercent>0.20</fillPercent>
+		<statBases>
+			<MaxHitPoints>80</MaxHitPoints>
+			<WorkToBuild>200</WorkToBuild>
+			<Flammability>0</Flammability>
+			<WorkTableWorkSpeedFactor>0.5</WorkTableWorkSpeedFactor>
+			<MeditationFocusStrength>0.08</MeditationFocusStrength>
+		</statBases>
+		<selectable>true</selectable>
+		<costList>
+			<WoodLog>20</WoodLog>
+			<!-- just the intial wood -->
+		</costList>
+		<soundImpactDefault>BulletImpact_Ground</soundImpactDefault>
+		<leaveResourcesWhenKilled>false</leaveResourcesWhenKilled>
+		<resourcesFractionWhenDeconstructed>0</resourcesFractionWhenDeconstructed>
+		<placeWorkers>
+			<li>PlaceWorker_PreventInteractionSpotOverlap</li>
+			<li>PlaceWorker_Heater</li>
+		</placeWorkers>
+		<drawPlaceWorkersWhileSelected>true</drawPlaceWorkersWhileSelected>
+		<comps>
+			<li Class="CompProperties_Refuelable">
+				<fuelConsumptionRate>10.0</fuelConsumptionRate>
+				<fuelCapacity>20.0</fuelCapacity>
+				<fuelConsumptionPerTickInRain>0.0006</fuelConsumptionPerTickInRain>
+				<fuelFilter>
+					<thingDefs>
+						<li>WoodLog</li>
+					</thingDefs>
+				</fuelFilter>
+				<initialFuelPercent>1</initialFuelPercent>
+				<showAllowAutoRefuelToggle>true</showAllowAutoRefuelToggle>
+			</li>
+			<li Class="CompProperties_Glower">
+				<glowRadius>10</glowRadius>
+				<glowColor>(252,187,113,0)</glowColor>
+			</li>
+			<li Class="CompProperties_HeatPusher">
+				<compClass>CompHeatPusherPowered</compClass>
+				<heatPerSecond>21</heatPerSecond>
+				<heatPushMaxTemperature>28</heatPushMaxTemperature>
+			</li>
+			<li Class="CompProperties_FireOverlay">
+				<fireSize>1</fireSize>
+			</li>
+			<li>
+				<compClass>CompGatherSpot</compClass>
+			</li>
+			<li Class="CompProperties_MeditationFocus">
+				<statDef>MeditationFocusStrength</statDef>
+				<focusTypes>
+					<li>Natural</li>
+					<li>Minimal</li>
+				</focusTypes>
+				<offsets>
+					<li Class="FocusStrengthOffset_Lit">
+						<offset>0.08</offset>
+					</li>
+				</offsets>
+			</li>
+			<li Class="OLB.CompProperties_Decorate">
+				<moteDecorations>
+					<li>
+						<moteDef>MyMote_Smoke</moteDef>
+						<whenFueled>true</whenFueled>
+						<buildingCentered>true</buildingCentered>
+
+						<!--
+						<offset>
+						<North>0,0</North>
+						<East>1,0</East>
+						<South></South>
+						<West></West>
+						</offset>
+						<randomOffset></randomOffset>
+						-->
+
+
+						<rotationRate>-30~30</rotationRate>
+						<!-- <exactRotation></exactRotation> -->
+						<xVelocity>30~40</xVelocity>
+						<yVelocity>.5~.7</yVelocity>
+
+						<scale>1.5~2.5</scale>
+						<graceTime>60</graceTime>
+					</li>
+					<li>
+						<moteDef>MyMote_DarkSmoke</moteDef>
+						<whenWorker>true</whenWorker>
+						<buildingCentered>true</buildingCentered>
+
+						<rotationRate>-40~40</rotationRate>
+
+						<xVelocity>40~50</xVelocity>
+						<yVelocity>1~2</yVelocity>
+
+						<scale>1.5~2.5</scale>
+						<graceTime>15</graceTime>
+					</li>
+				</moteDecorations>
+
+				<workerReservationUpdateFrequency>60</workerReservationUpdateFrequency>
+				<debug>true</debug>
+			</li>
+		</comps>
+		<designationCategory>Temperature</designationCategory>
+		<designationHotKey>Misc1</designationHotKey>
+		<hasInteractionCell>True</hasInteractionCell>
+		<interactionCellOffset>(0,0,-1)</interactionCellOffset>
+		<recipes>
+			<li>CookMealSimple</li>
+			<li>CookMealSimpleBulk</li>
+			<li>Make_Pemmican</li>
+			<li>Make_PemmicanBulk</li>
+			<li>BurnApparel</li>
+			<li>BurnWeapon</li>
+			<li>BurnDrugs</li>
+		</recipes>
+		<inspectorTabs>
+			<li>ITab_Bills</li>
+		</inspectorTabs>
+		<building>
+			<isMealSource>true</isMealSource>
+			<spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity>
+			<artificialForMeditationPurposes>false</artificialForMeditationPurposes>
+		</building>
+	</ThingDef>
+</Defs>
