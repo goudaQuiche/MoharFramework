@@ -5,7 +5,7 @@ using Verse;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CustomLifeSpan
+namespace FuPoSpa
 {
     public static class Lifespan_Utility
     {
@@ -22,22 +22,17 @@ namespace CustomLifeSpan
             return (deathThought.Contains(tDef));
         }
 
-        public static Thing ThingInCaseOfDeath(Thing t)
+        public static Thing ThingInCaseOfDeath(Pawn p)
         {
             Thing refThing = null;
-            if (t is Pawn p)
+            if (p.Dead)
             {
-                if (p.Dead)
-                {
-                    if (p.Corpse == null)
-                        return null;
-                    refThing = p.Corpse;
-                }
-                else
-                    refThing = p;
+                if (p.Corpse == null)
+                    return null;
+                refThing = p.Corpse;
             }
             else
-                refThing = t;
+                refThing = p;
 
             return refThing;
         }
@@ -64,13 +59,13 @@ namespace CustomLifeSpan
         }
 
 
-        public static bool TryDoSpawn(Thing myThing, ThingDef thingDef, int thingNum, int spawnMaxAdjacent, bool tryToUnstack, bool inheritFaction, bool spawnForbidden, bool showMessageIfOwned)
+        public static bool TryDoSpawn(Pawn pawn, ThingDef thingDef, int thingNum, int spawnMaxAdjacent, bool tryToUnstack, bool inheritFaction, bool spawnForbidden, bool showMessageIfOwned)
         {
             IntVec3 spawnPos = IntVec3.Invalid;
             Map map = null;
             Thing refThing = null;
 
-            refThing = ThingInCaseOfDeath(myThing);
+            refThing = ThingInCaseOfDeath(pawn);
             if (refThing == null)
                 return false;
             else

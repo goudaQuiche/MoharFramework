@@ -9,6 +9,7 @@ namespace CustomLifeSpan
 
         public bool spawnMeat = true;
         public bool relativeMeatAmount = true;
+        public ThingDef meatToSpawn;
         public int fixedMeatAmount = 50;
         public IntRange meatPilesIntRange = new IntRange(3, 5);
         public float meatRadius = 3;

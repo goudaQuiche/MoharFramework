@@ -12,7 +12,7 @@
 				<race>Alien_GuineaPig</race>
 <!-- if cBP is specified, if BP is missing or artificial, hediff will be removed -->
 				<conditionnalBodyPart>Nose</conditionnalBodyPart>
-				<debug>true</debug>
+				<!-- <debug>true</debug> -->
 			</li>
 		</modExtensions>
 

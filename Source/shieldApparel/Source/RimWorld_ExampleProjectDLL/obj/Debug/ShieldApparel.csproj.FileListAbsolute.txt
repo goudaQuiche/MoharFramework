@@ -1,0 +1,6 @@
+C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\Yanzikho\Source\RimWorld_ExampleProjectDLL\obj\Debug\ShieldApparel.csprojAssemblyReference.cache
+C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\Yanzikho\Source\RimWorld_ExampleProjectDLL\obj\Debug\ShieldApparel.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\Yanzikho\Source\Assemblies\ShieldApparel.dll
+C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\Yanzikho\Source\Assemblies\ShieldApparel.pdb
+C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\Yanzikho\Source\RimWorld_ExampleProjectDLL\obj\Debug\ShieldApparel.dll
+C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\Yanzikho\Source\RimWorld_ExampleProjectDLL\obj\Debug\ShieldApparel.pdb

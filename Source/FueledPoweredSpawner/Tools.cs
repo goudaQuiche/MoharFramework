@@ -1,7 +1,7 @@
 ﻿using AlienRace;
 using Verse;
 
-namespace CustomLifeSpan
+namespace FuPoSpa
 {
     public static class Tools
     {
@@ -10,16 +10,10 @@ namespace CustomLifeSpan
             return (t is Pawn);
         }
 
-        public static bool Negligeable(this Thing thing)
-        {
-            return (thing == null || thing.Map == null || thing.Position == null);
-        }
-
         public static bool Negligeable(this Pawn pawn)
         {
             return (pawn == null || !pawn.Spawned || pawn.Map == null || pawn.Position == null);
         }
-
         public static void Warn(string warning, bool debug = false)
         {
             if(debug)
