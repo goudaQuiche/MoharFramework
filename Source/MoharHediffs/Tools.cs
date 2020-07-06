@@ -102,6 +102,43 @@ namespace MoharHediffs
             return bodyPart;
         }
 
+        public static BodyPartRecord GetBPRecordWithoutHediff(this Pawn pawn, BodyPartDef bodyPartDef, HediffDef hd, bool myDebug = false)
+        {
+            IEnumerable<BodyPartDef> BPDefIE = DefDatabase<BodyPartDef>.AllDefs.Where((BodyPartDef b) => b == bodyPartDef);
+            if (BPDefIE.EnumerableNullOrEmpty())
+            {
+                Tools.Warn(pawn.Label + " - GetBPRecord - did not find any " + bodyPartDef.defName, myDebug);
+                return null;
+            }
+            BodyPartDef BPDef = BPDefIE.RandomElement();
+
+            List<BodyPartRecord> bprToExclude = new List<BodyPartRecord>();
+            foreach (Hediff hediff in pawn.health.hediffSet.hediffs.Where(h => h.def == hd))
+            {
+                if (!bprToExclude.Contains(hediff.Part))
+                    bprToExclude.Add(hediff.Part);
+            }
+
+            BodyPartRecord bodyPart = null;
+            if (bprToExclude.NullOrEmpty())
+            {
+                pawn.RaceProps.body.GetPartsWithDef(BPDef).TryRandomElement(out bodyPart);
+            }
+            else
+            {
+                pawn.RaceProps.body.GetPartsWithDef(BPDef).Where(bp => !bprToExclude.Contains(bp)).TryRandomElement(out bodyPart);
+            }
+
+            if (bodyPart == null)
+            {
+                Warn(pawn.Label + "GetBPRecord - did not find " + bodyPartDef.defName + " without " + hd.defName, myDebug);
+            }
+            else
+                Warn(pawn.Label + "GetBPRecord - did find " + bodyPartDef.defName, myDebug);
+
+            return bodyPart;
+        }
+
         public static bool OkPawn(Pawn pawn)
         {
             return ((pawn != null) && (pawn.Map != null));

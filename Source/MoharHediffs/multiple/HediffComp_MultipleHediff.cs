@@ -78,7 +78,13 @@ namespace MoharHediffs
                     return;
                 }
 
-                BodyPartRecord myBPR = pawn.GetBPRecord(curBPD, myDebug);
+                //BodyPartRecord myBPR = pawn.GetBPRecord(curBPD, myDebug);
+                BodyPartRecord myBPR = pawn.GetBPRecordWithoutHediff(curBPD, curHD, myDebug);
+                if (myBPR == null)
+                {
+                    Tools.Warn("Could not find a BPR to apply hediff, giving up", myDebug);
+                    return;
+                }
 
                 Hediff hediff2apply = HediffMaker.MakeHediff(curHD, pawn, myBPR);
                 if (hediff2apply == null)

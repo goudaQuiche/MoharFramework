@@ -60,7 +60,7 @@
     <Compile Include="HediffCompProperties_RainbowTrail.cs" />
     <Compile Include="HediffCompProperties_TrailLeaver.cs" />
     <Compile Include="HediffCompProperties_FootPrinter.cs" />
-    <Compile Include="HediffCompProperties_MultipleHediff.cs" />
+    <Compile Include="multiple\HediffCompProperties_MultipleHediff.cs" />
     <Compile Include="HediffCompProperties_HediffExclusive.cs" />
     <Compile Include="HediffCompProperties_HediffNullifier.cs" />
     <Compile Include="HediffCompProperties_Spawner.cs" />
@@ -71,7 +71,7 @@
     <Compile Include="HediffComp_RainbowTrail.cs" />
     <Compile Include="HediffComp_TrailLeaver.cs" />
     <Compile Include="HediffComp_FootPrinter.cs" />
-    <Compile Include="HediffComp_MultipleHediff.cs" />
+    <Compile Include="multiple\HediffComp_MultipleHediff.cs" />
     <Compile Include="HediffComp_HediffExclusive.cs" />
     <Compile Include="HediffComp_HediffNullifier.cs" />
     <Compile Include="HediffComp_Spawner.cs" />

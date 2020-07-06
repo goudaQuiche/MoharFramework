@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-	
-<!---->	
+
+	<!---->	
 	<HediffDef>
 		<defName>Hediff_Twodiseases</defName>
 		<hediffClass>HediffWithComps</hediffClass>
-		
+
 		<description>plague in stomach, flu in brain</description>
 		<label>MultipleHediffs</label>
-		<labelNoun>Hediff_Wraper_FondlingVestigialShell.labelNoun</labelNoun>
-		
+		<!-- <labelNoun>Hediff_Wraper_FondlingVestigialShell.labelNoun</labelNoun> -->
+
 		<comps>
 			<li Class="MoharHediffs.HediffCompProperties_MultipleHediff">
 				<bodyDef>Human</bodyDef>
@@ -25,5 +25,56 @@
 		</comps>
 	</HediffDef>
 
+	<HediffDef>
+		<defName>Hediff_AllInOne</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+
+		<description>destroy all inner organs except from brain</description>
+		<label>AllInOne</label>
+
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_MultipleHediff">
+				<bodyDef>Human</bodyDef>
+				<hediffToApply>
+					<li>MissingBodyPart</li>    
+					<li>MissingBodyPart</li>
+					<li>MissingBodyPart</li>
+					<li>MissingBodyPart</li>
+					<li>MissingBodyPart</li>
+					<li>MissingBodyPart</li>
+				</hediffToApply>
+				<bodyPartDef>
+					<li>Stomach</li>
+					<li>Lung</li>
+					<li>Lung</li>
+					<li>Kidney</li>
+					<li>Liver</li>
+					<li>Heart</li>
+				</bodyPartDef>
+			</li>
+		</comps>
+	</HediffDef> 
+
+	<HediffDef>
+		<defName>Hediff_WholeBodyTest</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+
+		<description>destroy one finger and apply flu to whole body</description>
+		<label>AllInOne</label>
+
+		<comps>
+			<li Class="MoharHediffs.HediffCompProperties_MultipleHediff">
+				<bodyDef>Human</bodyDef>
+				<hediffToApply>
+					<li>MissingBodyPart</li>    
+					<li>Flu</li>
+				</hediffToApply>
+				<bodyPartDef>
+					<li>Finger</li>
+					<li>Body</li>
+				</bodyPartDef>
+			</li>
+		</comps>
+	</HediffDef> 
 
 </Defs>

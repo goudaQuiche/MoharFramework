@@ -134,7 +134,7 @@ namespace CustomLifeSpan
                 Tools.Warn(i + "/" + pileNum + " spawning: " + currentPileAmount, myDebug);
                 bool Didit = false;
 
-                Didit = Lifespan_Utility.TryDoSpawn(pawn, thingToSpawn, currentPileAmount, Props.spawnMaxAdjacent, Props.tryToUnstack, Props.inheritFaction, Props.spawnForbidden, Props.showMessageIfOwned);
+                Didit = Lifespan_Utility.TryDoSpawn(parent, thingToSpawn, currentPileAmount, Props.spawnMaxAdjacent, Props.tryToUnstack, Props.inheritFaction, Props.spawnForbidden, Props.showMessageIfOwned);
 
                 if (!Didit)
                 {
