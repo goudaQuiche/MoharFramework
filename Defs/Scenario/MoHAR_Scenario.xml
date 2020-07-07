@@ -57,7 +57,12 @@
 		<def>StartingThing_Defined</def>
 		<thingDef>MoharHediff_fingerRemover</thingDef>		
 		<count>5</count>
-	</li>	
+	</li>
+		<li Class="ScenPart_StartingThing_Defined">
+		<def>StartingThing_Defined</def>
+		<thingDef>MoharHediff_DUDOD</thingDef>		
+		<count>5</count>
+	</li>
 	
 	
 	<!-- More Drugs -->

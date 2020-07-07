@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+<!---->	
+	<HediffDef>
+		<defName>Hediff_DUDOD</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+		
+		<description>will destroy body, weapon and inventory upon death or downed</description>
+		<label>MoHar_DUDOD</label>
+		
+		<comps>
+			<li Class="DUDOD.HediffCompProperties_DestroyUponDeathOrDowned">
+				<debug>true</debug>
+			</li>
+		</comps>
+	</HediffDef>
+
+</Defs>

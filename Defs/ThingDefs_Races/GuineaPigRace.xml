@@ -80,6 +80,7 @@
 
 				<alienPartGenerator>
 					<useGenderedHeads>true</useGenderedHeads>
+					<!-- <useGenderedBodies>true</useGenderedBodies> -->
 					<!-- <useSkincolorForHair>true</useSkincolorForHair> -->
 
 					<alienbodytypes>

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<ThingDef ParentName="MoHarPillBase">
+	
+		<defName>MoharHediff_DUDOD</defName>
+		<label>MoharHediff_DUDOD</label>
+		
+		<description>A drug.</description>
+		<descriptionHyperlinks>
+			<HediffDef>Hediff_DUDOD</HediffDef>
+		</descriptionHyperlinks>
+
+
+		<ingestible>
+			<drugCategory>Medical</drugCategory>
+			<outcomeDoers>
+				<li Class="IngestionOutcomeDoer_GiveHediff">
+					<hediffDef>Hediff_DUDOD</hediffDef>
+					<severity>.7</severity>
+				</li>
+			</outcomeDoers>
+		</ingestible>
+
+	</ThingDef>
+  
+</Defs>

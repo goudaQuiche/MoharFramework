@@ -19,6 +19,7 @@
 						<bodyPart>Heart</bodyPart>
 						<inFrontOfBody>true</inFrontOfBody>
 						<useSkinColor>false</useSkinColor>
+						<colorChannel>base</colorChannel>
 
 						<offsets>
 							<!-- front -->

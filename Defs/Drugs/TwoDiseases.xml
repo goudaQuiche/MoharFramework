@@ -1,42 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-	<ThingDef Name="MultipleHediffPillBase" ParentName="MakeableDrugPillBase" Abstract="true">
-
-		<graphicData>
-			<texPath>Things/Item/Drug/Penoxycyline</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
-		</graphicData>
-
-		<socialPropernessMatters>false</socialPropernessMatters>
-		<rotatable>false</rotatable>
-		<statBases>
-			<WorkToMake>600</WorkToMake>
-			<MarketValue>18</MarketValue>
-			<Mass>0.005</Mass>
-			<Flammability>0.7</Flammability>
-		</statBases>
-
-		<techLevel>Industrial</techLevel>
-
-		<costList>
-			<Neutroamine>1</Neutroamine>
-		</costList>
-		<recipeMaker>
-			<recipeUsers>
-				<li>DrugLab</li>
-			</recipeUsers>
-		</recipeMaker>
-		
-		<comps>
-			<li Class="CompProperties_Drug">
-				<listOrder>1000</listOrder>
-				<overdoseSeverityOffset>0.08~0.14</overdoseSeverityOffset>
-			</li>
-		</comps>
-	</ThingDef>
-
-	<ThingDef ParentName="MultipleHediffPillBase">
+	<ThingDef ParentName="MoHarPillBase">
 	
 		<defName>MoharHediff_TwoDiseases</defName>
 		<label>MoharHediff_TwoDiseases</label>
@@ -59,7 +24,7 @@
 
 	</ThingDef>
 
-	<ThingDef ParentName="MultipleHediffPillBase">
+	<ThingDef ParentName="MoHarPillBase">
 	
 		<defName>MoharHediff_SuicidePill</defName>
 		<label>MoharHediff_SuicidePill</label>
@@ -81,7 +46,7 @@
 		<!-- overdose wont happen -->
 	</ThingDef>
 
-	<ThingDef ParentName="MultipleHediffPillBase">
+	<ThingDef ParentName="MoHarPillBase">
 		<defName>MoharHediff_fingerRemover</defName>
 		<label>MoharHediff_fingerRemover</label>
 		
