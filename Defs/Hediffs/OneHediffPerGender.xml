@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<!-- male -->
+	<HediffDef ParentName="HiddenHediffBase">
+		<defName>Alien_GuineaPig_OHPG_male</defName>
+		<description>male hediff</description>
+		<label>male hediff</label>
+	</HediffDef>
+	<!-- female -->
+	<HediffDef ParentName="HiddenHediffBase">
+		<defName>Alien_GuineaPig_OHPG_female</defName>
+		<description>female hediff</description>
+		<label>female hediff</label>
+	</HediffDef>
+	<!---->	
+	<HediffDef ParentName="HiddenHediffBase">
+		<defName>Alien_GuineaPig_OneHediffPerGender</defName>
+		<hediffClass>HediffWithComps</hediffClass>
+
+		<description>apply one hediff per gender</description>
+		<label>OneHediffPerGender</label>
+
+		<comps>
+			<li Class="OHPG.HediffCompProperties_GenderHediffAssociation">
+				<race>Alien_GuineaPig</race>
+
+				<bodyPartDef>Heart</bodyPartDef>
+				<!-- <bodyPartLabel>left hand</bodyPartLabel> -->
+
+				<associations>
+					<li>
+						<gender>Male</gender>
+						<hediff>Alien_GuineaPig_OHPG_male</hediff>
+					</li>
+					<li>
+						<gender>Female</gender>
+						<hediff>Alien_GuineaPig_OHPG_female</hediff>
+					</li>
+				</associations>
+				
+				<debug>true</debug>
+			</li>
+		</comps>
+	</HediffDef>
+</Defs>

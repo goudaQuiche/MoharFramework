@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<HediffGiverSetDef>
+		<defName>Alien_GuineaPig_Gender_HediffGiverSet</defName>
+		<hediffGivers>
+			<li Class="OHPG.CustomRace_HediffGiver_OHPG">
+				<hediff>Alien_GuineaPig_OneHediffPerGender</hediff>
+				<partsToAffect>
+					<li>Heart</li>
+				</partsToAffect>
+			</li>
+		</hediffGivers>
+	</HediffGiverSetDef>
+
+</Defs>
