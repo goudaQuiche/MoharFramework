@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThingDef ParentName="EggFertBase">
+		<defName>MoHar_InsectEgg</defName>
+		<label>MoHar_InsectEgg</label>
+		<description>An egg</description>
+		<graphicData>
+			<color>(125,200,97)</color>
+			<drawSize>1.2</drawSize>
+		</graphicData>
+		<statBases>
+			<MarketValue>19.0</MarketValue>
+		</statBases>
+		<comps>
+			<li Class="OHFP.CompProperties_OHFP_Hatcher">
+				<hatcherDaystoHatch>2</hatcherDaystoHatch>
+				<hatcherPawnList>
+					<li>Megaspider</li>
+					<li>Megascarab</li>
+				</hatcherPawnList>
+				
+				<colonyAdoptedChance>.5</colonyAdoptedChance>
+				<neutralAdoptedChance>.3</neutralAdoptedChance>
+				<enemyAdoptedChance>.2</enemyAdoptedChance>
+				
+				<manhunterChance>.3</manhunterChance>
+				<debug>true</debug>
+			</li>
+		</comps>
+	</ThingDef>
+	
+	<ThingDef ParentName="EggFertBase">
+		<defName>MoHar_PawnEgg</defName>
+		<label>MoHar_PawnEgg</label>
+		<description>An egg</description>
+		<graphicData>
+			<color>(50,100,200)</color>
+			<drawSize>3</drawSize>
+		</graphicData>
+		<statBases>
+			<MarketValue>19.0</MarketValue>
+		</statBases>
+		<comps>
+			<li Class="OHFP.CompProperties_OHFP_Hatcher">
+				<hatcherDaystoHatch>20</hatcherDaystoHatch>
+				<hatcherPawnList>
+					<li>MoharHediff_basicMemberKind</li>
+				</hatcherPawnList>
+				
+				<colonyAdoptedChance>.75</colonyAdoptedChance>
+				<neutralAdoptedChance>.2</neutralAdoptedChance>
+				<enemyAdoptedChance>.05</enemyAdoptedChance>
+				
+				<manhunterChance>.05</manhunterChance>
+				<debug>true</debug>
+			</li>
+		</comps>
+	</ThingDef>
+	
+	<ThingDef ParentName="EggFertBase">
+		<defName>MoHar_MechaEgg</defName>
+		<label>MoHar_MechaEgg</label>
+		<description>An egg</description>
+		<graphicData>
+			<color>(100,100,100)</color>
+			<drawSize>5</drawSize>
+		</graphicData>
+		<statBases>
+			<MarketValue>19.0</MarketValue>
+		</statBases>
+		<comps>
+			<li Class="OHFP.CompProperties_OHFP_Hatcher">
+				<hatcherDaystoHatch>150</hatcherDaystoHatch>
+				<hatcherPawnList>
+					<li>Mech_Centipede</li>
+					<li>Mech_Lancer</li>
+					<li>Mech_Scyther</li>
+				</hatcherPawnList>
+				
+				<colonyAdoptedChance>.3</colonyAdoptedChance>
+				<neutralAdoptedChance>.3</neutralAdoptedChance>
+				<enemyAdoptedChance>.4</enemyAdoptedChance>
+				
+				<manhunterChance>.5</manhunterChance>
+				<debug>true</debug>
+			</li>
+		</comps>
+	</ThingDef>
+</Defs>
