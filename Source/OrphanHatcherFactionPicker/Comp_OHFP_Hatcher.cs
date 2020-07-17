@@ -119,12 +119,45 @@ namespace OHFP
             Tools.Warn("hatcheeFaction == null", hatcheeFaction == null && myDebug);
             Tools.Warn("hatcheeParent == null", hatcheeParent == null && myDebug);
 
+            //PawnGenerationContext pGenContext = playerAdopted ? PawnGenerationContext.NonPlayer : PawnGenerationContext.PlayerStarter;
+            PawnGenerationContext pGenContext = PawnGenerationContext.NonPlayer;
+            bool newBorn = Rand.Chance(Props.newBornChance);
+
+            bool noRelation = (hatcherPawn.race.defName == "Mohar_Scyther") ?true:false;
+            if (noRelation)
+                hatcheeFaction = Faction.OfAncients;
+
             try
             {
                 //PawnGenerationRequest request = new PawnGenerationRequest(
                 //    Props.hatcherPawn, hatcheeFaction, PawnGenerationContext.NonPlayer, -1, forceGenerateNewPawn: false, newborn: true);
-                PawnGenerationRequest request = new PawnGenerationRequest(
-                    hatcherPawn, hatcheeFaction, PawnGenerationContext.NonPlayer, -1, forceGenerateNewPawn: false, newborn: true);
+                /*
+                public PawnGenerationRequest(
+                    PawnKindDef kind, Faction faction = null, PawnGenerationContext context = PawnGenerationContext.NonPlayer,
+                    int tile = -1, bool forceGenerateNewPawn = false, bool newborn = false, bool allowDead = false,
+                    bool allowDowned = false, bool canGeneratePawnRelations = true, bool mustBeCapableOfViolence = true, float colonistRelationChanceFactor = 1,
+                    bool forceAddFreeWarmLayerIfNeeded = false, bool allowGay = true, bool allowFood = true, bool allowAddictions = true,
+                    bool inhabitant = false, bool certainlyBeenInCryptosleep = false, bool forceRedressWorldPawnIfFormerColonist = false, bool worldPawnFactionDoesntMatter = false,
+                    float biocodeWeaponChance = 0, Pawn extraPawnForExtraRelationChance = null, float relationWithExtraPawnChanceFactor = 1, Predicate<Pawn> validatorPreGear = null, 
+                    Predicate<Pawn> validatorPostGear = null, IEnumerable<TraitDef> forcedTraits = null, IEnumerable<TraitDef> prohibitedTraits = null, float? minChanceToRedressWorldPawn = null, 
+                    float? fixedBiologicalAge = null, float? fixedChronologicalAge = null, Gender? fixedGender = null, float? fixedMelanin = null,
+                    string fixedLastName = null, string fixedBirthName = null, RoyalTitleDef fixedTitle = null);
+                */
+
+                PawnGenerationRequest request;
+                if(noRelation)
+                request = new PawnGenerationRequest(
+                    kind: hatcherPawn, faction: hatcheeFaction, context: pGenContext, 
+                    tile: -1, forceGenerateNewPawn: false, newborn: newBorn, allowDead: false,
+                    allowDowned: false, canGeneratePawnRelations: false, mustBeCapableOfViolence: true, colonistRelationChanceFactor: 0,
+                    forceAddFreeWarmLayerIfNeeded: false, allowGay: false
+                    );
+                else 
+                    request = new PawnGenerationRequest(
+                    kind: hatcherPawn, faction: hatcheeFaction, context: pGenContext, tile: -1,
+                    forceGenerateNewPawn: false, newborn: newBorn
+                    );
+
                 for (int i = 0; i < parent.stackCount; i++)
                 {
                     Pawn pawn = PawnGenerator.GeneratePawn(request);
@@ -155,6 +188,13 @@ namespace OHFP
 
                         if (Rand.Chance(Props.manhunterChance))
                             MakeManhunter(pawn);
+
+                        if (noRelation)
+                        {
+                            pawn.SetFaction(Faction.OfPlayer);
+                            
+                        }
+                            
 
 
                     }

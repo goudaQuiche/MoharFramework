@@ -80,6 +80,22 @@
 					<thingDef>MoHar_MechaEgg</thingDef>		
 					<count>5</count>
 				</li>
+				<li Class="ScenPart_StartingThing_Defined">
+					<def>StartingThing_Defined</def>
+					<thingDef>MoHar_myOwnMechaEgg</thingDef>		
+					<count>1</count>
+				</li>
+				<li Class="ScenPart_StartingThing_Defined">
+					<def>StartingThing_Defined</def>
+					<thingDef>MoHar_myOwnMechaEgg</thingDef>		
+					<count>1</count>
+				</li>
+				<li Class="ScenPart_StartingThing_Defined">
+					<def>StartingThing_Defined</def>
+					<thingDef>MoHar_myOwnMechaEgg</thingDef>		
+					<count>1</count>
+				</li>
+				
 
 
 				<!-- More Drugs -->

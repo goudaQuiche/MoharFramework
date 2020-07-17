@@ -107,7 +107,8 @@ namespace OLB
             // rotation
             mote.rotationRate = decoration.rotationRate.RandomInRange;
             mote.exactRotation = decoration.exactRotation.RandomInRange;
-
+            //scale
+            mote.Scale = decoration.scale.RandomInRange;
             // velocity
             mote.SetVelocity(decoration.xVelocity.RandomInRange, decoration.yVelocity.RandomInRange);
 

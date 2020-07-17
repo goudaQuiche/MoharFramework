@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+
+<Defs>
+
+	<ThinkTreeDef>
+		<defName>MoHarMechanoid</defName>
+		<thinkRoot Class="ThinkNode_Priority">
+			<subNodes>
+				<!-- Downed -->
+				<li Class="ThinkNode_Subtree">
+					<treeDef>Downed</treeDef>
+				</li>
+
+				<!-- Added MoHar -->
+				<li Class="ThinkNode_Subtree">
+					<treeDef>MentalStateCritical</treeDef>
+				</li>
+
+
+				<!-- Do a queued job -->
+				<li Class="ThinkNode_QueuedJob" />
+
+				<!-- MoHar Wait if drafted -->
+				<li Class="ThinkNode_ConditionalColonist">
+					<subNodes>
+						<li Class="ThinkNode_Tagger">
+							<tagToGive>DraftedOrder</tagToGive>
+							<subNodes>
+								<li Class="JobGiver_MoveToStandable" />
+								<li Class="JobGiver_Orders" />
+							</subNodes>
+						</li>
+					</subNodes>
+				</li>
+
+				<!-- Lord -->
+				<li Class="ThinkNode_Subtree">
+					<treeDef>LordDuty</treeDef>
+				</li>
+
+				<!-- Idle -->
+				<li Class="ThinkNode_Tagger">
+					<tagToGive>Idle</tagToGive>
+					<subNodes>
+						<li Class="JobGiver_WanderAnywhere">
+							<maxDanger>Deadly</maxDanger>
+						</li>
+					</subNodes>
+				</li>
+
+				<!-- Idle error -->
+				<li Class="JobGiver_IdleError"/>
+			</subNodes>
+		</thinkRoot>
+	</ThinkTreeDef>
+
+</Defs>

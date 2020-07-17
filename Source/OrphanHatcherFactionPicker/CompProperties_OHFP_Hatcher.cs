@@ -15,7 +15,7 @@ namespace OHFP
         public float enemyAdoptedChance = .2f;
 
         public float manhunterChance = .25f;
-
+        public float newBornChance = 0f;
         public bool debug = false;
 
         public CompProperties_OHFP_Hatcher()

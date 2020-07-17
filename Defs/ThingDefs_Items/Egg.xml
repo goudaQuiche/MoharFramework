@@ -24,6 +24,8 @@
 				<enemyAdoptedChance>.2</enemyAdoptedChance>
 				
 				<manhunterChance>.3</manhunterChance>
+				<newBornChance>.5</newBornChance>
+				
 				<debug>true</debug>
 			</li>
 		</comps>
@@ -52,6 +54,7 @@
 				<enemyAdoptedChance>.05</enemyAdoptedChance>
 				
 				<manhunterChance>.05</manhunterChance>
+				<newBornChance>0</newBornChance>
 				<debug>true</debug>
 			</li>
 		</comps>
@@ -81,7 +84,37 @@
 				<neutralAdoptedChance>.3</neutralAdoptedChance>
 				<enemyAdoptedChance>.4</enemyAdoptedChance>
 				
+				<newBornChance>.2</newBornChance>
 				<manhunterChance>.5</manhunterChance>
+				<debug>true</debug>
+			</li>
+		</comps>
+	</ThingDef>
+	
+		<ThingDef ParentName="EggFertBase">
+		<defName>MoHar_myOwnMechaEgg</defName>
+		<label>MoHar_myOwnMechaEgg</label>
+		<description>An egg</description>
+		<graphicData>
+			<color>(100,100,180)</color>
+			<drawSize>3.5</drawSize>
+		</graphicData>
+		<statBases>
+			<MarketValue>19.0</MarketValue>
+		</statBases>
+		<comps>
+			<li Class="OHFP.CompProperties_OHFP_Hatcher">
+				<hatcherDaystoHatch>150</hatcherDaystoHatch>
+				<hatcherPawnList>
+					<li>Mohar_Scyther</li>
+				</hatcherPawnList>
+				
+				<colonyAdoptedChance>.9</colonyAdoptedChance>
+				<neutralAdoptedChance>.07</neutralAdoptedChance>
+				<enemyAdoptedChance>.03</enemyAdoptedChance>
+				
+				<newBornChance>.05</newBornChance>
+				<!-- <manhunterChance>.5</manhunterChance> -->
 				<debug>true</debug>
 			</li>
 		</comps>
