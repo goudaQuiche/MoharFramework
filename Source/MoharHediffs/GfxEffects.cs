@@ -28,7 +28,7 @@ namespace MoharHediffs
                 pColor =  pawn.DrawColor;
             else
             {
-                pColor = alienComp.skinColor;
+                pColor = alienComp.GetChannel("skin").first;
                 Tools.Warn(pawn.LabelShort +" is alien, color="+pColor,  myDebug);
                 
             }
