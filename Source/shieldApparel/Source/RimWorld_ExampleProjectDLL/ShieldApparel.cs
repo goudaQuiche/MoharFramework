@@ -154,7 +154,10 @@ namespace ShieldApparel
 
 		private void AbsorbedDamage(DamageInfo dinfo)
 		{
-			SoundDefOf.EnergyShield_AbsorbDamage.PlayOneShot(new TargetInfo(base.Wearer.Position, base.Wearer.Map));
+            if (Wearer.Position == null || Wearer.Map == null)
+                return;
+
+			SoundDefOf.EnergyShield_AbsorbDamage.PlayOneShot(new TargetInfo(Wearer.Position, Wearer.Map));
 			impactAngleVect = Vector3Utility.HorizontalVectorFromAngle(dinfo.Angle);
 			Vector3 loc = base.Wearer.TrueCenter() + impactAngleVect.RotatedBy(180f) * 0.5f;
 			float num = Mathf.Min(10f, 2f + dinfo.Amount / 10f);
@@ -170,11 +173,18 @@ namespace ShieldApparel
 
 		private void Break()
 		{
-			SoundDefOf.EnergyShield_Broken.PlayOneShot(new TargetInfo(base.Wearer.Position, base.Wearer.Map));
-			MoteMaker.MakeStaticMote(base.Wearer.TrueCenter(), base.Wearer.Map, ThingDefOf.Mote_ExplosionFlash, 12f);
+            if (Wearer.Position == null || Wearer.Map == null)
+                return;
+
+            SoundDefOf.EnergyShield_Broken.PlayOneShot(new TargetInfo(Wearer.Position, Wearer.Map));
+			MoteMaker.MakeStaticMote(Wearer.TrueCenter(), Wearer.Map, ThingDefOf.Mote_ExplosionFlash, 12f);
 			for (int i = 0; i < 6; i++)
 			{
-				MoteMaker.ThrowDustPuff(base.Wearer.TrueCenter() + Vector3Utility.HorizontalVectorFromAngle(Rand.Range(0, 360)) * Rand.Range(0.3f, 0.6f), base.Wearer.Map, Rand.Range(0.8f, 1.2f));
+				MoteMaker.ThrowDustPuff(
+                    Wearer.TrueCenter() + Vector3Utility.HorizontalVectorFromAngle(Rand.Range(0, 360)) * Rand.Range(0.3f, 0.6f),
+                    Wearer.Map,
+                    Rand.Range(0.8f, 1.2f)
+                    );
 			}
 			energy = 0f;
 			ticksToReset = StartingTicksToReset;

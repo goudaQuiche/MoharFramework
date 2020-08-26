@@ -144,16 +144,14 @@ namespace OHPG
             get
             {
                 string result = string.Empty;
-                if (Props.debug)
+                if (Prefs.DevMode)
                 {
-                    if (Props.debug)
-                    {
-                        result +=
-                            myPawn.PawnResumeString() + 
-                            "; hasAssociationHediffMaster: " + myPawn.Has_OHPG()
-                           ;
-                    }
+                    result +=
+                        myPawn.PawnResumeString() + 
+                        "; hasAssociationHediffMaster: " + myPawn.Has_OHPG()
+                        ;
                 }
+
                 return result;
             }
         }

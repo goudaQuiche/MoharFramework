@@ -17,7 +17,7 @@ namespace OHPG
                 return;
 
             string myPawnResume = pawn.LabelShort + "(" + pawn.def.defName + ")";
-            string myHediffDesc = "Apply hediff depending on lifestage Hediff";
+            string myHediffDesc = "Apply hediff depending on gender Hediff";
 
             bool Is_Wanted_Hediff = Tools.Get_GenderHediffAssociation_HediffComp_debug_and_race(hediff, out bool debug, out string raceDefName);
 

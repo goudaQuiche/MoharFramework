@@ -8,7 +8,6 @@ namespace OHPG
 {
     public static class MyDefs
     {
-        public static HediffDef OHPG_HediffDef = DefDatabase<HediffDef>.AllDefs.Where((HediffDef h) => h.defName == "OneHediffPerGender").First();
-
+        public static HediffDef OHPG_HediffDef = HediffDef.Named("Alien_GuineaPig_OneHediffPerGender");
     }
 }

@@ -15,17 +15,11 @@ using Verse;
 
 namespace MoharHediffs
 {
-    public class HeDiffComp_HediffRandom : HediffComp
+    public class HediffComp_HediffRandom : HediffComp
     {
         bool myDebug = false;
 
-        public HeDiffCompProperties_HediffRandom Props
-        {
-            get
-            {
-                return (HeDiffCompProperties_HediffRandom)this.props;
-            }
-        }
+        public HediffCompProperties_HediffRandom Props => (HediffCompProperties_HediffRandom)this.props;
 
         public override void CompPostMake()
         {
@@ -52,25 +46,32 @@ namespace MoharHediffs
                     return;
                 }
 
-            HediffDef hediff2use = Props.hediffPool.RandomElement();
+            int randomElementIndex = Rand.RangeInclusive(0, Props.hediffPool.Count());
+
+            HediffDef hediff2use = Props.hediffPool[randomElementIndex];
             if (hediff2use == null)
             {
                 Tools.Warn("cant find hediff", myDebug);
                 return;
             }
 
+            /*
             IEnumerable<BodyPartDef> myBPDefIE = DefDatabase<BodyPartDef>.AllDefs.Where((BodyPartDef b) => b == Props.bodyPartDef);
             if (myBPDefIE.EnumerableNullOrEmpty())
             {
                 Tools.Warn("cant find body part def called: " + Props.bodyPartDef.defName, myDebug);
                 return;
             }
+            
             BodyPartDef myBPDef = myBPDefIE.RandomElement();
+            */
+
+            BodyPartDef myBPDef = Props.bodyPartDef[randomElementIndex];
 
             IEnumerable<BodyPartRecord> myBPIE = pawn.RaceProps.body.GetPartsWithDef(myBPDef);
             if (myBPIE.EnumerableNullOrEmpty())
             {
-                Tools.Warn("cant find body part record called: " + Props.bodyPartDef.defName, myDebug);
+                Tools.Warn("cant find body part record called: " + myBPDef.defName, myDebug);
                 return;
             }
             BodyPartRecord myBP = myBPIE.RandomElement();
@@ -78,12 +79,12 @@ namespace MoharHediffs
             Hediff hediff2apply = HediffMaker.MakeHediff(hediff2use, pawn, myBP);
             if (hediff2apply == null)
             {
-                Tools.Warn("cant create hediff "+ hediff2use.defName + " to apply on " + Props.bodyPartDef.defName, myDebug);
+                Tools.Warn("cant create hediff "+ hediff2use.defName + " to apply on " + myBPDef.defName, myDebug);
                 return;
             }
 
             pawn.health.AddHediff(hediff2apply, myBP, null);
-            Tools.Warn("Succesfully applied " + hediff2use.defName + " to apply on " + Props.bodyPartDef.defName, myDebug);
+            Tools.Warn("Succesfully applied " + hediff2use.defName + " to apply on " + myBPDef.defName, myDebug);
         }
 
         public override void CompPostTick(ref float severityAdjustment)
