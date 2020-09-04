@@ -86,6 +86,16 @@ namespace MoharHediffs
             return answer;
         }
 
+        public static bool CheckIfExistingNaturalBP(this Pawn pawn, BodyPartDef bodyPartDef, bool myDebug = false)
+        {
+                BodyPartRecord BPR = pawn.GetBPRecord(bodyPartDef) ?? null;
+
+                if (BPR == null || pawn.health.hediffSet.PartIsMissing(BPR) || pawn.health.hediffSet.AncestorHasDirectlyAddedParts(BPR))
+                    return false;
+
+                return true;
+        }
+
         public static BodyPartRecord GetBPRecord(this Pawn pawn, BodyPartDef bodyPartDef, bool myDebug = false)
         {
             IEnumerable<BodyPartDef> BPDefIE = DefDatabase<BodyPartDef>.AllDefs.Where((BodyPartDef b) => b == bodyPartDef);

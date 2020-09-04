@@ -18,6 +18,8 @@ namespace MoharHediffs
         public List<HediffDef> hediffToNullify;
         public int limitedUsageNumber = -99;
 
+        public List<BodyPartDef> RequiredBodyPart;
+
         public HediffCompProperties_HediffNullifier()
 		{
 			this.compClass = typeof(HediffComp_HediffNullifier);
