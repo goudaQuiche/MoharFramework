@@ -17,23 +17,37 @@ namespace MoharHediffs
 {
     public class HediffComp_HediffRandom : HediffComp
     {
-        bool myDebug = false;
-
         public HediffCompProperties_HediffRandom Props => (HediffCompProperties_HediffRandom)this.props;
+
+        bool myDebug => Props.debug;
+        bool HasWeights => !Props.weights.NullOrEmpty() && Props.weights.Count == Props.hediffPool.Count;
+        bool HasHediff => !Props.hediffPool.NullOrEmpty();
 
         public override void CompPostMake()
         {
             //base.CompPostMake();
             if (Props.hideBySeverity)
                 parent.Severity = .05f;
-            myDebug = Props.debug;
         }
 
-        public bool HasHediff
+        public int WeightedRandomness
         {
             get
             {
-                return (!Props.hediffPool.NullOrEmpty());
+                int totalWeights = 0;
+                foreach (int curW in Props.weights)
+                    totalWeights += curW;
+
+                int Dice = Rand.Range(0, totalWeights);
+
+                for (int i = 0; i < Props.weights.Count; i++)
+                {
+                    int curW = Props.weights[i];
+                    if ((Dice -= curW) < 0)
+                        return i;
+                }
+
+                return 0;
             }
         }
 
@@ -46,7 +60,11 @@ namespace MoharHediffs
                     return;
                 }
 
-            int randomElementIndex = Rand.RangeInclusive(0, Props.hediffPool.Count());
+            int randomElementIndex;
+            if (!HasWeights)
+                randomElementIndex = Rand.RangeInclusive(0, Props.hediffPool.Count());
+            else
+                randomElementIndex = WeightedRandomness;
 
             HediffDef hediff2use = Props.hediffPool[randomElementIndex];
             if (hediff2use == null)
@@ -54,17 +72,6 @@ namespace MoharHediffs
                 Tools.Warn("cant find hediff", myDebug);
                 return;
             }
-
-            /*
-            IEnumerable<BodyPartDef> myBPDefIE = DefDatabase<BodyPartDef>.AllDefs.Where((BodyPartDef b) => b == Props.bodyPartDef);
-            if (myBPDefIE.EnumerableNullOrEmpty())
-            {
-                Tools.Warn("cant find body part def called: " + Props.bodyPartDef.defName, myDebug);
-                return;
-            }
-            
-            BodyPartDef myBPDef = myBPDefIE.RandomElement();
-            */
 
             BodyPartDef myBPDef = Props.bodyPartDef[randomElementIndex];
 

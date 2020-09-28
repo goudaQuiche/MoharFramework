@@ -8,6 +8,8 @@ namespace MoharHediffs
         public BodyDef bodyDef;
 
         public List<HediffDef> hediffPool;
+        public List<int> weights;
+
         public List<BodyPartDef> bodyPartDef;
 
         public bool debug = false;

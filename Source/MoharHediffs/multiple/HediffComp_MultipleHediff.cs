@@ -15,17 +15,17 @@ using Verse;
 
 namespace MoharHediffs
 {
-    public class HeDiffComp_MultipleHediff : HediffComp
+    public class HediffComp_MultipleHediff : HediffComp
     {
         const int tickLimiterModulo = 60;
         bool myDebug = false;
         bool blockAction = false;
 
-        public HeDiffCompProperties_MultipleHediff Props
+        public HediffCompProperties_MultipleHediff Props
         {
             get
             {
-                return (HeDiffCompProperties_MultipleHediff)this.props;
+                return (HediffCompProperties_MultipleHediff)this.props;
             }
         }
         public void CheckProps()

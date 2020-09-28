@@ -12,7 +12,7 @@ using Verse;
 
 namespace MoharHediffs
 {
-	public class HeDiffCompProperties_MultipleHediff : HediffCompProperties
+	public class HediffCompProperties_MultipleHediff : HediffCompProperties
 	{
         //conditionnal body
         public BodyDef bodyDef;
@@ -23,9 +23,9 @@ namespace MoharHediffs
 
         public bool debug = false;
 
-        public HeDiffCompProperties_MultipleHediff()
+        public HediffCompProperties_MultipleHediff()
 		{
-			this.compClass = typeof(HeDiffComp_MultipleHediff);
+			this.compClass = typeof(HediffComp_MultipleHediff);
 		}
 	}
 }
