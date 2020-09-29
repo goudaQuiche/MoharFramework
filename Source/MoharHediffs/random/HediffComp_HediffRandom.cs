@@ -21,7 +21,10 @@ namespace MoharHediffs
 
         bool myDebug => Props.debug;
         bool HasWeights => !Props.weights.NullOrEmpty() && Props.weights.Count == Props.hediffPool.Count;
+        bool HasBodyParts => !Props.bodyPartDef.NullOrEmpty() && Props.bodyPartDef.Count == Props.hediffPool.Count;
         bool HasHediff => !Props.hediffPool.NullOrEmpty();
+
+        Pawn pawn => parent.pawn;
 
         public override void CompPostMake()
         {
@@ -62,9 +65,15 @@ namespace MoharHediffs
 
             int randomElementIndex;
             if (!HasWeights)
-                randomElementIndex = Rand.RangeInclusive(0, Props.hediffPool.Count());
+                randomElementIndex = Rand.Range(0, Props.hediffPool.Count());
             else
                 randomElementIndex = WeightedRandomness;
+
+            if (randomElementIndex < 0 || randomElementIndex >= Props.hediffPool.Count)
+            {
+                Tools.Warn(randomElementIndex + " is out of range. Applyhediff will fail. Please report this error.", myDebug);
+            }
+
 
             HediffDef hediff2use = Props.hediffPool[randomElementIndex];
             if (hediff2use == null)
@@ -73,37 +82,39 @@ namespace MoharHediffs
                 return;
             }
 
-            BodyPartDef myBPDef = Props.bodyPartDef[randomElementIndex];
-
-            IEnumerable<BodyPartRecord> myBPIE = pawn.RaceProps.body.GetPartsWithDef(myBPDef);
-            if (myBPIE.EnumerableNullOrEmpty())
+            BodyPartRecord myBP = null;
+            BodyPartDef myBPDef = null;
+            if (HasBodyParts)
             {
-                Tools.Warn("cant find body part record called: " + myBPDef.defName, myDebug);
-                return;
+                myBPDef = Props.bodyPartDef[randomElementIndex];
+
+                IEnumerable<BodyPartRecord> myBPIE = pawn.RaceProps.body.GetPartsWithDef(myBPDef);
+                if (myBPIE.EnumerableNullOrEmpty())
+                {
+                    Tools.Warn("cant find body part record called: " + myBPDef.defName, myDebug);
+                    return;
+                }
+                myBP = myBPIE.RandomElement();
             }
-            BodyPartRecord myBP = myBPIE.RandomElement();
 
             Hediff hediff2apply = HediffMaker.MakeHediff(hediff2use, pawn, myBP);
             if (hediff2apply == null)
             {
-                Tools.Warn("cant create hediff "+ hediff2use.defName + " to apply on " + myBPDef.defName, myDebug);
+                Tools.Warn("cant create hediff " + hediff2use.defName + " to apply on " + myBPDef?.defName, myDebug);
                 return;
             }
 
             pawn.health.AddHediff(hediff2apply, myBP, null);
-            Tools.Warn("Succesfully applied " + hediff2use.defName + " to apply on " + myBPDef.defName, myDebug);
+            Tools.Warn("Succesfully applied " + hediff2use.defName + " to apply on " + myBPDef?.defName, myDebug);
         }
 
         public override void CompPostTick(ref float severityAdjustment)
         {
-            Pawn pawn = parent.pawn;
             if (!Tools.OkPawn(pawn))
                 return;
 
             if (HasHediff)
-            {
                 ApplyHediff(pawn);
-            }
 
             // suicide
             Tools.DestroyParentHediff(parent, myDebug);

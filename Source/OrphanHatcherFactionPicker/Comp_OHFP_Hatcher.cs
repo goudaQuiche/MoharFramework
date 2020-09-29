@@ -73,26 +73,26 @@ namespace OHFP
             // got enemy
             if( (DiceRoll -= Props.enemyAdoptedChance) < 0)
             {
-                hatcheeFaction = Find.FactionManager.AllFactions.Where(f => !f.IsPlayer && !f.AllyOrNeutralTo(Faction.OfPlayer)).RandomElement();
+                hatcheeFaction = Find.FactionManager.AllFactions.Where(f => !f.IsPlayer && !f.AllyOrNeutralTo(Faction.OfPlayer)).RandomElementWithFallback();
 
                 if(hatcheeFaction!=null)
-                    hatcheeParent = Find.WorldPawns.AllPawnsAlive.Where(p => p.Faction != null && p.Faction == hatcheeFaction).RandomElement();
+                    hatcheeParent = Find.WorldPawns.AllPawnsAlive.Where(p => p.Faction != null && p.Faction == hatcheeFaction).RandomElementWithFallback();
                 enemyAdopted = true;
             }
             // got neutral
             else if ((DiceRoll -= Props.neutralAdoptedChance) < 0)
             {
-                hatcheeFaction = Find.FactionManager.AllFactions.Where(f => !f.IsPlayer && f.AllyOrNeutralTo(Faction.OfPlayer)).RandomElement();
+                hatcheeFaction = Find.FactionManager.AllFactions.Where(f => !f.IsPlayer && f.AllyOrNeutralTo(Faction.OfPlayer)).RandomElementWithFallback();
 
                 if (hatcheeFaction != null)
-                    hatcheeParent = Find.WorldPawns.AllPawnsAlive.Where(p => p.Faction != null && p.Faction == hatcheeFaction).RandomElement();
+                    hatcheeParent = Find.WorldPawns.AllPawnsAlive.Where(p => p.Faction != null && p.Faction == hatcheeFaction).RandomElementWithFallback();
                 neutralAdopted = true;
             }
             // got player faction
             else
             {
                 hatcheeFaction = Faction.OfPlayer;
-                hatcheeParent = parent.Map.mapPawns.AnyFreeColonistSpawned ? parent.Map.mapPawns.FreeColonists.RandomElement() : null;
+                hatcheeParent = parent.Map.mapPawns.AnyFreeColonistSpawned ? parent.Map.mapPawns.FreeColonists.RandomElementWithFallback() : null;
                 playerAdopted = true;
             }
 
