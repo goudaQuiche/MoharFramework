@@ -79,10 +79,11 @@ namespace MoharHediffs
                     {
                         Tools.Warn(" Props.hediffToNullify #" + j + ": " + curHediffToNullify, myDebug);
 
-                        if (curHediff.def == curHediffToNullify)
+                        if (curHediff.def == curHediffToNullify && Props.hediffToApply != curHediffToNullify)
                         {
+                            //pawn.health.RemoveHediff(curHediff);
                             curHediff.Severity = 0;
-                            Tools.Warn(curHediff.def.defName + " severity = 0", myDebug);
+                            Tools.Warn(curHediff.def.defName + " removed", myDebug);
                         }
                         j++;
                     }
@@ -130,18 +131,17 @@ namespace MoharHediffs
                 return;
             }
 
-            BodyPartDef myBPDef = DefDatabase<BodyPartDef>.AllDefs.Where((BodyPartDef b) => b == Props.bodyPartDef).RandomElement();
-            if (myBPDef == null)
+            BodyPartDef myBPDef = DefDatabase<BodyPartDef>.AllDefs.Where((BodyPartDef b) => b == Props.bodyPartDef).RandomElementWithFallback();
+
+            BodyPartRecord myBP = null;
+            if (myBPDef != null)
             {
-                Tools.Warn("cant find body part def called: " + Props.bodyPartDef.defName, true);
-                return;
-            }
-            
-            BodyPartRecord myBP = pawn.RaceProps.body.GetPartsWithDef(myBPDef).RandomElement();
-            if (myBP == null)
-            {
-                Tools.Warn("cant find body part record called: " + Props.bodyPartDef.defName, true);
-                return;
+                myBP = pawn.RaceProps.body.GetPartsWithDef(myBPDef).RandomElementWithFallback();
+                if (myBP == null)
+                {
+                    Tools.Warn("cant find body part record called: " + Props.bodyPartDef.defName, true);
+                    return;
+                }
             }
 
             Hediff hediff2apply = HediffMaker.MakeHediff(hediff2use, pawn, myBP);
