@@ -16,6 +16,7 @@ namespace MoHarRegeneration
         public RegenParamsSpecial BodyPartRegeneration = null;
         //
         public BleedTendingParams BleedingHediff = null;
+        public ChronicTendingParams ChronicHediff = null;
 
         public bool debug = false;
 
