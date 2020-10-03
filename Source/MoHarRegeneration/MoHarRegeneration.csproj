@@ -57,9 +57,9 @@
     <Compile Include="Common\GfxEffects.cs" />
     <Compile Include="Common\PawnTools.cs" />
     <Compile Include="Regeneration\RegenerationPriority.cs" />
+    <Compile Include="Regeneration\MyDefs.cs" />
     <Compile Include="Regeneration\RegenWork.cs" />
-    <Compile Include="Regeneration\Structure\ChronicTendingParams.cs" />
-    <Compile Include="Regeneration\Structure\BleedTendingParams.cs" />
+    <Compile Include="Regeneration\Structure\TendingParams.cs" />
     <Compile Include="Regeneration\Structure\RegenParamsSpecial.cs" />
     <Compile Include="Regeneration\HediffCompProperties_Regeneration.cs" />
     <Compile Include="Regeneration\HediffComp_Regeneration.cs" />
@@ -76,6 +76,7 @@
     </Reference>
     <Reference Include="AlienRace">
       <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.2\Assemblies\AlienRace.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>

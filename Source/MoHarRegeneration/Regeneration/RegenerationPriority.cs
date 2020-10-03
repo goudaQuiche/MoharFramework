@@ -19,49 +19,62 @@ namespace MoHarRegeneration
             //CreatePriorities();
         }
 
-        public List<RegenParamsUtility.HealingTask> CustomPriority = new List<RegenParamsUtility.HealingTask>();
+        public List<MyDefs.HealingTask> CustomPriority = new List<MyDefs.HealingTask>();
 
-        public readonly List<RegenParamsUtility.HealingTask> DefaultPriority = new List<RegenParamsUtility.HealingTask>
+        public readonly List<MyDefs.HealingTask> DefaultPriority = new List<MyDefs.HealingTask>
         {
-            RegenParamsUtility.HealingTask.BleedingTending,
-            RegenParamsUtility.HealingTask.ChronicDisease,
+            MyDefs.HealingTask.BloodLossTending,
+            MyDefs.HealingTask.ChronicDiseaseTending,
+            MyDefs.HealingTask.RegularDiseaseTending,
 
-            RegenParamsUtility.HealingTask.InjuryRegeneration,
-            RegenParamsUtility.HealingTask.DiseaseHealing,
+            MyDefs.HealingTask.DiseaseHealing,
+            MyDefs.HealingTask.InjuryRegeneration,
+            MyDefs.HealingTask.ChemicalRemoval,
 
-            RegenParamsUtility.HealingTask.ChemicalRemoval,
-
-            RegenParamsUtility.HealingTask.PermanentInjuryRegeneration,
-            RegenParamsUtility.HealingTask.BodyPartRegeneration
+            MyDefs.HealingTask.PermanentInjuryRegeneration,
+            MyDefs.HealingTask.BodyPartRegeneration
         };
         
+        public string DumpDefaultPriority()
+        {
+            string answer = string.Empty;
+
+            for(int i=0; i< DefaultPriority.Count(); i++)
+            {
+                answer += ' '+ i.ToString("00") + " - " + DefaultPriority[i].DescriptionAttr() +";";
+            }
+
+            return answer;
+        }
+
         public void CreatePriorities()
         {
             int maxIndex = 0;
 
             if (parent.Effect_TendBleeding)
-                maxIndex = AffectPriority(CustomPriority, RegenParamsUtility.HealingTask.BleedingTending, parent.Props.BleedingHediff.Priority, maxIndex);
+                maxIndex = AffectPriority(CustomPriority, MyDefs.HealingTask.BloodLossTending, parent.Props.BloodLossTendingParams.Priority, maxIndex);
+            if (parent.Effect_TendChronicDisease)
+                maxIndex = AffectPriority(CustomPriority, MyDefs.HealingTask.ChronicDiseaseTending, parent.Props.ChronicHediffTendingParams.Priority, maxIndex);
+            if (parent.Effect_TendRegularDisease)
+                maxIndex = AffectPriority(CustomPriority, MyDefs.HealingTask.RegularDiseaseTending, parent.Props.RegularDiseaseTendingParams.Priority, maxIndex);
+
 
             if (parent.Effect_RegeneratePhysicalInjuries)
-                maxIndex = AffectPriority(CustomPriority, RegenParamsUtility.HealingTask.InjuryRegeneration, parent.Props.PhysicalHediff.Priority, maxIndex);
-
+                maxIndex = AffectPriority(CustomPriority, MyDefs.HealingTask.InjuryRegeneration, parent.Props.PhysicalInjuryRegenParams.Priority, maxIndex);
             if(parent.Effect_HealDiseases)
-                maxIndex = AffectPriority(CustomPriority, RegenParamsUtility.HealingTask.DiseaseHealing , parent.Props.DiseaseHediff.Priority, maxIndex);
-            
+                maxIndex = AffectPriority(CustomPriority, MyDefs.HealingTask.DiseaseHealing , parent.Props.DiseaseHediffRegenParams.Priority, maxIndex);
             if(parent.Effect_RemoveChemicals)
-                maxIndex = AffectPriority(CustomPriority, RegenParamsUtility.HealingTask.ChemicalRemoval , parent.Props.ChemicalHediff.Priority, maxIndex);
+                maxIndex = AffectPriority(CustomPriority, MyDefs.HealingTask.ChemicalRemoval , parent.Props.ChemicalHediffRegenParams.Priority, maxIndex);
+
 
             if(parent.Effect_RemoveScares)
-                maxIndex = AffectPriority(CustomPriority, RegenParamsUtility.HealingTask.PermanentInjuryRegeneration, parent.Props.PermanentInjury.Priority, maxIndex);
-
-            if (parent.Effect_TendChronicDisease)
-                maxIndex = AffectPriority(CustomPriority, RegenParamsUtility.HealingTask.ChronicDisease, parent.Props.ChronicHediff.Priority, maxIndex);
+                maxIndex = AffectPriority(CustomPriority, MyDefs.HealingTask.PermanentInjuryRegeneration, parent.Props.PermanentInjuryRegenParams.Priority, maxIndex);
 
             if (parent.Effect_RegenerateBodyParts)
-                maxIndex = AffectPriority(CustomPriority, RegenParamsUtility.HealingTask.BodyPartRegeneration, parent.Props.BodyPartRegeneration.Priority, maxIndex);
+                maxIndex = AffectPriority(CustomPriority, MyDefs.HealingTask.BodyPartRegeneration, parent.Props.BodyPartRegenParams.Priority, maxIndex);
 
         }
-        public int AffectPriority(List<RegenParamsUtility.HealingTask> Array, RegenParamsUtility.HealingTask value, int priority, int maxIndex)
+        public int AffectPriority(List<MyDefs.HealingTask> Array, MyDefs.HealingTask value, int priority, int maxIndex)
         {
             maxIndex = Math.Max(priority, maxIndex);
             Array[priority] = value;

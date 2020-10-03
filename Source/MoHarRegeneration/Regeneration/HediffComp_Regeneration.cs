@@ -7,31 +7,43 @@ namespace MoHarRegeneration
     public class HediffComp_Regeneration : HediffComp
     {
         public HediffCompProperties_Regeneration Props => (HediffCompProperties_Regeneration)this.props;
-        bool MyDebug => Props.debug;
+        public bool MyDebug => Props.debug;
 
-        public bool Effect_TendBleeding => Props.BleedingHediff != null;
-        public bool Effect_RegeneratePhysicalInjuries => Props.PhysicalHediff != null && Props.PhysicalHediff.HediffDefs.Count != 0;
-        public bool Effect_HealDiseases => Props.DiseaseHediff != null && Props.DiseaseHediff.HediffDefs.Count != 0;
-        public bool Effect_RemoveChemicals => Props.ChemicalHediff != null && Props.ChemicalHediff.HediffDefs.Count != 0;
+        public bool Effect_TendBleeding => Props.BloodLossTendingParams != null;
+        public bool Effect_TendRegularDisease=> Props.RegularDiseaseTendingParams != null;
+        public bool Effect_TendChronicDisease => Props.ChronicHediffTendingParams != null;
 
-        public bool Effect_TendChronicDisease => Props.ChronicHediff != null && Props.ChronicHediff.HediffDefs.Count != 0;
+        public bool Effect_RegeneratePhysicalInjuries => Props.PhysicalInjuryRegenParams != null && Props.PhysicalInjuryRegenParams.HediffDefs.Count != 0;
+        public bool Effect_HealDiseases => Props.DiseaseHediffRegenParams != null && Props.DiseaseHediffRegenParams.HediffDefs.Count != 0;
+        public bool Effect_RemoveChemicals => Props.ChemicalHediffRegenParams != null && Props.ChemicalHediffRegenParams.HediffDefs.Count != 0;
 
-        public bool Effect_RemoveScares => Props.PermanentInjury != null;
-        public bool Effect_RegenerateBodyParts => Props.BodyPartRegeneration != null;
+        public bool Effect_RemoveScares => Props.PermanentInjuryRegenParams != null;
+        public bool Effect_RegenerateBodyParts => Props.BodyPartRegenParams != null;
 
-        public bool HasPendingTreatment => currentHT != RegenParamsUtility.HealingTask.None;
+        public bool HasPendingTreatment => currentHT != MyDefs.HealingTask.None;
         public bool HasNoPendingTreatment => !HasPendingTreatment;
 
         int CheckingTickCounter = 0;
         int HealingTickCounter = 0;
 
         public Hediff currentHediff;
-        public RegenParamsUtility.HealingTask currentHT;
+        public MyDefs.HealingTask currentHT;
         public RegenerationPriority regenerationPriority;
 
         public override void CompPostMake()
         {
             InitCheckCounter();
+            regenerationPriority = new RegenerationPriority(this);
+            if (MyDebug)
+                Log.Warning(regenerationPriority.DumpDefaultPriority());
+        }
+
+        public string SecondsBeforeNextTreatment
+        {
+            get
+            {
+                return HealingTickCounter.TicksToSeconds().ToString("0.0");
+            }
         }
 
         public override void CompPostTick(ref float severityAdjustment)
@@ -51,33 +63,76 @@ namespace MoHarRegeneration
                 {
                     bool DidIt = false;
                     bool DoneWithIt = false;
+                    bool NextHediffIfDidIt = false;
+                    bool NextHediffIfDoneWithIt = false;
 
-                    if ( currentHT == RegenParamsUtility.HealingTask.BleedingTending) 
+                    // 00 Tending - Blood loss
+                    if ( currentHT.IsBloodLossTending() ) 
                     {
+                        NextHediffIfDidIt = true;
                         DidIt = this.TryTendBleeding();
                     }
-                    else if (currentHT == RegenParamsUtility.HealingTask.ChronicDisease)
+                    // 01 Tending - Chronic disease
+                    else if (currentHT.IsChronicDiseaseTending() )
                     {
+                        NextHediffIfDidIt = true;
                         DidIt = this.TryTendChronic();
                     }
-                    else if(currentHT == RegenParamsUtility.HealingTask.InjuryRegeneration)
+                    // 02 Tending - Regular disease
+                    else if (currentHT.IsRegularDiseaseTending())
                     {
-                        DidIt = this.TryRegenInjury(out DoneWithIt);
-                        if (DoneWithIt)
-                            currentHediff = null;
+                        NextHediffIfDidIt = true;
+                        DidIt = this.TryTendRegularDisease();
                     }
-                      
+                    // 03 Regeneration - Injury 
+                    else if (currentHT.IsDiseaseHealing())
+                    {
+                        NextHediffIfDoneWithIt = true;
+                        DidIt = this.TryCureDisease(out DoneWithIt);
+                    }
+                    // 04 Regeneration - Injury 
+                    else if (currentHT.IsInjuryRegeneration())
+                    {
+                        NextHediffIfDoneWithIt = true;
+                        DidIt = this.TryRegenInjury(out DoneWithIt);
+                    }
+                    // 05 Regeneration - Chemical 
+                    else if (currentHT.IsChemicalRemoval())
+                    {
+                        NextHediffIfDoneWithIt = true;
+                        DidIt = this.TryChemicalRemoval(out DoneWithIt);
+                    }
+                    // 06 Regeneration - Permanent injury
+                    else if (currentHT.IsPermanentInjuryRegeneration())
+                    {
+                        NextHediffIfDoneWithIt = true;
+                        DidIt = this.TryRemovePermanentInjury(out DoneWithIt);
+                    }
+                    // 07 Regeneration -Bodypart
+                    else if (currentHT.IsBodyPartRegeneration())
+                    {
+                        NextHediffIfDidIt = true;
+                        DidIt = this.TryBodyPartRegeneration();
+                    }
+                    
                     if(DidIt)
                         Tools.Warn(Pawn.LabelShort + " had " + currentHT.DescriptionAttr() + " performed", MyDebug);
                     if (DoneWithIt)
                         Tools.Warn(Pawn.LabelShort + " had " + currentHT.DescriptionAttr() + " fully cured/healed/regen", MyDebug);
+
+                    if (NextHediffIfDidIt && DidIt || NextHediffIfDoneWithIt && DoneWithIt)
+                    {
+                        NextHediff();
+                        Tools.Warn(Pawn.LabelShort + " new HT: " + currentHT.DescriptionAttr(), MyDebug);
+                    }
+                        
                 }
             }
             else
             {
                 if (CheckingTickCounter-- <= 0)
                 {
-                    currentHT = this.InitHealingTask(out currentHediff, out HealingTickCounter);
+                    NextHediff();
                     InitCheckCounter();
                 }
             }
@@ -88,9 +143,19 @@ namespace MoHarRegeneration
             CheckingTickCounter = Props.CheckingTicksPeriod;
         }
 
+        public void NextHediff()
+        {
+            currentHT = this.InitHealingTask(out currentHediff, out HealingTickCounter);
+        }
+
         public override void CompExposeData()
         {
             base.CompExposeData();
+
+            Scribe_Values.Look(ref CheckingTickCounter, "MoHarRegen.CheckingTickCounter");
+            Scribe_References.Look(ref currentHediff, "MoHarRegen.currentHediff");
+            Scribe_Values.Look(ref currentHT, "MoHarRegen.currentHT");
+
         }
 
         public override string CompTipStringExtra
@@ -99,6 +164,10 @@ namespace MoHarRegeneration
             {
                 string result = string.Empty;
                 //result += "Puff in " + this.sprayTicksLeft.ToStringTicksToPeriod();
+                if (MyDebug)
+                    if (HasPendingTreatment)
+                        result += SecondsBeforeNextTreatment + "s. before " + currentHT.DescriptionAttr() + " next progress";
+
                 return result;
             }
         }
