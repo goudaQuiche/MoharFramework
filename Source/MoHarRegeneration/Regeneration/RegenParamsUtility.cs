@@ -8,6 +8,57 @@ namespace MoHarRegeneration
 {
     public static class RegenParamsUtility
     {
+        public static int ResetHealingTicks(this HediffComp_Regeneration RegenHComp)
+        {
+            MyDefs.HealingTask curHT = RegenHComp.currentHT;
+
+            for (int i = 0; i < RegenHComp.regenerationPriority.DefaultPriority.Count; i++)
+            {
+                //00
+                if (RegenHComp.Effect_TendBleeding && curHT.IsBloodLossTending())
+                {
+                    return RegenHComp.Props.BloodLossTendingParams.PeriodBase.RandomInRange;
+                }
+                // 01 chronic disease tending
+                else if (RegenHComp.Effect_TendChronicDisease && curHT.IsChronicDiseaseTending())
+                {
+                    return RegenHComp.Props.ChronicHediffTendingParams.PeriodBase.RandomInRange;
+                }
+                // 02 regular disease tending
+                else if (RegenHComp.Effect_TendRegularDisease && curHT.IsRegularDiseaseTending())
+                {
+                    return RegenHComp.Props.RegularDiseaseTendingParams.PeriodBase.RandomInRange;
+                }
+                // 03 regular injury
+                else if (RegenHComp.Effect_RegeneratePhysicalInjuries && curHT.IsInjuryRegeneration())
+                {
+                    return RegenHComp.Props.RegularDiseaseTendingParams.PeriodBase.RandomInRange;
+                }
+                // 04 regular disease
+                else if (RegenHComp.Effect_HealDiseases && curHT.IsDiseaseHealing())
+                {
+                    return RegenHComp.Props.DiseaseHediffRegenParams.PeriodBase.RandomInRange;
+                }
+                // 05 chemicals
+                else if (RegenHComp.Effect_RemoveChemicals && curHT.IsChemicalRemoval())
+                {
+                    return RegenHComp.Props.ChemicalHediffRegenParams.PeriodBase.RandomInRange;
+                }
+                // 06 permanent
+                else if (RegenHComp.Effect_RemoveScares && curHT.IsPermanentInjuryRegeneration())
+                {
+                    return RegenHComp.Props.PermanentInjuryRegenParams.PeriodBase.RandomInRange;
+                }
+                // 07 Bodypart regen
+                else if (RegenHComp.Effect_RegenerateBodyParts && curHT.IsBodyPartRegeneration())
+                {
+                    return RegenHComp.Props.BodyPartRegenParams.PeriodBase.RandomInRange;
+                }
+            }
+
+            return 0;
+        }
+
         public static MyDefs.HealingTask InitHealingTask(this HediffComp_Regeneration RegenHComp, out Hediff hediffToTreat, out int InitTicks)
         {
             for (int i = 0; i < RegenHComp.regenerationPriority.DefaultPriority.Count; i++)

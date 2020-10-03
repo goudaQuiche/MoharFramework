@@ -58,6 +58,7 @@
     <Compile Include="Common\PawnTools.cs" />
     <Compile Include="Regeneration\RegenerationPriority.cs" />
     <Compile Include="Regeneration\MyDefs.cs" />
+    <Compile Include="Regeneration\WorkBill.cs" />
     <Compile Include="Regeneration\RegenWork.cs" />
     <Compile Include="Regeneration\Structure\TendingParams.cs" />
     <Compile Include="Regeneration\Structure\RegenParamsSpecial.cs" />

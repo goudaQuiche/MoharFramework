@@ -12,8 +12,10 @@ namespace MoHarRegeneration
         public FloatRange RegenerationBase = new FloatRange(.05f, .15f);
         public List<HediffDef> HediffDefs;
 
-        public float HungerCostPerRegen = 1;
-        public float RestCostPerRegen = 1;
+        public ThingDef MoteDef;
+
+        public float HungerCost = 0;
+        public float RestCost = 0;
 
         public byte Priority = 0;
     }

@@ -65,35 +65,41 @@ namespace MoHarRegeneration
                     bool DoneWithIt = false;
                     bool NextHediffIfDidIt = false;
                     bool NextHediffIfDoneWithIt = false;
+                    ThingDef MyMoteDef = null;
 
                     // 00 Tending - Blood loss
                     if ( currentHT.IsBloodLossTending() ) 
                     {
                         NextHediffIfDidIt = true;
+                        MyMoteDef = Props.BloodLossTendingParams.MoteDef;
                         DidIt = this.TryTendBleeding();
                     }
                     // 01 Tending - Chronic disease
                     else if (currentHT.IsChronicDiseaseTending() )
                     {
                         NextHediffIfDidIt = true;
+                        MyMoteDef = Props.ChronicHediffTendingParams.MoteDef;
                         DidIt = this.TryTendChronic();
                     }
                     // 02 Tending - Regular disease
                     else if (currentHT.IsRegularDiseaseTending())
                     {
                         NextHediffIfDidIt = true;
+                        MyMoteDef = Props.RegularDiseaseTendingParams.MoteDef;
                         DidIt = this.TryTendRegularDisease();
                     }
                     // 03 Regeneration - Injury 
                     else if (currentHT.IsDiseaseHealing())
                     {
                         NextHediffIfDoneWithIt = true;
+                        MyMoteDef = Props.DiseaseHediffRegenParams.MoteDef;
                         DidIt = this.TryCureDisease(out DoneWithIt);
                     }
                     // 04 Regeneration - Injury 
                     else if (currentHT.IsInjuryRegeneration())
                     {
                         NextHediffIfDoneWithIt = true;
+                        MyMoteDef = Props.PhysicalInjuryRegenParams.MoteDef;
                         DidIt = this.TryRegenInjury(out DoneWithIt);
                     }
                     // 05 Regeneration - Chemical 
@@ -106,12 +112,14 @@ namespace MoHarRegeneration
                     else if (currentHT.IsPermanentInjuryRegeneration())
                     {
                         NextHediffIfDoneWithIt = true;
+                        MyMoteDef = Props.PermanentInjuryRegenParams.MoteDef;
                         DidIt = this.TryRemovePermanentInjury(out DoneWithIt);
                     }
                     // 07 Regeneration -Bodypart
                     else if (currentHT.IsBodyPartRegeneration())
                     {
                         NextHediffIfDidIt = true;
+                        MyMoteDef = Props.BodyPartRegenParams.MoteDef;
                         DidIt = this.TryBodyPartRegeneration();
                     }
                     
@@ -120,8 +128,14 @@ namespace MoHarRegeneration
                     if (DoneWithIt)
                         Tools.Warn(Pawn.LabelShort + " had " + currentHT.DescriptionAttr() + " fully cured/healed/regen", MyDebug);
 
+                    if (!DidIt)
+                        HealingTickCounter = this.ResetHealingTicks();
+
                     if (NextHediffIfDidIt && DidIt || NextHediffIfDoneWithIt && DoneWithIt)
                     {
+                        if(MyMoteDef != null)
+                            MoteMaker.ThrowMetaIcon(Pawn.Position, Pawn.Map, MyMoteDef);
+
                         NextHediff();
                         Tools.Warn(Pawn.LabelShort + " new HT: " + currentHT.DescriptionAttr(), MyDebug);
                     }
