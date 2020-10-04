@@ -67,5 +67,31 @@ namespace MoHarRegeneration
         {
             return HT == HealingTask.BodyPartRegeneration;
         }
+
+        public static readonly List<HealingTask> DefaultPriority = new List<HealingTask>
+        {
+            HealingTask.BloodLossTending,
+            HealingTask.ChronicDiseaseTending,
+            HealingTask.RegularDiseaseTending,
+
+            HealingTask.DiseaseHealing,
+            HealingTask.InjuryRegeneration,
+            HealingTask.ChemicalRemoval,
+
+            HealingTask.PermanentInjuryRegeneration,
+            HealingTask.BodyPartRegeneration
+        };
+
+        public static string DumpDefaultPriority()
+        {
+            string answer = string.Empty;
+
+            for (int i = 0; i < DefaultPriority.Count(); i++)
+            {
+                answer += ' ' + i.ToString("00") + " - " + DefaultPriority[i].DescriptionAttr() + ";";
+            }
+
+            return answer;
+        }
     }
 }

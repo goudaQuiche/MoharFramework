@@ -9,6 +9,7 @@ namespace MoHarRegeneration
     public class HealingWithMaxParams : HealingParams
     {
         public float BPMaxHealth = .35f;
+        public bool FullyRegenBodyPart = false;
         public string techHediffTag = string.Empty;
     }
 }

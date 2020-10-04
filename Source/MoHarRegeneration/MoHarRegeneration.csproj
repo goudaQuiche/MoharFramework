@@ -56,7 +56,6 @@
   <ItemGroup>
     <Compile Include="Common\GfxEffects.cs" />
     <Compile Include="Common\PawnTools.cs" />
-    <Compile Include="Regeneration\RegenerationPriority.cs" />
     <Compile Include="Regeneration\MyDefs.cs" />
     <Compile Include="Regeneration\BodyPartTechHediff.cs" />
     <Compile Include="Regeneration\WorkBill.cs" />

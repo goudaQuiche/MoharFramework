@@ -7,7 +7,7 @@ using AlienRace;
 
 namespace MoHarRegeneration
 {
-    public class RegenerationPriority
+    public class RegenerationPriority : IExposable
     {
         HediffComp_Regeneration parent;
         bool MyDebug => parent.Props.debug;
@@ -20,6 +20,12 @@ namespace MoHarRegeneration
         }
 
         public List<MyDefs.HealingTask> CustomPriority = new List<MyDefs.HealingTask>();
+
+        public void ExposeData()
+        {
+            Scribe_Values.Look(ref parent, "RegenerationPriority_parent");
+
+        }
 
         public readonly List<MyDefs.HealingTask> DefaultPriority = new List<MyDefs.HealingTask>
         {
@@ -46,7 +52,7 @@ namespace MoHarRegeneration
 
             return answer;
         }
-
+        /*
         public void CreatePriorities()
         {
             int maxIndex = 0;
@@ -81,6 +87,7 @@ namespace MoHarRegeneration
             return maxIndex;
 
         }
+        */
 
     }
 }

@@ -20,23 +20,31 @@ namespace MoHarRegeneration
         public bool Effect_RemoveScares => Props.PermanentInjuryRegenParams != null;
         public bool Effect_RegenerateBodyParts => Props.BodyPartRegenParams != null;
 
+        public bool Effect_GrowProsthetic => !Props.BodyPartRegenParams.techHediffTag.NullOrEmpty();
+        public bool Effect_PartialHealthUponRegrow => Props.BodyPartRegenParams.BPMaxHealth < 1;
+
+
         public bool HasPendingTreatment => currentHT != MyDefs.HealingTask.None;
         public bool HasNoPendingTreatment => !HasPendingTreatment;
         public bool DoesNotKnowIfTreatment => CheckingTickCounter != 0;
 
         int CheckingTickCounter = 0;
         int HealingTickCounter = 0;
+        public float BodyPartsHealthSum = 0;
+
 
         public Hediff currentHediff;
         public MyDefs.HealingTask currentHT;
-        public RegenerationPriority regenerationPriority;
+        //public RegenerationPriority regenerationPriority;
 
         public override void CompPostMake()
         {
+            Tools.Warn("HediffComp_Regeneration - CompPostMake", MyDebug);
             InitCheckCounter();
-            regenerationPriority = new RegenerationPriority(this);
+            InitBodyPartsHP();
+            //regenerationPriority = new RegenerationPriority(this);
             if (MyDebug)
-                Log.Warning(regenerationPriority.DumpDefaultPriority());
+                Log.Warning(MyDefs.DumpDefaultPriority());
         }
 
         public string SecondsBeforeNextTreatment
@@ -129,8 +137,23 @@ namespace MoHarRegeneration
                     else if (currentHT.IsBodyPartRegeneration())
                     {
                         NextHediffIfDidIt = true;
-                        MyMoteDef = Props.BodyPartRegenParams.MoteDef;
-                        DidIt = this.TryBodyPartRegeneration(out Impossible);
+                        bool AppliedProsthetic = false;
+
+                        if (Effect_GrowProsthetic)
+                        {
+                            HediffDef ProstheticHediff = this.TryFindBodyPartProsthetic();
+                            if(ProstheticHediff!=null)
+                                DidIt = AppliedProsthetic = this.TryRegrowProsthetic(ProstheticHediff);
+                        }
+
+                        if (!AppliedProsthetic)
+                        {
+                            MyMoteDef = Props.BodyPartRegenParams.MoteDef;
+                            if (Props.BodyPartRegenParams.FullyRegenBodyPart)
+                                DidIt = this.TryBodyPartFullRegeneration(out Impossible);
+                            else
+                                DidIt = this.TryBodyPartRegeneration(out Impossible);
+                        }
                     }
                     
                     if(DidIt)
@@ -138,8 +161,8 @@ namespace MoHarRegeneration
                     if (DoneWithIt)
                         Tools.Warn(Pawn.LabelShort + " had " + currentHT.DescriptionAttr() + " fully cured/healed/regen", MyDebug);
 
-                    if (!DidIt)
-                        HealingTickCounter = this.ResetHealingTicks();
+                    //if (!DidIt)
+                    HealingTickCounter = this.ResetHealingTicks();
 
                     if (NextHediffIfDidIt && DidIt || NextHediffIfDoneWithIt && DoneWithIt)
                     {
@@ -167,6 +190,11 @@ namespace MoHarRegeneration
             }
         }
 
+        public void InitBodyPartsHP()
+        {
+            BodyPartsHealthSum = Pawn.GetAllBodyPartsHealthSum();
+        }
+
         public void InitCheckCounter()
         {
             CheckingTickCounter = Props.CheckingTicksPeriod;
@@ -182,8 +210,12 @@ namespace MoHarRegeneration
             base.CompExposeData();
 
             Scribe_Values.Look(ref CheckingTickCounter, "MoHarRegen.CheckingTickCounter");
+            Scribe_Values.Look(ref HealingTickCounter, "MoHarRegen.HealingTickCounter");
+
             Scribe_References.Look(ref currentHediff, "MoHarRegen.currentHediff");
             Scribe_Values.Look(ref currentHT, "MoHarRegen.currentHT");
+
+            Scribe_Values.Look(ref BodyPartsHealthSum, "MoHarRegen.BodyPartsHealthSum");
 
         }
 

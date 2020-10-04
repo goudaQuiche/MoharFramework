@@ -248,6 +248,7 @@ namespace MoHarRegeneration
                 Tools.Warn(
                 RegenHComp.Pawn.LabelShort + " - TryBodyPartRegeneration " +
                     "BPRMaxHealth: " + BPRMaxHealth + "; " +
+                    "Pawn maxHP: " + RegenHComp.Pawn.MaxHitPoints +"; "+
                     "RegenQuantity: " + RegenQuantity + "; " +
                     "PawnBodyPartRatio: " + PawnBodyPartRatio + "; "
                     , RegenHComp.MyDebug
@@ -274,6 +275,60 @@ namespace MoHarRegeneration
             return true;
         }
 
+        public static bool TryBodyPartFullRegeneration(this HediffComp_Regeneration comp, out bool Impossible)
+        {
+            Pawn p = comp.Pawn;
+            BodyPartRecord BPR = comp.currentHediff.Part;
+
+            if (
+                comp.currentHediff == null ||
+                comp.currentHediff.def != HediffDefOf.MissingBodyPart ||
+                comp.currentHediff.Part == null ||
+                comp.currentHT != MyDefs.HealingTask.BodyPartRegeneration ||
+                !comp.Pawn.health.hediffSet.HasHediff(comp.currentHediff.def, comp.currentHediff.Part)
+                )
+            {
+                Impossible = true;
+                return false;
+            }
+
+            Impossible = false;
+            float BPRMaxHealth = comp.Pawn.GetAllChildrenHealth(BPR);
+            float TheoricSeverity = BPRMaxHealth * (1 - comp.Props.BodyPartRegenParams.BPMaxHealth);
+            float PawnBodyPartRatio = BPRMaxHealth * comp.Props.BodyPartRegenParams.BPMaxHealth / comp.BodyPartsHealthSum;
+
+            Tools.Warn(
+                comp.Pawn.LabelShort + " - TryBodyPartFullRegeneration " +
+                "PawnBPHealthSum: " + comp.BodyPartsHealthSum + "; " +
+                "BPRMH: " + BPRMaxHealth + "; " +
+                "TheoricSeverity: " + TheoricSeverity + "; " +
+                "PawnBodyPartRatio: " + PawnBodyPartRatio + "+; "
+                , comp.MyDebug
+            );
+
+            if (!comp.Pawn.HungerAndRestTransaction(
+                comp.Props.BodyPartRegenParams.HungerCost,
+                comp.Props.BodyPartRegenParams.RestCost,
+                PawnBodyPartRatio,
+                comp.MyDebug)
+            )
+            {
+                return false;
+            }
+
+            MedicalRecipesUtility.RestorePartAndSpawnAllPreviousParts(p, BPR, p.Position, p.Map);
+
+            //p.RecursiveHediffRemoval(BPR, HediffDefOf.MissingBodyPart, comp.MyDebug);
+            p.health.hediffSet.DirtyCache();
+            /*
+            if (RegenHComp.Effect_PartialHealthUponRegrow)
+                p.RecursiveHediff(BPR, TheoricSeverity, HediffDefOf.SurgicalCut);
+            */
+
+
+            return true;
+        }
+
         public static bool TryBodyPartRegeneration(this HediffComp_Regeneration RegenHComp, out bool Impossible)
         {
             if (
@@ -294,7 +349,8 @@ namespace MoHarRegeneration
             BodyPartRecord BPR = RegenHComp.currentHediff.Part;
             float BPRMaxHealth = BPR.def.GetMaxHealth(RegenHComp.Pawn);
             float TheoricSeverity = BPRMaxHealth * (1 - RegenHComp.Props.BodyPartRegenParams.BPMaxHealth);
-            float PawnBodyPartRatio = BPRMaxHealth * RegenHComp.Props.BodyPartRegenParams.BPMaxHealth / (float)RegenHComp.Pawn.MaxHitPoints;
+
+            float PawnBodyPartRatio = BPRMaxHealth * RegenHComp.Props.BodyPartRegenParams.BPMaxHealth / RegenHComp.BodyPartsHealthSum;
 
             Tools.Warn(
                 RegenHComp.Pawn.LabelShort + " - TryBodyPartRegeneration " +
@@ -316,11 +372,15 @@ namespace MoHarRegeneration
 
             Tools.Warn("TryBodyPartRegeneration OK", RegenHComp.MyDebug);
             RegenHComp.Pawn.health.RemoveHediff(RegenHComp.currentHediff);
-            
-            Hediff BarelyAliveBP = HediffMaker.MakeHediff(HediffDefOf.SurgicalCut, RegenHComp.Pawn, BPR);
-            BarelyAliveBP.Severity = TheoricSeverity;
 
-            RegenHComp.Pawn.health.AddHediff(BarelyAliveBP, BPR);
+            if (RegenHComp.Effect_PartialHealthUponRegrow)
+            {
+                Hediff BarelyAliveBP = HediffMaker.MakeHediff(HediffDefOf.SurgicalCut, RegenHComp.Pawn, BPR);
+                BarelyAliveBP.Severity = TheoricSeverity;
+
+                RegenHComp.Pawn.health.AddHediff(BarelyAliveBP, BPR);
+            }
+
             //pawn.health.hediffSet.DirtyCache();
             return true;
         }

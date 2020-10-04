@@ -12,7 +12,8 @@ namespace MoHarRegeneration
         {
             MyDefs.HealingTask curHT = RegenHComp.currentHT;
 
-            for (int i = 0; i < RegenHComp.regenerationPriority.DefaultPriority.Count; i++)
+            //for (int i = 0; i < RegenHComp.regenerationPriority.DefaultPriority.Count; i++)
+            for (int i = 0; i < MyDefs.DefaultPriority.Count; i++)
             {
                 //00
                 if (RegenHComp.Effect_TendBleeding && curHT.IsBloodLossTending())
@@ -61,12 +62,14 @@ namespace MoHarRegeneration
 
         public static MyDefs.HealingTask InitHealingTask(this HediffComp_Regeneration RegenHComp, out Hediff hediffToTreat, out int InitTicks)
         {
-            for (int i = 0; i < RegenHComp.regenerationPriority.DefaultPriority.Count; i++)
+            //for (int i = 0; i < RegenHComp.regenerationPriority.DefaultPriority.Count; i++)
+            for (int i = 0; i < MyDefs.DefaultPriority.Count; i++)
             {
-                MyDefs.HealingTask curHealingTask = RegenHComp.regenerationPriority.DefaultPriority[i];
+                //MyDefs.HealingTask curHealingTask = RegenHComp.regenerationPriority.DefaultPriority[i];
+                MyDefs.HealingTask curHealingTask = MyDefs.DefaultPriority[i];
 
                 // 00 bloodloss tending
-                if(RegenHComp.Effect_TendBleeding && curHealingTask.IsBloodLossTending())
+                if (RegenHComp.Effect_TendBleeding && curHealingTask.IsBloodLossTending())
                 {
                     if (RegenHComp.GetBleedingHediff(out hediffToTreat))
                     {
@@ -154,7 +157,7 @@ namespace MoHarRegeneration
 
         public static bool GetBleedingHediff(this HediffComp_Regeneration RegenHComp, out Hediff hediff)
         {
-            Tools.Warn(RegenHComp.Pawn.LabelShort + " GetBleedingHediff", RegenHComp.MyDebug);
+            //Tools.Warn(RegenHComp.Pawn.LabelShort + " GetBleedingHediff", RegenHComp.MyDebug);
 
             /*
             if (!RegenHComp.Pawn.health.HasHediffsNeedingTend())
