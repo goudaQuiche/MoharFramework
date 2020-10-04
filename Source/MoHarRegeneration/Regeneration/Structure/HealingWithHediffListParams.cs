@@ -8,6 +8,6 @@ namespace MoHarRegeneration
 {
     public class HealingWithHediffListParams : HealingParams
     {
-        public List<HediffDef> HediffDefs;
+        public List<HediffDef> TargetedHediffDefs;
     }
 }

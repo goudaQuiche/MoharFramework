@@ -115,12 +115,21 @@ namespace MoHarRegeneration
                 Tools.Warn(RegenHComp.Pawn.LabelShort + " - TryRegenInjury calling HungerAndRestTransaction", RegenHComp.MyDebug);
 
                 float BPRMaxHealth = RegenHComp.currentHediff.Part.def.GetMaxHealth(RegenHComp.Pawn);
-
                 float RegenQuantity = RegenHComp.Props.PhysicalInjuryRegenParams.HealingQuality.RandomInRange * BPRMaxHealth;
+                float PawnBodyPartRatio = RegenQuantity / (float)RegenHComp.Pawn.MaxHitPoints;
+
+                Tools.Warn(
+                    RegenHComp.Pawn.LabelShort + " - TryBodyPartRegeneration " +
+                    "BPRMaxHealth: " + BPRMaxHealth + "; " +
+                    "RegenQuantity: " + RegenQuantity + "; " +
+                    "PawnBodyPartRatio: " + PawnBodyPartRatio + "; "
+                    , RegenHComp.MyDebug
+                );
+
                 if (!RegenHComp.Pawn.HungerAndRestTransaction(
                     RegenHComp.Props.PhysicalInjuryRegenParams.HungerCost,
                     RegenHComp.Props.PhysicalInjuryRegenParams.RestCost,
-                    RegenQuantity,
+                    PawnBodyPartRatio,
                     RegenHComp.MyDebug)
                 )
                 {
@@ -234,11 +243,20 @@ namespace MoHarRegeneration
 
                 float RegenQuantity = RegenHComp.Props.PermanentInjuryRegenParams.HealingQuality.RandomInRange * BPRMaxHealth;
                 RegenQuantity = Math.Min(RegenQuantity, RegenHComp.currentHediff.Severity);
+                float PawnBodyPartRatio = RegenQuantity / (float)RegenHComp.Pawn.MaxHitPoints;
+
+                Tools.Warn(
+                RegenHComp.Pawn.LabelShort + " - TryBodyPartRegeneration " +
+                    "BPRMaxHealth: " + BPRMaxHealth + "; " +
+                    "RegenQuantity: " + RegenQuantity + "; " +
+                    "PawnBodyPartRatio: " + PawnBodyPartRatio + "; "
+                    , RegenHComp.MyDebug
+                );
 
                 if (!RegenHComp.Pawn.HungerAndRestTransaction(
                     RegenHComp.Props.PermanentInjuryRegenParams.HungerCost,
                     RegenHComp.Props.PermanentInjuryRegenParams.RestCost,
-                    RegenQuantity,
+                    PawnBodyPartRatio,
                     RegenHComp.MyDebug)
                 )
                 {
@@ -277,6 +295,14 @@ namespace MoHarRegeneration
             float BPRMaxHealth = BPR.def.GetMaxHealth(RegenHComp.Pawn);
             float TheoricSeverity = BPRMaxHealth * (1 - RegenHComp.Props.BodyPartRegenParams.BPMaxHealth);
             float PawnBodyPartRatio = BPRMaxHealth * RegenHComp.Props.BodyPartRegenParams.BPMaxHealth / (float)RegenHComp.Pawn.MaxHitPoints;
+
+            Tools.Warn(
+                RegenHComp.Pawn.LabelShort + " - TryBodyPartRegeneration " +
+                "BPRMH: " + BPRMaxHealth + "+; " +
+                "TheoricSeverity: " + TheoricSeverity + "+; " +
+                "PawnBodyPartRatio: " + PawnBodyPartRatio + "+; "
+                , RegenHComp.MyDebug
+            );
 
             if (!RegenHComp.Pawn.HungerAndRestTransaction(
                 RegenHComp.Props.BodyPartRegenParams.HungerCost,

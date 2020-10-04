@@ -13,9 +13,9 @@ namespace MoHarRegeneration
         public bool Effect_TendRegularDisease=> Props.RegularDiseaseTendingParams != null;
         public bool Effect_TendChronicDisease => Props.ChronicHediffTendingParams != null;
 
-        public bool Effect_RegeneratePhysicalInjuries => Props.PhysicalInjuryRegenParams != null && Props.PhysicalInjuryRegenParams.HediffDefs.Count != 0;
-        public bool Effect_HealDiseases => Props.DiseaseHediffRegenParams != null && Props.DiseaseHediffRegenParams.HediffDefs.Count != 0;
-        public bool Effect_RemoveChemicals => Props.ChemicalHediffRegenParams != null && Props.ChemicalHediffRegenParams.HediffDefs.Count != 0;
+        public bool Effect_RegeneratePhysicalInjuries => Props.PhysicalInjuryRegenParams != null && Props.PhysicalInjuryRegenParams.TargetedHediffDefs.Count != 0;
+        public bool Effect_HealDiseases => Props.DiseaseHediffRegenParams != null && Props.DiseaseHediffRegenParams.TargetedHediffDefs.Count != 0;
+        public bool Effect_RemoveChemicals => Props.ChemicalHediffRegenParams != null && Props.ChemicalHediffRegenParams.TargetedHediffDefs.Count != 0;
 
         public bool Effect_RemoveScares => Props.PermanentInjuryRegenParams != null;
         public bool Effect_RegenerateBodyParts => Props.BodyPartRegenParams != null;

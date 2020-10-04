@@ -205,7 +205,7 @@ namespace MoHarRegeneration
             IEnumerable<Hediff> hediffs =
                 p.health.hediffSet.GetHediffs<Hediff>().Where(
                 h => 
-                HP.HediffDefs.Contains(h.def) &&
+                HP.TargetedHediffDefs.Contains(h.def) &&
                 !h.IsPermanent()
             );
 

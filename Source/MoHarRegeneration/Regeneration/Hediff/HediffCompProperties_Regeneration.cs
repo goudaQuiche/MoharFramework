@@ -17,7 +17,7 @@ namespace MoHarRegeneration
         public HealingWithHediffListParams DiseaseHediffRegenParams = null;
 
         // special case, hediffDefs are not needed
-        public HealingWithMaxParams PermanentInjuryRegenParams = null;
+        public HealingParams PermanentInjuryRegenParams = null;
         public HealingWithMaxParams BodyPartRegenParams = null;
 
         public bool debug = false;
