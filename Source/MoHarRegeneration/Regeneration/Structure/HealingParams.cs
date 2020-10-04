@@ -6,10 +6,10 @@ using AlienRace;
 
 namespace MoHarRegeneration
 {
-    public class TendingParams
+    public class HealingParams
     {
         public IntRange PeriodBase = new IntRange(300, 600);
-        public FloatRange TendingQuality = new FloatRange(.75f, 2f);
+        public FloatRange HealingQuality = new FloatRange(.75f, 2f);
 
         public ThingDef MoteDef;
 

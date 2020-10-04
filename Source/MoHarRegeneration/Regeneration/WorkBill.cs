@@ -69,12 +69,26 @@ namespace MoHarRegeneration
             float RestCost = WorkDone * RestCostRatio;
             float HungerCost = WorkDone * HungerCostRatio;
 
+            Tools.Warn(
+                p.LabelShort + " HungerAndRestTransaction " +
+                " Quality:" + WorkDone +
+                "; RestCost: " + RestCost +
+                "; p.rest: " + p.needs.rest.CurLevel +
+                "; HungerCost: " + HungerCost +
+                "; p.hunger: " + p.needs.food.CurLevel,
+                myDebug
+            );
+
             if (HungerCostRatio > 0 && RestCostRatio > 0)
             {
                 if (!p.CanPayRestBill(RestCost) || !p.CanPayHungerBill(HungerCost))
+                {
+                    Tools.Warn(p.LabelShort + " cant pay either RestCost or HungerCost ", myDebug );
                     return false;
+                }
                 else
                 {
+                    Tools.Warn(p.LabelShort + " will pay both RestCost/HungerCost ", myDebug);
                     p.PayRestBill(RestCost);
                     p.PayHungerBill(HungerCost);
                     return true;

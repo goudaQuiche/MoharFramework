@@ -8,19 +8,17 @@ namespace MoHarRegeneration
         public int CheckingTicksPeriod = 600;
 
         //Tending
-        public TendingParams BloodLossTendingParams = null;
-        public TendingParams ChronicHediffTendingParams = null;
-        public TendingParams RegularDiseaseTendingParams = null;
+        public HealingParams BloodLossTendingParams = null;
+        public HealingParams ChronicHediffTendingParams = null;
+        public HealingParams RegularDiseaseTendingParams = null;
 
-        public RegenParams PhysicalInjuryRegenParams = null;
-        public RegenParams ChemicalHediffRegenParams = null;
-        public RegenParams DiseaseHediffRegenParams = null;
+        public HealingWithHediffListParams PhysicalInjuryRegenParams = null;
+        public HealingWithHediffListParams ChemicalHediffRegenParams = null;
+        public HealingWithHediffListParams DiseaseHediffRegenParams = null;
 
         // special case, hediffDefs are not needed
-        public RegenParamsSpecial PermanentInjuryRegenParams = null;
-        public RegenParamsSpecial BodyPartRegenParams = null;
-        
-
+        public HealingWithMaxParams PermanentInjuryRegenParams = null;
+        public HealingWithMaxParams BodyPartRegenParams = null;
 
         public bool debug = false;
 

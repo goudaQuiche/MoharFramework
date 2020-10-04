@@ -22,6 +22,7 @@ namespace MoHarRegeneration
 
         public bool HasPendingTreatment => currentHT != MyDefs.HealingTask.None;
         public bool HasNoPendingTreatment => !HasPendingTreatment;
+        public bool DoesNotKnowIfTreatment => CheckingTickCounter != 0;
 
         int CheckingTickCounter = 0;
         int HealingTickCounter = 0;
@@ -46,6 +47,14 @@ namespace MoHarRegeneration
             }
         }
 
+        public string SecondsBeforePillTakesEffect
+        {
+            get
+            {
+                return CheckingTickCounter.TicksToSeconds().ToString("0.0");
+            }
+        }
+
         public override void CompPostTick(ref float severityAdjustment)
         {
             if (Pawn.NegligeablePawn())
@@ -63,6 +72,7 @@ namespace MoHarRegeneration
                 {
                     bool DidIt = false;
                     bool DoneWithIt = false;
+                    bool Impossible = false;
                     bool NextHediffIfDidIt = false;
                     bool NextHediffIfDoneWithIt = false;
                     ThingDef MyMoteDef = null;
@@ -72,55 +82,55 @@ namespace MoHarRegeneration
                     {
                         NextHediffIfDidIt = true;
                         MyMoteDef = Props.BloodLossTendingParams.MoteDef;
-                        DidIt = this.TryTendBleeding();
+                        DidIt = this.TryTendBleeding(out Impossible);
                     }
                     // 01 Tending - Chronic disease
                     else if (currentHT.IsChronicDiseaseTending() )
                     {
                         NextHediffIfDidIt = true;
                         MyMoteDef = Props.ChronicHediffTendingParams.MoteDef;
-                        DidIt = this.TryTendChronic();
+                        DidIt = this.TryTendChronic(out Impossible);
                     }
                     // 02 Tending - Regular disease
                     else if (currentHT.IsRegularDiseaseTending())
                     {
                         NextHediffIfDidIt = true;
                         MyMoteDef = Props.RegularDiseaseTendingParams.MoteDef;
-                        DidIt = this.TryTendRegularDisease();
+                        DidIt = this.TryTendRegularDisease(out Impossible);
                     }
                     // 03 Regeneration - Injury 
                     else if (currentHT.IsDiseaseHealing())
                     {
                         NextHediffIfDoneWithIt = true;
                         MyMoteDef = Props.DiseaseHediffRegenParams.MoteDef;
-                        DidIt = this.TryCureDisease(out DoneWithIt);
+                        DidIt = this.TryCureDisease(out DoneWithIt, out Impossible);
                     }
                     // 04 Regeneration - Injury 
                     else if (currentHT.IsInjuryRegeneration())
                     {
                         NextHediffIfDoneWithIt = true;
                         MyMoteDef = Props.PhysicalInjuryRegenParams.MoteDef;
-                        DidIt = this.TryRegenInjury(out DoneWithIt);
+                        DidIt = this.TryRegenInjury(out DoneWithIt, out Impossible);
                     }
                     // 05 Regeneration - Chemical 
                     else if (currentHT.IsChemicalRemoval())
                     {
                         NextHediffIfDoneWithIt = true;
-                        DidIt = this.TryChemicalRemoval(out DoneWithIt);
+                        DidIt = this.TryChemicalRemoval(out DoneWithIt, out Impossible);
                     }
                     // 06 Regeneration - Permanent injury
                     else if (currentHT.IsPermanentInjuryRegeneration())
                     {
                         NextHediffIfDoneWithIt = true;
                         MyMoteDef = Props.PermanentInjuryRegenParams.MoteDef;
-                        DidIt = this.TryRemovePermanentInjury(out DoneWithIt);
+                        DidIt = this.TryRemovePermanentInjury(out DoneWithIt, out Impossible);
                     }
                     // 07 Regeneration -Bodypart
                     else if (currentHT.IsBodyPartRegeneration())
                     {
                         NextHediffIfDidIt = true;
                         MyMoteDef = Props.BodyPartRegenParams.MoteDef;
-                        DidIt = this.TryBodyPartRegeneration();
+                        DidIt = this.TryBodyPartRegeneration(out Impossible);
                     }
                     
                     if(DidIt)
@@ -139,7 +149,12 @@ namespace MoHarRegeneration
                         NextHediff();
                         Tools.Warn(Pawn.LabelShort + " new HT: " + currentHT.DescriptionAttr(), MyDebug);
                     }
-                        
+                    else if (Impossible)
+                    {
+                        NextHediff();
+                        Tools.Warn(Pawn.LabelShort + " Impossible to heal hediff found - new HT: " + currentHT.DescriptionAttr(), MyDebug);
+                    }
+                    
                 }
             }
             else
@@ -181,6 +196,9 @@ namespace MoHarRegeneration
                 if (MyDebug)
                     if (HasPendingTreatment)
                         result += SecondsBeforeNextTreatment + "s. before " + currentHT.DescriptionAttr() + " next progress";
+                    /*else if(DoesNotKnowIfTreatment)
+                        result += SecondsBeforePillTakesEffect + "s. before medicament effect";
+                        */
 
                 return result;
             }

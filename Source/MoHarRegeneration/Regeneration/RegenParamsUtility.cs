@@ -174,7 +174,7 @@ namespace MoHarRegeneration
 
             if (hediffs.EnumerableNullOrEmpty())
             {
-                Tools.Warn(RegenHComp.Pawn.LabelShort + " GetBleedingHediff - Found no bloodloss", RegenHComp.MyDebug);
+                //Tools.Warn(RegenHComp.Pawn.LabelShort + " GetBleedingHediff - Found no bloodloss", RegenHComp.MyDebug);
                 hediff = null;
                 return false;
             }
@@ -200,12 +200,12 @@ namespace MoHarRegeneration
             return GetHediffFromRegenParamsHediffArray(RegenHComp.Pawn, RegenHComp.Props.DiseaseHediffRegenParams, out hediff);
         }
 
-        public static bool GetHediffFromRegenParamsHediffArray(this Pawn p, RegenParams RP, out Hediff hediff)
+        public static bool GetHediffFromRegenParamsHediffArray(this Pawn p, HealingWithHediffListParams HP, out Hediff hediff)
         {
             IEnumerable<Hediff> hediffs =
                 p.health.hediffSet.GetHediffs<Hediff>().Where(
                 h => 
-                RP.HediffDefs.Contains(h.def) &&
+                HP.HediffDefs.Contains(h.def) &&
                 !h.IsPermanent()
             );
 
@@ -242,7 +242,7 @@ namespace MoHarRegeneration
             return true;
         }
 
-        public static bool GetMissingBodyPart(this Pawn p, out Hediff hediff)
+        public static bool GetMissingBodyPart(this Pawn p, out Hediff hediff, bool myDebug=false)
         {
             List<Hediff_MissingPart> mpca = p.health.hediffSet.GetMissingPartsCommonAncestors();
             if (mpca.NullOrEmpty())
@@ -252,7 +252,8 @@ namespace MoHarRegeneration
             }
 
             float maxHP = mpca.Max(h => h.Part.def.GetMaxHealth(p));
-            hediff = mpca.First(h => h.Severity == maxHP);
+            hediff = mpca.First(h => h.Part.def.GetMaxHealth(p) == maxHP);
+
             return true;
         }
 
