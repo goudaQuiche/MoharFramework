@@ -373,7 +373,7 @@ namespace MoHarRegeneration
             Tools.Warn("TryBodyPartRegeneration OK", RegenHComp.MyDebug);
             RegenHComp.Pawn.health.RemoveHediff(RegenHComp.currentHediff);
 
-            if (RegenHComp.Effect_PartialHealthUponRegrow)
+            if (RegenHComp.Effect_PartialHealthUponRegrow && !RegenHComp.Effect_RegenBodyPartChildrenAtOnce)
             {
                 Hediff BarelyAliveBP = HediffMaker.MakeHediff(HediffDefOf.SurgicalCut, RegenHComp.Pawn, BPR);
                 BarelyAliveBP.Severity = TheoricSeverity;

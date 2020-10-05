@@ -13,6 +13,12 @@ namespace MoHarRegeneration
 
         public ThingDef MoteDef;
 
+        public string TreatmentLabel = string.Empty;
+
+        public HediffDef HediffToApplyDuringProgress;
+        public bool RemoveHediffWhenProgressOver = false;
+        public HediffDef HediffToApplyWhenComplete;
+
         public float HungerCost = 0;
         public float RestCost = 0;
 

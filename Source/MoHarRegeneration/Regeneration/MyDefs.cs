@@ -93,5 +93,51 @@ namespace MoHarRegeneration
 
             return answer;
         }
+
+        public static HealingParams GetParams(this HediffComp_Regeneration comp)
+        {
+            HealingTask curHT = comp.currentHT;
+            if (comp.Effect_TendBleeding && curHT.IsBloodLossTending())
+            {
+                return comp.Props.BloodLossTendingParams;
+            }
+            // 01 chronic disease tending
+            else if (comp.Effect_TendChronicDisease && curHT.IsChronicDiseaseTending())
+            {
+                return comp.Props.ChronicHediffTendingParams;
+            }
+            // 02 regular disease tending
+            else if (comp.Effect_TendRegularDisease && curHT.IsRegularDiseaseTending())
+            {
+                return comp.Props.RegularDiseaseTendingParams;
+            }
+            // 03 regular injury
+            else if (comp.Effect_RegeneratePhysicalInjuries && curHT.IsInjuryRegeneration())
+            {
+                return comp.Props.RegularDiseaseTendingParams;
+            }
+            // 04 regular disease
+            else if (comp.Effect_HealDiseases && curHT.IsDiseaseHealing())
+            {
+                return comp.Props.DiseaseHediffRegenParams;
+            }
+            // 05 chemicals
+            else if (comp.Effect_RemoveChemicals && curHT.IsChemicalRemoval())
+            {
+                return comp.Props.ChemicalHediffRegenParams;
+            }
+            // 06 permanent
+            else if (comp.Effect_RemoveScares && curHT.IsPermanentInjuryRegeneration())
+            {
+                return comp.Props.PermanentInjuryRegenParams;
+            }
+            // 07 Bodypart regen
+            else if (comp.Effect_RegenerateBodyParts && curHT.IsBodyPartRegeneration())
+            {
+                return comp.Props.BodyPartRegenParams;
+            }
+
+            return null;
+        }
     }
 }
