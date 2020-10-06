@@ -103,6 +103,9 @@ namespace MoHarRegeneration
                 if (MyMoteDef != null)
                     MoteMaker.ThrowMetaIcon(p.Position, p.Map, MyMoteDef);
 
+                comp.RemoveProgressHediff();
+                comp.ApplyCompleteHediff();
+
                 if (ResetHealingTick)
                     comp.NextHediff();
                 else

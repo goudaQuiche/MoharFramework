@@ -18,10 +18,14 @@ namespace MoHarRegeneration
 
             Tools.Warn(p.LabelShort + " TryRegrowProsthetic - hediffdef: " + ProstheticHediff?.defName + "; BP: " + BPR?.Label);
 
-            //Hediff newH = HediffMaker.MakeHediff(ProstheticHediff, p, BPR);
-            //p.health.AddHediff(newH, BPR);
+            float BPRMaxHealth = BPR.def.GetMaxHealth(RegenHComp.Pawn);
+            float PawnBodyPartRatio = BPRMaxHealth / RegenHComp.BodyPartsHealthSum;
+
             MedicalRecipesUtility.RestorePartAndSpawnAllPreviousParts(p, BPR, p.Position, p.Map);
             p.health.AddHediff(ProstheticHediff, BPR);
+
+            if(RegenHComp.HasLimits)
+                RegenHComp.TreatmentPerformedQuality += PawnBodyPartRatio * 10;
 
             return p.health.hediffSet.HasHediff(ProstheticHediff, BPR);
         }

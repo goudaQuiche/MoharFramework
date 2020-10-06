@@ -20,6 +20,8 @@ namespace MoHarRegeneration
         public HealingParams PermanentInjuryRegenParams = null;
         public HealingWithMaxParams BodyPartRegenParams = null;
 
+        public TreatmentLimit Limit = null;
+
         public bool debug = false;
 
         public HediffCompProperties_Regeneration()

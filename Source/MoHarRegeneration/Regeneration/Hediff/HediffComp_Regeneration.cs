@@ -28,14 +28,27 @@ namespace MoHarRegeneration
         public bool HasNoPendingTreatment => !HasPendingTreatment;
         public bool DoesNotKnowIfTreatment => CheckingTickCounter != 0;
 
+        public bool HasLimits => Props.Limit != null;
+        public bool ExceedsQuantity => Props.Limit.IsQuantityLimited ? TreatmentPerformedNum >= Props.Limit.LimitedTreatmentQuantity : false;
+        public bool ExceedsQuality => Props.Limit.IsQualityLimited ? TreatmentPerformedQuality >= Props.Limit.LimitedTreatmentQuality : false;
+
         public int CheckingTickCounter = 0;
         public int HealingTickCounter = 0;
         public float BodyPartsHealthSum = 0;
 
+        public int TreatmentPerformedNum = 0;
+        public float TreatmentPerformedQuality = 0;
 
         public Hediff currentHediff;
         public MyDefs.HealingTask currentHT;
         //public RegenerationPriority regenerationPriority;
+
+        public override bool CompShouldRemove {
+            get
+            {
+                return base.CompShouldRemove && (HasLimits ? (ExceedsQuantity || ExceedsQuality) : false);
+            }
+        }
 
         public override void CompPostMake()
         {
@@ -103,7 +116,11 @@ namespace MoHarRegeneration
 
         public void NextHediff()
         {
+            Hediff oldHediff = currentHediff;
+
             currentHT = this.InitHealingTask(out currentHediff, out HealingTickCounter);
+
+            this.ApplyProgressHediff(oldHediff);
         }
         public void NextHediffWithoutTickReset()
         {
@@ -124,6 +141,8 @@ namespace MoHarRegeneration
 
             Scribe_Values.Look(ref BodyPartsHealthSum, "MoHarRegen.BodyPartsHealthSum");
 
+            Scribe_Values.Look(ref TreatmentPerformedNum, "MoHarRegen.TreatmentPerformedNum");
+            Scribe_Values.Look(ref TreatmentPerformedQuality, "MoHarRegen.TreatmentPerformedQuality");
         }
 
         public override string CompTipStringExtra

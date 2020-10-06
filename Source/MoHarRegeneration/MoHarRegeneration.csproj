@@ -59,6 +59,8 @@
     <Compile Include="Regeneration\MyDefs.cs" />
     <Compile Include="Regeneration\BodyPartTechHediff.cs" />
     <Compile Include="Regeneration\HealingDispatcher.cs" />
+    <Compile Include="Regeneration\AdditionnalHediff.cs" />
+    <Compile Include="Regeneration\Structure\TreatmentLimit.cs" />
     <Compile Include="Regeneration\WorkBill.cs" />
     <Compile Include="Regeneration\RegenWork.cs" />
     <Compile Include="Regeneration\Structure\HealingParams.cs" />

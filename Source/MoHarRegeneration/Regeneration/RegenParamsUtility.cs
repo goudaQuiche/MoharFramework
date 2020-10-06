@@ -293,44 +293,5 @@ namespace MoHarRegeneration
 
             return HP.TreatmentLabel;
         }
-
-        public static bool RequiresProgressHediff(this HediffComp_Regeneration comp, HediffDef hediffToApply)
-        {
-            MyDefs.HealingTask curHT = comp.currentHT;
-            HealingParams HP = comp.GetParams();
-
-            hediffToApply = null;
-            if (HP == null || HP.HediffToApplyDuringProgress == null)
-                return false;
-
-            hediffToApply = HP.HediffToApplyDuringProgress;
-            return true;
-        }
-
-        public static bool RequiresProgressHediffRemoval(this HediffComp_Regeneration comp, HediffDef hediffToRemove)
-        {
-            MyDefs.HealingTask curHT = comp.currentHT;
-            HealingParams HP = comp.GetParams();
-
-            hediffToRemove = null;
-            if (HP == null || HP.HediffToApplyDuringProgress == null)
-                return false;
-
-            hediffToRemove = HP.HediffToApplyDuringProgress;
-            return HP.RemoveHediffWhenProgressOver;
-        }
-
-        public static bool RequiresCompleteHediff(this HediffComp_Regeneration comp, HediffDef hediffToApply)
-        {
-            MyDefs.HealingTask curHT = comp.currentHT;
-            HealingParams HP = comp.GetParams();
-
-            hediffToApply = null;
-            if (HP == null || HP.HediffToApplyWhenComplete == null)
-                return false;
-
-            hediffToApply = HP.HediffToApplyWhenComplete;
-            return true;
-        }
     }
 }
