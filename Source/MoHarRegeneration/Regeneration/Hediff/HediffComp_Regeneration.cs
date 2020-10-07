@@ -46,7 +46,7 @@ namespace MoHarRegeneration
         public override bool CompShouldRemove {
             get
             {
-                return base.CompShouldRemove && (HasLimits ? (ExceedsQuantity || ExceedsQuality) : false);
+                return base.CompShouldRemove || (HasLimits ? (ExceedsQuantity || ExceedsQuality) : false);
             }
         }
 
