@@ -20,13 +20,12 @@ namespace OHPLS
 
         bool shouldSkip = false;
 
-        public HediffCompProperties_LifeStageHediffAssociation Props
-        {
-            get
-            {
-                return (HediffCompProperties_LifeStageHediffAssociation)this.props;
-            }
-        }
+        public HediffCompProperties_LifeStageHediffAssociation Props => (HediffCompProperties_LifeStageHediffAssociation)this.props;
+        bool HasBPLabel => !Props.bodyPartLabel.NullOrEmpty();
+        bool HasBPDef => Props.bodyPartDef != null;
+        bool HasBPSpecification => HasBPDef || HasBPLabel;
+
+        bool myDebug => Props.debug;
 
         public override void CompPostMake()
         {
@@ -49,20 +48,31 @@ namespace OHPLS
                 if (!Pawn.HasHediff(association.hediff) && association.lifeStageDef == lifeStageDef)
                 {
                     Hediff lifeStageHediff = null;
-                    IEnumerable<BodyPartRecord> bodyPartRecords;
+                    BodyPartRecord myBPR;
 
-                    if (!Props.bodyPartLabel.NullOrEmpty())
-                        bodyPartRecords = myPawn.RaceProps.body.GetPartsWithDef(Props.bodyPartDef).Where(bp => bp.customLabel == Props.bodyPartLabel);
-                    else
-                        bodyPartRecords = myPawn.RaceProps.body.GetPartsWithDef(Props.bodyPartDef);
-
-                    if (bodyPartRecords.EnumerableNullOrEmpty())
+                    if (HasBPSpecification)
                     {
-                        Log.Error("Cant find BPR with def: " + Props.bodyPartDef.defName);
+                        IEnumerable<BodyPartRecord> bodyPartRecords;
+                        if (!Props.bodyPartLabel.NullOrEmpty())
+                            bodyPartRecords = myPawn.RaceProps.body.GetPartsWithDef(Props.bodyPartDef).Where(bp => bp.customLabel == Props.bodyPartLabel);
+                        else
+                            bodyPartRecords = myPawn.RaceProps.body.GetPartsWithDef(Props.bodyPartDef);
+
+                        if (bodyPartRecords.EnumerableNullOrEmpty())
+                        {
+                            Tools.Warn("Cant find BPR with def: " + Props.bodyPartDef.defName + ", skipping", myDebug);
+                            continue;
+                        }
+                        myBPR = bodyPartRecords.FirstOrFallback();
+                    }
+                    else
+                        myBPR = null;
+
+                    if(HasBPSpecification && myBPR == null)
+                    {
+                        Tools.Warn("Cant find BPR with def: " + Props.bodyPartDef.defName + ", skipping", myDebug);
                         continue;
                     }
-                    BodyPartRecord myBPR = bodyPartRecords.First();
-
 
                     lifeStageHediff = HediffMaker.MakeHediff(association.hediff, myPawn, myBPR);
                     if (lifeStageHediff == null)
@@ -130,13 +140,18 @@ namespace OHPLS
                 return;
             }
 
-            if(Props.bodyPartDef == null)
+            if(HasBPSpecification)
             {
-                Log.Error("no bodyPartDef set in the OHPLS  hediffCompProps, you need one, destroying hediff");
-                parent.Severity = 0;
-                shouldSkip = true;
-                return;
+                if (Pawn.def.race.body.GetPartsWithDef(Props.bodyPartDef).EnumerableNullOrEmpty())
+                {
+                    Log.Error("no bodyPartDef (" + Props.bodyPartDef + ") found in the race body definition, destroying hediff");
+                    parent.Severity = 0;
+                    shouldSkip = true;
+                    return;
+                }
+                
             }
+            
             UpdateHediffDependingOnLifeStage();
         }
 
@@ -146,16 +161,15 @@ namespace OHPLS
             get
             {
                 string result = string.Empty;
+
                 if (Props.debug)
                 {
-                    if (Props.debug)
-                    {
-                        result +=
-                            myPawn.PawnResumeString() + 
-                            "; hasAssociationHediffMaster: " + myPawn.Has_OHPLS()
-                           ;
-                    }
+                    result +=
+                        myPawn.PawnResumeString() 
+                        //+ "; hasAssociationHediffMaster: " + myPawn.Has_OHPLS()
+                       ;
                 }
+
                 return result;
             }
         }

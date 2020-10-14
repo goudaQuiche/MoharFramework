@@ -17,7 +17,7 @@ namespace OHPLS
                 return;
 
             string myPawnResume = pawn.LabelShort + "(" + pawn.def.defName + ")";
-            string myHediffDesc = "Apply hediff depending on lifestage Hediff";
+            string myHediffDesc = "hediff depending on lifestage Hediff";
 
             bool Is_Wanted_Hediff = Tools.Get_LifeStageHediffAssociation_HediffComp_debug_and_race(hediff, out bool debug, out string raceDefName);
 

@@ -22,6 +22,7 @@ namespace OHPLS
         {
             return pawn.health.hediffSet.HasHediff(hediffDef);
         }
+        /*
         public static bool Has_OHPLS(this Pawn pawn)
         {
             return pawn.health.hediffSet.HasHediff(MyDefs.OHPLS_HediffDef);
@@ -30,6 +31,7 @@ namespace OHPLS
         {
             return pawn.health.hediffSet.GetFirstHediffOfDef(MyDefs.OHPLS_HediffDef);
         }
+        */
 
         public static string PawnResumeString(this Pawn pawn)
         {
@@ -37,7 +39,7 @@ namespace OHPLS
                     ", " +
                     (int)pawn?.ageTracker?.AgeBiologicalYears + " y/o" +
                     " " + pawn?.gender.ToString() +
-                    ", " + pawn?.def?.label + "(" + pawn.kindDef + ")"
+                    ", " + "curLifeStage: " + pawn?.ageTracker.CurLifeStageRace.minAge + "=>"+ pawn?.ageTracker.CurLifeStageRace.def.ToString()
                     );
         }
     }

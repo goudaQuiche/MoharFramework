@@ -8,7 +8,7 @@ namespace OHPLS
 {
     public static class MyDefs
     {
-        public static HediffDef OHPLS_HediffDef = DefDatabase<HediffDef>.AllDefs.Where((HediffDef h) => h.defName == "OneHediffPerLifeStage").First();
+        //public static HediffDef OHPLS_HediffDef = DefDatabase<HediffDef>.AllDefs.Where((HediffDef h) => h.defName == "OneHediffPerLifeStage").First();
 
     }
 }
