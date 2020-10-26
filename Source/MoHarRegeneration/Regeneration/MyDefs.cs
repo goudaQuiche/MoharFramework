@@ -39,7 +39,7 @@ namespace MoHarRegeneration
         }
         public static bool IsRegularDiseaseTending(this HealingTask HT)
         {
-            return HT == HealingTask.ChronicDiseaseTending;
+            return HT == HealingTask.RegularDiseaseTending;
         }
         public static bool IsChronicDiseaseTending(this HealingTask HT)
         {

@@ -10,7 +10,10 @@ namespace MoHarRegeneration
         public bool MyDebug => Props.debug;
 
         public bool Effect_TendBleeding => Props.BloodLossTendingParams != null;
-        public bool Effect_TendRegularDisease=> Props.RegularDiseaseTendingParams != null;
+        public bool Effect_TendRegularDisease => Props.RegularDiseaseTendingParams != null;
+
+        public bool HasTendRegularDiseaseTargets => Effect_TendRegularDisease && !Props.RegularDiseaseTendingParams.TargetedHediffDefs.NullOrEmpty();
+
         public bool Effect_TendChronicDisease => Props.ChronicHediffTendingParams != null;
 
         public bool Effect_RegeneratePhysicalInjuries => Props.PhysicalInjuryRegenParams != null && Props.PhysicalInjuryRegenParams.TargetedHediffDefs.Count != 0;
@@ -127,7 +130,6 @@ namespace MoHarRegeneration
             currentHT = this.InitHealingTask(out currentHediff, out _);
             HealingTickCounter = 5;
         }
-
 
         public override void CompExposeData()
         {

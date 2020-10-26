@@ -10,7 +10,8 @@ namespace MoHarRegeneration
         //Tending
         public HealingParams BloodLossTendingParams = null;
         public HealingParams ChronicHediffTendingParams = null;
-        public HealingParams RegularDiseaseTendingParams = null;
+
+        public HealingWithHediffListParams RegularDiseaseTendingParams = null;
 
         public HealingWithHediffListParams PhysicalInjuryRegenParams = null;
         public HealingWithHediffListParams ChemicalHediffRegenParams = null;

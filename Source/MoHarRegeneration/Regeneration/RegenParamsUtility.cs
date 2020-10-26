@@ -25,16 +25,20 @@ namespace MoHarRegeneration
 
         public static MyDefs.HealingTask InitHealingTask(this HediffComp_Regeneration comp, out Hediff hediffToTreat, out int InitTicks)
         {
-            Tools.Warn(comp.Pawn.LabelShort + " - Entering InitHealingTask", comp.MyDebug);
+            //Tools.Warn(comp.Pawn.LabelShort + " - Entering InitHealingTask", comp.MyDebug);
             //for (int i = 0; i < comp.regenerationPriority.DefaultPriority.Count; i++)
             for (int i = 0; i < MyDefs.DefaultPriority.Count; i++)
             {
                 //MyDefs.HealingTask curHealingTask = comp.regenerationPriority.DefaultPriority[i];
+                
                 MyDefs.HealingTask curHealingTask = MyDefs.DefaultPriority[i];
+
+                //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask task[" + i + "]: " + curHealingTask.DescriptionAttr(), comp.MyDebug);
 
                 // 00 bloodloss tending
                 if (comp.Effect_TendBleeding && curHealingTask.IsBloodLossTending())
                 {
+                    //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_TendBleeding", comp.MyDebug);
                     if (comp.GetBleedingHediff(out hediffToTreat))
                     {
                         InitTicks = comp.Props.BloodLossTendingParams.PeriodBase.RandomInRange;
@@ -45,6 +49,8 @@ namespace MoHarRegeneration
                 // 01 chronic disease tending
                 else if (comp.Effect_TendChronicDisease && curHealingTask.IsChronicDiseaseTending())
                 {
+                    //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_TendChronicDisease", comp.MyDebug);
+
                     if (comp.Pawn.GetTendableChronicDisease(out hediffToTreat))
                     {
                         InitTicks = comp.Props.ChronicHediffTendingParams.PeriodBase.RandomInRange;
@@ -54,7 +60,17 @@ namespace MoHarRegeneration
                 // 02 regular disease tending
                 else if (comp.Effect_TendRegularDisease && curHealingTask.IsRegularDiseaseTending())
                 {
-                    if (comp.Pawn.GetTendableRegularDisease(out hediffToTreat))
+                    //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_TendRegularDisease", comp.MyDebug);
+
+                    if (comp.HasTendRegularDiseaseTargets)
+                    {
+                        if (comp.Pawn.GetTendableRegularDisease(out hediffToTreat, comp.Props.RegularDiseaseTendingParams.TargetedHediffDefs, comp.MyDebug))
+                        {
+                            InitTicks = comp.Props.RegularDiseaseTendingParams.PeriodBase.RandomInRange;
+                            return curHealingTask;
+                        }
+                    }
+                    else if (comp.Pawn.GetTendableRegularDisease(out hediffToTreat, null, comp.MyDebug))
                     {
                         InitTicks = comp.Props.RegularDiseaseTendingParams.PeriodBase.RandomInRange;
                         return curHealingTask;
@@ -64,6 +80,8 @@ namespace MoHarRegeneration
                 // 03 regular injury
                 else if (comp.Effect_RegeneratePhysicalInjuries && curHealingTask.IsInjuryRegeneration())
                 {
+                    //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_RegeneratePhysicalInjuries", comp.MyDebug);
+
                     if (comp.GetPhysicalHediff(out hediffToTreat))
                     {
                         InitTicks = comp.Props.RegularDiseaseTendingParams.PeriodBase.RandomInRange;
@@ -74,6 +92,8 @@ namespace MoHarRegeneration
                 // 04 regular disease
                 else if(comp.Effect_HealDiseases && curHealingTask.IsDiseaseHealing())
                 {
+                    //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_HealDiseases", comp.MyDebug);
+
                     if (comp.GetDiseaseHediff(out hediffToTreat))
                     {
                         InitTicks = comp.Props.DiseaseHediffRegenParams.PeriodBase.RandomInRange;
@@ -83,6 +103,8 @@ namespace MoHarRegeneration
                 // 05 chemicals
                 else if(comp.Effect_RemoveChemicals && curHealingTask.IsChemicalRemoval())
                 {
+                    //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_RemoveChemicals", comp.MyDebug);
+
                     if (comp.GetChemicalHediff(out hediffToTreat))
                     {
                         InitTicks = comp.Props.ChemicalHediffRegenParams.PeriodBase.RandomInRange;
@@ -93,6 +115,7 @@ namespace MoHarRegeneration
                 // 06 permanent
                 else if(comp.Effect_RemoveScares && curHealingTask.IsPermanentInjuryRegeneration())
                 {
+                    //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_RemoveScares", comp.MyDebug);
                     if (comp.Pawn.GetPermanentHediff(out hediffToTreat))
                     {
                         InitTicks = comp.Props.PermanentInjuryRegenParams.PeriodBase.RandomInRange;
@@ -104,6 +127,7 @@ namespace MoHarRegeneration
                 // 07 Bodypart regen
                 else if(comp.Effect_RegenerateBodyParts && curHealingTask.IsBodyPartRegeneration())
                 {
+                    //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_RegenerateBodyParts", comp.MyDebug);
                     if (comp.Pawn.GetMissingBodyPart(out hediffToTreat))
                     {
                         InitTicks = comp.Props.BodyPartRegenParams.PeriodBase.RandomInRange;
@@ -111,10 +135,9 @@ namespace MoHarRegeneration
                     }
                         
                 }
-
             }
 
-            Tools.Warn(comp.Pawn.LabelShort + " - Exiting InitHealingTask: found nothing to do", comp.MyDebug);
+            //Tools.Warn(comp.Pawn.LabelShort + " - Exiting InitHealingTask: found nothing to do", comp.MyDebug);
 
             InitTicks = 0;
             hediffToTreat = null;
@@ -148,8 +171,7 @@ namespace MoHarRegeneration
                 return false;
             }
 
-            float maxSeverity = hediffs.Max(h => h.Severity);
-            hediff = hediffs.First(h => h.Severity == maxSeverity);
+            hediff = hediffs.MostSeverityHediff();
 
             return true;
         }
@@ -169,6 +191,12 @@ namespace MoHarRegeneration
             return GetHediffFromRegenParamsHediffArray(comp.Pawn, comp.Props.DiseaseHediffRegenParams, out hediff);
         }
 
+        public static Hediff MostSeverityHediff(this IEnumerable<Hediff> IEH)
+        {
+            float maxSeverity = IEH.Max(h => h.Severity);
+            return IEH.First(h => h.Severity == maxSeverity);
+        }
+
         public static bool GetHediffFromRegenParamsHediffArray(this Pawn p, HealingWithHediffListParams HP, out Hediff hediff)
         {
             IEnumerable<Hediff> hediffs =
@@ -184,8 +212,7 @@ namespace MoHarRegeneration
                 return false;
             }
 
-            float maxSeverity = hediffs.Max(h => h.Severity);
-            hediff = hediffs.First(h => h.Severity == maxSeverity);
+            hediff = hediffs.MostSeverityHediff();
 
             return true;
         }
@@ -205,8 +232,7 @@ namespace MoHarRegeneration
                 return false;
             }
 
-            float maxSeverity = hediffs.Max(h => h.Severity);
-            hediff = hediffs.First(h => h.Severity == maxSeverity);
+            hediff = hediffs.MostSeverityHediff();
 
             return true;
         }
@@ -248,14 +274,15 @@ namespace MoHarRegeneration
                 return false;
             }
 
-            float maxSeverity = hediffs.Max(h => h.Severity);
-            hediff = hediffs.First(h => h.Severity == maxSeverity);
+            hediff = hediffs.MostSeverityHediff();
 
             return true;
         }
 
-        public static bool GetTendableRegularDisease(this Pawn p, out Hediff hediff)
+        public static bool GetTendableRegularDisease(this Pawn p, out Hediff hediff, List<HediffDef> TargetedHediffs = null, bool MyDebug = false)
         {
+            //Tools.Warn(p.LabelShort + " Entering GetTendableRegularDisease", MyDebug);
+
             if (!p.health.HasHediffsNeedingTend())
             {
                 hediff = null;
@@ -269,6 +296,17 @@ namespace MoHarRegeneration
                 h.TendableNow() &&
                 !h.IsTended()
             );
+            /*
+            if (MyDebug)
+            {
+                int i = 0;
+                foreach(Hediff h in hediffs)
+                {
+                    Tools.Warn(p.LabelShort + " GetTendableRegularDisease hediff[" + i + "]:" + h.def.defName, MyDebug);
+                    i++;
+                }
+            }
+            */
 
             if (hediffs.EnumerableNullOrEmpty())
             {
@@ -276,8 +314,32 @@ namespace MoHarRegeneration
                 return false;
             }
 
-            float maxSeverity = hediffs.Max(h => h.Severity);
-            hediff = hediffs.First(h => h.Severity == maxSeverity);
+            if (!TargetedHediffs.NullOrEmpty())
+            {
+                hediffs = hediffs.Where(
+                    h =>
+                    TargetedHediffs.Contains(h.def)
+                );
+                /*
+                if (MyDebug)
+                {
+                    int i = 0;
+                    foreach (Hediff h in hediffs)
+                    {
+                        Tools.Warn(p.LabelShort + " GetTendableRegularDisease hediff[" + i + "]:" + h.def.defName, MyDebug);
+                        i++;
+                    }
+                }
+                */
+            }
+
+            if (hediffs.EnumerableNullOrEmpty())
+            {
+                hediff = null;
+                return false;
+            }
+
+            hediff = hediffs.MostSeverityHediff();
 
             return true;
         }
