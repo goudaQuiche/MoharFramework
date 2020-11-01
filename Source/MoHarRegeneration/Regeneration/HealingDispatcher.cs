@@ -23,7 +23,7 @@ namespace MoHarRegeneration
             bool NextHediffIfDidIt = false;
             bool NextHediffIfDoneWithIt = false;
             bool ResetHealingTick = true;
-            ThingDef MyMoteDef = HP.MoteDef;
+            ThingDef MyMoteDef = HP.MoteDef ?? null;
 
             // 00 Tending - Blood loss
             if (curHT.IsBloodLossTending())
