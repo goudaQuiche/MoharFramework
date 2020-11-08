@@ -55,8 +55,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="GfxEffects.cs" />
+    <Compile Include="randySpawner\HediffCompProperties_RandySpawner.cs" />
+    <Compile Include="randySpawner\HediffComp_RandySpawner.cs" />
     <Compile Include="random\HediffCompProperties_HediffRandom.cs" />
     <Compile Include="postremove_hediffadd\HediffCompProperties_PostRemoveTrigger_HediffAdd.cs" />
+    <Compile Include="randySpawner\RandySpawnerUtils.cs" />
+    <Compile Include="randySpawner\RandySpawnerStruct.cs" />
     <Compile Include="trail\HediffCompProperties_RainbowTrail.cs" />
     <Compile Include="trail\HediffCompProperties_TrailLeaver.cs" />
     <Compile Include="footprinter\HediffCompProperties_FootPrinter.cs" />

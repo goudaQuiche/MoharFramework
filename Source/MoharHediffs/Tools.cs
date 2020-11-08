@@ -51,7 +51,7 @@ namespace MoharHediffs
 
             return ratio;
         }
-        public static bool IsInjured(Pawn pawn, bool debug = false)
+        public static bool IsInjured(this Pawn pawn, bool debug = false)
         {
             if (pawn == null)
             {
@@ -72,7 +72,7 @@ namespace MoharHediffs
             Warn(pawn.Label + " is wounded ", debug && (num>0));
             return (num > 0);
         }
-        public static bool IsHungry(Pawn pawn, bool debug = false)
+        public static bool IsHungry(this Pawn pawn, bool debug = false)
         {
             if (pawn == null)
             {
@@ -147,6 +147,11 @@ namespace MoharHediffs
                 Warn(pawn.Label + "GetBPRecord - did find " + bodyPartDef.defName, myDebug);
 
             return bodyPart;
+        }
+
+        public static bool Negligeable(this Pawn p)
+        {
+            return (p == null || !p.Spawned || p.Map == null || p.Position == null);
         }
 
         public static bool OkPawn(Pawn pawn)
