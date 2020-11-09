@@ -1,5 +1,6 @@
 using Verse;
 using RimWorld;
+using System.Collections.Generic;
 
 namespace MoharHediffs
 {
@@ -8,12 +9,14 @@ namespace MoharHediffs
         //Item - thing/pawnKind
         public ThingDef thingToSpawn = null; 
         public PawnKindDef pawnKindToSpawn = null;
+        public bool NewBorn = false;
 
         public IntRange spawnCount = new IntRange(1, 1);
 
+        public ThingDef filthDef = null;
+
         // Item faction
-        public bool inheritedFaction = false;
-        public FactionDef forcedFaction = null;
+        public List<RandomFactionParameter> randomFactionParameters;
 
         //when
         public FloatRange daysB4Next = new FloatRange(1f, 2f);
@@ -29,16 +32,17 @@ namespace MoharHediffs
 
         public bool ThingSpawner => thingToSpawn != null && pawnKindToSpawn == null;
         public bool PawnSpawner => thingToSpawn == null && pawnKindToSpawn != null;
-        public bool IsFactionForced => forcedFaction != null;
+        public bool HasFactionParams => !randomFactionParameters.NullOrEmpty();
+        public bool HasGraceChance => graceChance != 0;
+        public bool HasFilth => filthDef != null;
 
-        public void LogParams(bool myDebug=false)
+        public void LogParams(bool myDebug = false)
         {
             Tools.Warn(
                 "ThingSpawner:" + ThingSpawner + "; " + (ThingSpawner ? thingToSpawn.defName : "") +
                 "PawnSpawner:" + PawnSpawner + "; " + (PawnSpawner ? pawnKindToSpawn.defName : "") +
 
                 "spawnCount:" + spawnCount + "; " +
-                "inheritedFaction:" + inheritedFaction + "; " + (IsFactionForced ? pawnKindToSpawn.defName : "") +
 
                 "weight:" + weight + "; "
                 , myDebug
@@ -52,8 +56,10 @@ namespace MoharHediffs
             calculatedSpawnCount = spawnCount.RandomInRange;
 
             calculatedGraceTicks = 0;
-            if (Rand.Chance(graceChance))
-                calculatedGraceTicks = (int)(daysB4Next.RandomInRange * 60000);
+            if (HasGraceChance && Rand.Chance(graceChance))
+                calculatedGraceTicks = (int)(graceDays.RandomInRange * 60000);
         }
+
+        
     }
 }

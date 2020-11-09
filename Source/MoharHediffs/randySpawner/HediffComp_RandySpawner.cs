@@ -12,8 +12,7 @@ namespace MoharHediffs
         private int initialTicksUntilSpawn = 0;
         public int graceTicks = 0;
 
-        private int calculatedQuantity;
-        private float calculatedDaysB4Next => (float)ticksUntilSpawn / 60000;
+        public int calculatedQuantity;
 
         public int hungerReset = 0;
 		public int healthReset = 0;
@@ -21,14 +20,18 @@ namespace MoharHediffs
         private bool blockSpawn = false;
 
         private int pickedItem = -1;
+        public Faction Itemfaction = null;
 
-        readonly float minDaysB4NextErrorLimit = .001f;
-        readonly int spawnCountErrorLimit = 750;
+        public readonly float minDaysB4NextErrorLimit = .001f;
+        public readonly int spawnCountErrorLimit = 750;
 
         public HediffCompProperties_RandySpawner Props => (HediffCompProperties_RandySpawner)this.props;
 
         public bool MyDebug => Props.debug;
+
         public bool HasGraceDelay => graceTicks > 0;
+        private float CalculatedDaysB4Next => (float)ticksUntilSpawn / 60000;
+
         public ItemParameter CurIP => (pickedItem != -1 && !Props.itemParameters.NullOrEmpty() && pickedItem < Props.itemParameters.Count) ? Props.itemParameters[pickedItem] : null;
         public bool HasValidIP => CurIP != null;
 
@@ -54,18 +57,12 @@ namespace MoharHediffs
         {
             Tools.Warn(">>> " + Pawn?.Label + " - " + parent.def.defName + " - CompPostMake start", MyDebug);
 
-            DumpProps();
-            CheckProps();
+            this.DumpProps();
+            this.CheckProps();
+
             CalculateValues();
             CheckCalculatedValues();
             DumpCalculatedValues();
-
-            // Only on first spawn ?
-            if (initialTicksUntilSpawn == 0)
-            {
-                Tools.Warn("Reseting countdown bc initialTicksUntilSpawn == 0 (comppostmake)", MyDebug);
-                ResetCountdown();
-            }
         }
 
         public override void CompPostTick(ref float severityAdjustment)
@@ -91,28 +88,26 @@ namespace MoharHediffs
 
                 CalculateValues();
                 CheckCalculatedValues();
-                ResetCountdown();
             }
         }
 
-        private void DumpProps()
-        {
-            Tools.Warn(
-            "hungerRelative: " + Props.hungerRelative + "; " +
-            "healthRelative: " + Props.healthRelative + "; "
-            , MyDebug);
 
-            for (int i = 0; i < Props.itemParameters.Count; i++)
-            {
-                ItemParameter IP = Props.itemParameters[i];
-                IP.LogParams(MyDebug);
-            }
-        }
 
         private void CalculateValues()
         {
             pickedItem = this.GetWeightedRandomIndex();
-            Props.itemParameters[pickedItem].ComputeRandomParameters(out ticksUntilSpawn, out graceTicks, out calculatedQuantity);
+            if (HasValidIP)
+            {
+                CurIP.ComputeRandomParameters(out ticksUntilSpawn, out graceTicks, out calculatedQuantity);
+                if (CurIP.HasFactionParams)
+                    this.ComputeRandomFaction();
+            }
+            else
+            {
+                BlockAndDestroy(">ERROR< failed to find an index for IP, check and adjust your hediff props", MyDebug);
+                return;
+            }
+
         }
 
         private void CheckCalculatedValues()
@@ -123,9 +118,9 @@ namespace MoharHediffs
                 return;
             }
 
-            if (calculatedDaysB4Next < minDaysB4NextErrorLimit)
+            if (CalculatedDaysB4Next < minDaysB4NextErrorLimit)
             {
-                BlockAndDestroy(">ERROR< calculatedMinDaysB4Next is too low: " + calculatedDaysB4Next + "(<" + minDaysB4NextErrorLimit + "), check and adjust your hediff props", MyDebug);
+                BlockAndDestroy(">ERROR< calculatedMinDaysB4Next is too low: " + CalculatedDaysB4Next + "(<" + minDaysB4NextErrorLimit + "), check and adjust your hediff props", MyDebug);
                 return;
             }
         }
@@ -134,46 +129,17 @@ namespace MoharHediffs
         {
             Tools.Warn(
                 "<<< " +
-                " calculatedDaysB4Next: " + calculatedDaysB4Next +
+                " calculatedDaysB4Next: " + CalculatedDaysB4Next +
                 "; CalculatedQuantity: " + calculatedQuantity + "; "
                 , MyDebug
             );
         }
 
-        private void BlockAndDestroy(string ErrorLog = "", bool myDebug = false)
+        public void BlockAndDestroy(string ErrorLog = "", bool myDebug = false)
         {
             Tools.Warn(ErrorLog, myDebug);
             blockSpawn = true;
             Tools.DestroyParentHediff(parent, myDebug);
-        }
-
-        private void CheckProps()
-        {
-            if (Props.itemParameters.NullOrEmpty())
-                BlockAndDestroy(Pawn.Label + " props: no itemParameters - giving up", MyDebug);
-
-            // Logical checks
-            for (int i = 0; i < Props.itemParameters.Count; i++)
-            {
-                ItemParameter IP = Props.itemParameters[i];
-                if(IP.spawnCount.min > spawnCountErrorLimit || IP.spawnCount.max > spawnCountErrorLimit)
-                {
-                    BlockAndDestroy(Pawn.Label + " props: SpawnCount is too high: >" + spawnCountErrorLimit, MyDebug);
-                    return;
-                }
-                    
-                if(IP.daysB4Next.min < minDaysB4NextErrorLimit)
-                {
-                    BlockAndDestroy(Pawn.Label + " props: minDaysB4Next is too low: " + IP.daysB4Next.min + "<" + minDaysB4NextErrorLimit, MyDebug);
-                    return;
-                }
-
-                if(!IP.ThingSpawner && !IP.PawnSpawner)
-                {
-                    BlockAndDestroy(Pawn.Label + " props: not a thing nor pawn spawner bc no def for either", MyDebug);
-                    return;
-                }
-            }
         }
 
         private bool CheckShouldSpawn()
@@ -206,7 +172,33 @@ namespace MoharHediffs
         }
         */
 
-            public bool TrySpawnPawn
+        public bool TrySpawnPawn()
+        {
+            /*
+             * public PawnGenerationRequest(
+             1   PawnKindDef kind, Faction faction = null, PawnGenerationContext context = PawnGenerationContext.NonPlayer, int tile = -1, bool forceGenerateNewPawn = false, 
+             2   bool newborn = false, bool allowDead = false, bool allowDowned = false, bool canGeneratePawnRelations = true, bool mustBeCapableOfViolence = false, 
+             3   float colonistRelationChanceFactor = 1, bool forceAddFreeWarmLayerIfNeeded = false, bool allowGay = true, bool allowFood = true, bool allowAddictions = true,
+             4   bool inhabitant = false, bool certainlyBeenInCryptosleep = false, bool forceRedressWorldPawnIfFormerColonist = false, bool worldPawnFactionDoesntMatter = false, float biocodeWeaponChance = 0,
+             5   Pawn extraPawnForExtraRelationChance = null, float relationWithExtraPawnChanceFactor = 1, Predicate<Pawn> validatorPreGear = null, Predicate<Pawn> validatorPostGear = null, IEnumerable<TraitDef> forcedTraits = null,
+             6   IEnumerable<TraitDef> prohibitedTraits = null, float? minChanceToRedressWorldPawn = null, float? fixedBiologicalAge = null, float? fixedChronologicalAge = null, Gender? fixedGender = null,
+             7   float? fixedMelanin = null, string fixedLastName = null, string fixedBirthName = null, RoyalTitleDef fixedTitle = null);
+                */
+            
+            PawnGenerationRequest request = new PawnGenerationRequest(
+                CurIP.pawnKindToSpawn, Itemfaction, PawnGenerationContext.NonPlayer, -1, false, CurIP.NewBorn);
+
+            for (int i = 0; i < calculatedQuantity; i++)
+            {
+                Pawn NewBorn = PawnGenerator.GeneratePawn(request);
+                GenSpawn.Spawn(NewBorn, Pawn.Position, Pawn.Map, WipeMode.Vanish);
+
+                if(CurIP.HasFilth)
+                    FilthMaker.TryMakeFilth(parent.pawn.Position, parent.pawn.Map, CurIP.filthDef, 1);
+            }
+
+            return true;
+        }
 
         public bool TryDoSpawn()
         {
@@ -216,33 +208,11 @@ namespace MoharHediffs
                 return false;
             }
 
-            if (this.Props.animalThing) {
-                Faction animalFaction = (Props.factionOfPlayerAnimal) ? Faction.OfPlayer : null;
-
-                /*
-                 * public PawnGenerationRequest(
-                 1   PawnKindDef kind, Faction faction = null, PawnGenerationContext context = PawnGenerationContext.NonPlayer, int tile = -1, bool forceGenerateNewPawn = false, 
-                 2   bool newborn = false, bool allowDead = false, bool allowDowned = false, bool canGeneratePawnRelations = true, bool mustBeCapableOfViolence = false, 
-                 3   float colonistRelationChanceFactor = 1, bool forceAddFreeWarmLayerIfNeeded = false, bool allowGay = true, bool allowFood = true, bool allowAddictions = true,
-                 4   bool inhabitant = false, bool certainlyBeenInCryptosleep = false, bool forceRedressWorldPawnIfFormerColonist = false, bool worldPawnFactionDoesntMatter = false, float biocodeWeaponChance = 0,
-                 5   Pawn extraPawnForExtraRelationChance = null, float relationWithExtraPawnChanceFactor = 1, Predicate<Pawn> validatorPreGear = null, Predicate<Pawn> validatorPostGear = null, IEnumerable<TraitDef> forcedTraits = null,
-                 6   IEnumerable<TraitDef> prohibitedTraits = null, float? minChanceToRedressWorldPawn = null, float? fixedBiologicalAge = null, float? fixedChronologicalAge = null, Gender? fixedGender = null,
-                 7   float? fixedMelanin = null, string fixedLastName = null, string fixedBirthName = null, RoyalTitleDef fixedTitle = null);
-                    */
-
-                PawnGenerationRequest request = new PawnGenerationRequest(
-                    Props.animalToSpawn, animalFaction, PawnGenerationContext.NonPlayer, -1, false, true);
-
-                for (int i = 0; i < calculatedQuantity; i++)
-                {
-                    Pawn pawn = PawnGenerator.GeneratePawn(request);
-                    GenSpawn.Spawn(pawn, parent.pawn.Position, parent.pawn.Map, WipeMode.Vanish);
-
-                    FilthMaker.TryMakeFilth(parent.pawn.Position, parent.pawn.Map, ThingDefOf.Filth_AmnioticFluid, 1);
-                }
-
-                return true;
+            if (CurIP.PawnSpawner)
+            {
+                return TrySpawnPawn();
             }
+            else if (CurIP.ThingSpawner)
             // Thing case NON animal
             // Trying to stack with an existing pile
 
@@ -251,15 +221,15 @@ namespace MoharHediffs
                 int num = 0;
                 for (int i = 0; i < 9; i++)
                 {
-                    IntVec3 curCell = pawn.Position + GenAdj.AdjacentCellsAndInside[i];
-                    if (!curCell.InBounds(pawn.Map))
+                    IntVec3 curCell = Pawn.Position + GenAdj.AdjacentCellsAndInside[i];
+                    if (!curCell.InBounds(Pawn.Map))
                     {
                         continue;
                     }
-                    List<Thing> thingList = (curCell).GetThingList(pawn.Map);
+                    List<Thing> thingList = (curCell).GetThingList(Pawn.Map);
                     for (int j = 0; j < thingList.Count; j++)
                     {
-                        if (thingList[j].def == Props.thingToSpawn)
+                        if (thingList[j].def == CurIP.thingToSpawn)
                         {
                             num += thingList[j].stackCount;
                             if (num >= Props.spawnMaxAdjacent)
@@ -276,9 +246,9 @@ namespace MoharHediffs
             int loopBreaker = 0;
 
             while (numSpawned < calculatedQuantity) {
-                if (TryFindSpawnCell(out IntVec3 center))
+                if (this.TryFindSpawnCell(out IntVec3 center))
                 {
-                    Thing thing = ThingMaker.MakeThing(Props.thingToSpawn, null);
+                    Thing thing = ThingMaker.MakeThing(CurIP.thingToSpawn, null);
                     thing.stackCount = remainingSpawnCount;
                     if (thing.def.stackLimit > 0)
                         if (thing.stackCount > thing.def.stackLimit)
@@ -289,7 +259,7 @@ namespace MoharHediffs
                     numSpawned += thing.stackCount;
                     remainingSpawnCount -= thing.stackCount;
 
-                    GenPlace.TryPlaceThing(thing, center, pawn.Map, ThingPlaceMode.Direct, out Thing t, null);
+                    GenPlace.TryPlaceThing(thing, center, Pawn.Map, ThingPlaceMode.Direct, out Thing t, null);
                     if (Props.spawnForbidden)
                     {
                         t.SetForbidden(true, true);
@@ -299,7 +269,7 @@ namespace MoharHediffs
 
                 if (loopBreaker++ > 10)
                 {
-                    Tools.Warn("Had to break the loop", myDebug);
+                    Tools.Warn("Had to break the loop", MyDebug);
                     return false;
                 }
                     
@@ -313,67 +283,13 @@ namespace MoharHediffs
 
         }
 
-        private bool TryFindSpawnCell(out IntVec3 result)
-        {
-            if (Pawn.Negligeable())
-            {
-                result = IntVec3.Invalid;
-                Tools.Warn("TryFindSpawnCell Null - pawn null", myDebug);
-                return false;
-            }
-
-            foreach (IntVec3 current in GenAdj.CellsAdjacent8Way(pawn).InRandomOrder(null))
-            {
-                if (current.Walkable(pawn.Map))
-                {
-                    Building edifice = current.GetEdifice(pawn.Map);
-                    if (edifice == null || !Props.thingToSpawn.IsEdifice())
-                    {
-                        if (!(edifice is Building_Door building_Door) || building_Door.FreePassage)
-                        {
-                            if (GenSight.LineOfSight(pawn.Position, current, pawn.Map, false, null, 0, 0))
-                            {
-                                bool flag = false;
-                                List<Thing> thingList = current.GetThingList(pawn.Map);
-                                for (int i = 0; i < thingList.Count; i++)
-                                {
-                                    Thing thing = thingList[i];
-                                    if (thing.def.category == ThingCategory.Item)
-                                        if (thing.def != Props.thingToSpawn || thing.stackCount > Props.thingToSpawn.stackLimit - calculatedQuantity)
-                                        {
-                                            flag = true;
-                                            break;
-                                        }
-                                }
-                                if (!flag)
-                                {
-                                    result = current;
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Tools.Warn("TryFindSpawnCell Null - no spawn cell found", myDebug);
-            result = IntVec3.Invalid;
-            return false;
-
-        }
-
-		private void ResetCountdown()
-		{
-            ticksUntilSpawn = initialTicksUntilSpawn = (int)(RandomDays2wait() * 60000);
-        }
-
         public override string CompTipStringExtra
         {
             get
             {
                 string result = string.Empty;
 
-                if (!HasValidIP)
+                if (!HasValidIP || !Props.logNextSpawn)
                     return result;
 
                 if (HasGraceDelay)
@@ -384,7 +300,7 @@ namespace MoharHediffs
                     }
                     else if(CurIP.ThingSpawner)
                     {
-                        result = " No " + CurIP.pawnKindToSpawn.label + " for " + (graceTicks).ToStringTicksToPeriod();
+                        result = " No " + CurIP.thingToSpawn.label + " for " + (graceTicks).ToStringTicksToPeriod();
                     }
 
                     if (hungerReset > 0)
@@ -407,9 +323,9 @@ namespace MoharHediffs
                     {
                         result += CurIP.pawnKindToSpawn.label;
                     }
-                    else
+                    else if (CurIP.ThingSpawner)
                     {
-                        result += CurIP.pawnKindToSpawn.label;
+                        result += CurIP.thingToSpawn.label;
                     }
 
                     result += " " + CurIP.spawnVerb + "(" + calculatedQuantity + "x)";
