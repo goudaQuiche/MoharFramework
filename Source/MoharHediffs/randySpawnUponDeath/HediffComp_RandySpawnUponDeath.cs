@@ -6,52 +6,35 @@ using System.Linq;
 
 namespace MoharHediffs
 {
-	public class HediffComp_RandySpawner : HediffComp
+	public class HediffComp_RandySpawnUponDeath : HediffComp
 	{
-        private int ticksUntilSpawn;
-        private int initialTicksUntilSpawn = 0;
-        public int graceTicks = 0;
-
-        public int calculatedQuantity;
-
-        public int hungerReset = 0;
-		public int healthReset = 0;
-
         private bool blockSpawn = false;
 
-        private int pickedItem = -1;
-        public Faction Itemfaction = null;
+        private int randomlyChosenIndex = -1;
+        public Faction randomlyChosenItemfaction = null;
+        public int randomlyChosenQuantity;
+
         public bool newBorn = false;
 
         public readonly float minDaysB4NextErrorLimit = .001f;
         public readonly int spawnCountErrorLimit = 750;
 
-        public HediffCompProperties_RandySpawner Props => (HediffCompProperties_RandySpawner)this.props;
+        public HediffCompProperties_RandySpawnUponDeath Props => (HediffCompProperties_RandySpawnUponDeath)this.props;
 
         public bool MyDebug => Props.debug;
 
-        public bool HasGraceDelay => graceTicks > 0;
-        private float CalculatedDaysB4Next => (float)ticksUntilSpawn / 60000;
+        public PawnOrThingParameter CurIP => 
+            (randomlyChosenIndex != -1 && !Props.pawnOrThingParameters.NullOrEmpty() && 
+            randomlyChosenIndex < Props.pawnOrThingParameters.Count) ? Props.pawnOrThingParameters[randomlyChosenIndex] : null;
 
-        public ItemParameter CurIP => (pickedItem != -1 && !Props.itemParameters.NullOrEmpty() && pickedItem < Props.itemParameters.Count) ? Props.itemParameters[pickedItem] : null;
         public bool HasValidIP => CurIP != null;
-
-        public bool RequiresFood => Props.hungerRelative && Pawn.IsHungry(MyDebug);
-        public bool RequiresHealth => Props.healthRelative && Pawn.IsInjured(MyDebug);
 
         public override void CompExposeData()
         {
-            Scribe_Values.Look(ref ticksUntilSpawn, "ticksUntilSpawn");
-            Scribe_Values.Look(ref initialTicksUntilSpawn, "initialTicksUntilSpawn");
-
-            Scribe_Values.Look(ref calculatedQuantity, "calculatedQuantity");
-
-            Scribe_Values.Look(ref hungerReset, "LTF_hungerReset");
-            Scribe_Values.Look(ref healthReset, "LTF_healthReset");
-
-            Scribe_Values.Look(ref graceTicks, "graceTicks");
-
-            Scribe_Values.Look(ref pickedItem, "pickedItem");
+            Scribe_Values.Look(ref randomlyChosenItemfaction, "randomlyChosenItemfaction");
+            Scribe_Values.Look(ref randomlyChosenQuantity, "randomlyChosenQuantity");
+            Scribe_Values.Look(ref randomlyChosenIndex, "randomlyChosenIndex");
+            Scribe_Values.Look(ref newBorn, "newBorn");
         }
 
         public override void CompPostMake()
@@ -66,40 +49,37 @@ namespace MoharHediffs
             DumpCalculatedValues();
         }
 
-        public override void CompPostTick(ref float severityAdjustment)
+        public override void Notify_PawnDied()
         {
-            if (Pawn.Negligeable())
-                return;
-
-            if (blockSpawn)
-                return;
-
-            if (HasGraceDelay)
+            Tools.Warn("Entering HediffComp_RandySpawnUponDeath Notify_PawnDied", MyDebug);
+            if (Pawn.Corpse.Negligeable())
             {
-                graceTicks--;
+                Tools.Warn("Corpse is no more, cant find its position - giving up", MyDebug);
                 return;
             }
+                
 
-            if(this.SetRequirementGraceTicks())
+            if (blockSpawn)
+            {
+                Tools.Warn("blockSpawn for some reason- giving up", MyDebug);
                 return;
+            }
+                
 
             if (CheckShouldSpawn())
             {
-                Tools.Warn("Reseting countdown bc spawned thing", MyDebug);
-
-                CalculateValues();
-                CheckCalculatedValues();
+                Tools.Warn("Spawn occured", MyDebug);
             }
+
+            base.Notify_PawnDied();
         }
-
-
 
         private void CalculateValues()
         {
-            pickedItem = this.GetWeightedRandomIndex();
+            randomlyChosenIndex = this.GetWeightedRandomIndex();
             if (HasValidIP)
             {
-                CurIP.ComputeRandomParameters(out ticksUntilSpawn, out graceTicks, out calculatedQuantity);
+                CurIP.ComputeRandomParameters(out randomlyChosenQuantity);
                 if (CurIP.HasFactionParams)
                     this.ComputeRandomFaction();
             }
@@ -113,15 +93,9 @@ namespace MoharHediffs
 
         private void CheckCalculatedValues()
         {
-            if (calculatedQuantity > spawnCountErrorLimit)
+            if (randomlyChosenQuantity > spawnCountErrorLimit)
             {
-                BlockAndDestroy(">ERROR< calculatedQuantity is too high: " + calculatedQuantity + "(>" + spawnCountErrorLimit + "), check and adjust your hediff props", MyDebug);
-                return;
-            }
-
-            if (CalculatedDaysB4Next < minDaysB4NextErrorLimit)
-            {
-                BlockAndDestroy(">ERROR< calculatedMinDaysB4Next is too low: " + CalculatedDaysB4Next + "(<" + minDaysB4NextErrorLimit + "), check and adjust your hediff props", MyDebug);
+                BlockAndDestroy(">ERROR< calculatedQuantity is too high: " + randomlyChosenQuantity + "(>" + spawnCountErrorLimit + "), check and adjust your hediff props", MyDebug);
                 return;
             }
         }
@@ -130,8 +104,7 @@ namespace MoharHediffs
         {
             Tools.Warn(
                 "<<< " +
-                " calculatedDaysB4Next: " + CalculatedDaysB4Next +
-                "; CalculatedQuantity: " + calculatedQuantity + "; "
+                "; randomlyChosenQuantity: " + randomlyChosenQuantity + "; "
                 , MyDebug
             );
         }
@@ -145,35 +118,17 @@ namespace MoharHediffs
 
         private bool CheckShouldSpawn()
         {
-            ticksUntilSpawn--;
-            if (ticksUntilSpawn <= 0)
-            {
-                bool didSpawn = TryDoSpawn();
-                Tools.Warn("TryDoSpawn: " + didSpawn, MyDebug);
+            if (Pawn.Corpse.Negligeable())
+                return false;
 
-                if (didSpawn)
-                    pickedItem = -1;
+            bool didSpawn = TryDoSpawn(Pawn.Corpse, Pawn.Corpse.Map);
+            Tools.Warn("TryDoSpawn: " + didSpawn, MyDebug);
 
-                return didSpawn;
-            }
-
-            return false;
+            return didSpawn;
         }
 
-        /*
-        PawnKindDef MyPawnKindDefNamed (string myDefName)
-        {
-            PawnKindDef answer = null;
-            foreach (PawnKindDef curPawnKindDef in DefDatabase<PawnKindDef>.AllDefs)
-            {
-                if (curPawnKindDef.defName == myDefName)
-                    return curPawnKindDef;
-            }
-            return answer;
-        }
-        */
 
-        public bool TrySpawnPawn()
+        public bool TrySpawnPawn(IntVec3 position, Map map)
         {
             /*
              * public PawnGenerationRequest(
@@ -187,23 +142,23 @@ namespace MoharHediffs
                 */
             
             PawnGenerationRequest request = new PawnGenerationRequest(
-                CurIP.pawnKindToSpawn, Itemfaction, PawnGenerationContext.NonPlayer, -1, false, newBorn);
+                CurIP.pawnKindToSpawn, randomlyChosenItemfaction, PawnGenerationContext.NonPlayer, -1, false, newBorn);
 
-            for (int i = 0; i < calculatedQuantity; i++)
+            for (int i = 0; i < randomlyChosenQuantity; i++)
             {
-                Pawn NewBorn = PawnGenerator.GeneratePawn(request);
-                GenSpawn.Spawn(NewBorn, Pawn.Position, Pawn.Map, WipeMode.Vanish);
+                Pawn NewPawn = PawnGenerator.GeneratePawn(request);
+                GenSpawn.Spawn(NewPawn, position, map, WipeMode.Vanish);
 
                 if(CurIP.HasFilth)
-                    FilthMaker.TryMakeFilth(parent.pawn.Position, parent.pawn.Map, CurIP.filthDef, 1);
+                    FilthMaker.TryMakeFilth(position, map, CurIP.filthDef, 1);
             }
 
             return true;
         }
 
-        public bool TryDoSpawn()
+        public bool TryDoSpawn(Thing thing, Map map)
         {
-            if (Pawn.Negligeable())
+            if (thing.Negligeable())
             {
                 Tools.Warn("TryDoSpawn - pawn null", MyDebug);
                 return false;
@@ -211,7 +166,7 @@ namespace MoharHediffs
 
             if (CurIP.PawnSpawner)
             {
-                return TrySpawnPawn();
+                return TrySpawnPawn(thing.Position, map);
             }
             else if (CurIP.ThingSpawner)
             // Thing case NON animal
@@ -222,12 +177,12 @@ namespace MoharHediffs
                 int num = 0;
                 for (int i = 0; i < 9; i++)
                 {
-                    IntVec3 curCell = Pawn.Position + GenAdj.AdjacentCellsAndInside[i];
-                    if (!curCell.InBounds(Pawn.Map))
+                    IntVec3 curCell = thing.Position + GenAdj.AdjacentCellsAndInside[i];
+                    if (!curCell.InBounds(map))
                     {
                         continue;
                     }
-                    List<Thing> thingList = (curCell).GetThingList(Pawn.Map);
+                    List<Thing> thingList = (curCell).GetThingList(map);
                     for (int j = 0; j < thingList.Count; j++)
                     {
                         if (thingList[j].def == CurIP.thingToSpawn)
@@ -243,24 +198,24 @@ namespace MoharHediffs
             }
 
             int numSpawned = 0;
-            int remainingSpawnCount = calculatedQuantity;
+            int remainingSpawnCount = randomlyChosenQuantity;
             int loopBreaker = 0;
 
-            while (numSpawned < calculatedQuantity) {
-                if (this.TryFindSpawnCell(out IntVec3 center))
+            while (numSpawned < randomlyChosenQuantity) {
+                if (this.TryFindSpawnCell(thing, map, out IntVec3 center))
                 {
-                    Thing thing = ThingMaker.MakeThing(CurIP.thingToSpawn, null);
-                    thing.stackCount = remainingSpawnCount;
-                    if (thing.def.stackLimit > 0)
-                        if (thing.stackCount > thing.def.stackLimit)
+                    Thing newThing = ThingMaker.MakeThing(CurIP.thingToSpawn, null);
+                    newThing.stackCount = remainingSpawnCount;
+                    if (newThing.def.stackLimit > 0)
+                        if (newThing.stackCount > newThing.def.stackLimit)
                         {
-                            thing.stackCount = thing.def.stackLimit;
+                            newThing.stackCount = newThing.def.stackLimit;
                         }
 
-                    numSpawned += thing.stackCount;
-                    remainingSpawnCount -= thing.stackCount;
+                    numSpawned += newThing.stackCount;
+                    remainingSpawnCount -= newThing.stackCount;
 
-                    GenPlace.TryPlaceThing(thing, center, Pawn.Map, ThingPlaceMode.Direct, out Thing t, null);
+                    GenPlace.TryPlaceThing(newThing, center, map, ThingPlaceMode.Direct, out Thing t, null);
                     if (Props.spawnForbidden)
                     {
                         t.SetForbidden(true, true);
@@ -290,6 +245,7 @@ namespace MoharHediffs
             {
                 string result = string.Empty;
 
+                /*
                 if (!HasValidIP || !Props.logNextSpawn)
                     return result;
 
@@ -332,7 +288,7 @@ namespace MoharHediffs
                     result += " " + CurIP.spawnVerb + "(" + calculatedQuantity + "x)";
 
                 }
-
+                */
                 return result;
             }
         }

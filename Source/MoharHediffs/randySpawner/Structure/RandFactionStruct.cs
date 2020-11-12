@@ -10,14 +10,17 @@ namespace MoharHediffs
         public bool inheritedFaction = false;
         public FactionDef forcedFaction = null;
         public bool playerFaction = false;
+        public bool defaultPawnKindFaction = false;
         public bool noFaction = false;
 
+        public bool newBorn = false;
         public float weight;
 
         public bool HasInheritedFaction => inheritedFaction == true;
         public bool HasForcedFaction => forcedFaction != null;
         public bool HasPlayerFaction => playerFaction == true;
         public bool HasNoFaction => noFaction == true;
+        public bool HasDefaultPawnKindFaction => defaultPawnKindFaction == true;
 
         public bool IsLegitRandomFactionParameter()
         {
@@ -30,29 +33,10 @@ namespace MoharHediffs
                 shouldBeOne += 1;
             if (HasNoFaction)
                 shouldBeOne += 1;
+            if(HasDefaultPawnKindFaction)
+                shouldBeOne += 1;
 
             return shouldBeOne == 1;
         }
-
-        public Faction GetFaction(Pawn p)
-        {
-            FactionDef fDef = GetFactionDef(p);
-            return Find.FactionManager.AllFactions.Where(F => F.def == fDef).FirstOrFallback();
-        }
-
-        public FactionDef GetFactionDef(Pawn p)
-        {
-            if (HasInheritedFaction)
-                return p.Faction.def;
-            else if (HasForcedFaction)
-                return forcedFaction;
-            else if (HasPlayerFaction)
-                return Faction.OfPlayerSilentFail.def;
-            else if (HasNoFaction)
-                return null;
-
-            return null;
-        }
-
     }
 }

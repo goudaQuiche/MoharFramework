@@ -154,6 +154,11 @@ namespace MoharHediffs
             return (p == null || !p.Spawned || p.Map == null || p.Position == null);
         }
 
+        public static bool Negligeable(this Thing thing)
+        {
+            return (thing == null || !thing.Spawned || thing.Map == null || thing.Position == null);
+        }
+
         public static bool OkPawn(Pawn pawn)
         {
             return ((pawn != null) && (pawn.Map != null));

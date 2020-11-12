@@ -1,6 +1,7 @@
 using Verse;
 using RimWorld;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MoharHediffs
 {
@@ -38,9 +39,10 @@ namespace MoharHediffs
                     Tools.Warn("ComputeRandomFaction - found no index", comp.MyDebug);
                     return;
                 }
-                    
 
-                comp.Itemfaction = comp.CurIP.randomFactionParameters[FactionIndex].GetFaction(comp.Pawn);
+                comp.newBorn = comp.CurIP.randomFactionParameters[FactionIndex].newBorn;
+                RandomFactionParameter RFP = comp.CurIP.randomFactionParameters[FactionIndex];
+                comp.Itemfaction = comp.GetFaction(RFP);
                 Tools.Warn("ComputeRandomFaction - found:" + comp.Itemfaction?.GetCallLabel(), comp.MyDebug);
             }
         }
@@ -212,6 +214,34 @@ namespace MoharHediffs
             result = IntVec3.Invalid;
             return false;
 
+        }
+
+        public static Faction GetFaction(this HediffComp_RandySpawner comp, RandomFactionParameter RFP)
+        {
+            FactionDef fDef = comp.GetFactionDef(RFP);
+            if (fDef == null)
+                return null;
+            return Find.FactionManager.AllFactions.Where(F => F.def == fDef).FirstOrFallback();
+        }
+
+        public static FactionDef GetFactionDef(this HediffComp_RandySpawner comp, RandomFactionParameter RFP)
+        {
+            Pawn p = comp.Pawn;
+
+            if (RFP.HasInheritedFaction)
+                return p.Faction.def;
+            else if (RFP.HasForcedFaction)
+                return RFP.forcedFaction;
+            else if (RFP.HasPlayerFaction)
+                return Faction.OfPlayerSilentFail.def;
+            else if (RFP.HasNoFaction)
+                return null;
+            else if (RFP.HasDefaultPawnKindFaction)
+            {
+                return comp.CurIP.pawnKindToSpawn?.defaultFactionType ?? null;
+            }
+
+            return null;
         }
     }
 }
