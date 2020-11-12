@@ -17,6 +17,8 @@ namespace OHFP
 
         bool playerAdopted, enemyAdopted, neutralAdopted;
 
+        public bool HasForcedFaction => Props.forcedFaction != null;
+
         public bool myDebug => Props.debug;
         public CompProperties_OHFP_Hatcher Props => (CompProperties_OHFP_Hatcher)props;
         private CompTemperatureRuinable FreezerComp => parent.GetComp<CompTemperatureRuinable>();
@@ -46,14 +48,23 @@ namespace OHFP
         {
             playerAdopted = enemyAdopted = neutralAdopted = false;
 
-            if (SetFactionAndParent())
+            if (HasForcedFaction)
+            {
+                hatcheeFaction = Find.FactionManager.AllFactions.Where(F => F.def == Props.forcedFaction).FirstOrFallback();
+                hatcheeParent = null;
+                Tools.Warn("Faction forced ok", myDebug);
+            }
+            else if (SetFactionAndParent())
                 Tools.Warn("SetFactionAndParent ok", myDebug);
+
             if (SetPawnKind())
                 Tools.Warn("SetPawnKind ok", myDebug);
-
-            Tools.Warn("Enemy adopted", myDebug && enemyAdopted);
-            Tools.Warn("Neutral adopted", myDebug && neutralAdopted);
-            Tools.Warn("Player adopted", myDebug && playerAdopted);
+            if (enemyAdopted)
+                Tools.Warn("Enemy adopted", myDebug);
+            else if (neutralAdopted)
+                Tools.Warn("Neutral adopted", myDebug);
+            else if (playerAdopted)
+                Tools.Warn("Player adopted", myDebug);
         }
 
         private bool SetPawnKind()
@@ -71,11 +82,11 @@ namespace OHFP
 
             float DiceRoll = Rand.RangeInclusive(0, 1);
             // got enemy
-            if( (DiceRoll -= Props.enemyAdoptedChance) < 0)
+            if ((DiceRoll -= Props.enemyAdoptedChance) < 0)
             {
                 hatcheeFaction = Find.FactionManager.AllFactions.Where(f => !f.IsPlayer && !f.AllyOrNeutralTo(Faction.OfPlayer)).RandomElementWithFallback();
 
-                if(hatcheeFaction!=null)
+                if (hatcheeFaction != null)
                     hatcheeParent = Find.WorldPawns.AllPawnsAlive.Where(p => p.Faction != null && p.Faction == hatcheeFaction).RandomElementWithFallback();
                 enemyAdopted = true;
             }

@@ -1,4 +1,5 @@
 using Verse;
+using RimWorld;
 using System.Collections.Generic;
 
 namespace OHFP
@@ -13,6 +14,8 @@ namespace OHFP
         public float colonyAdoptedChance = .5f;
         public float neutralAdoptedChance = .3f;
         public float enemyAdoptedChance = .2f;
+
+        public FactionDef forcedFaction = null;
 
         public float manhunterChance = .25f;
         public float newBornChance = 0f;
