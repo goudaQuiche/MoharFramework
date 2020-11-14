@@ -17,37 +17,41 @@ namespace MoharGamez
         string MyName = "JobDriver_PlayGenericTargetingGame";
         readonly bool myDebug = true;
 
+        //Available parameters
         public List<GameProjectile> gameProjectileList = null;
         public GameProjectile gameProjectile = null;
 
+        //Random weighted parameter
         public ProjectileOption projectileOption = null;
+        public MoteParameter PickedMoteParam = null;
 
-        //public EffecterParameter effecterParameter = null;
-
+        // Common to all projectiles parameters
         public SkillDef SkillDefScaling => gameProjectile.skillDefScaling;
-        public IntRange ThrowInterval => gameProjectile.throwInterval;
 
+        public IntRange ThrowInterval => gameProjectile.throwInterval;
         public bool IsTimeToThrow => pawn.IsHashIntervalTick(ThrowInterval.RandomInRange);
 
-        public ThingDef MoteDef => projectileOption.moteParam.moteDef;
-        public FloatRange Speed => projectileOption.moteParam.speed;
-        public FloatRange Rotation => projectileOption.moteParam.rotation;
+        // Depending on Randomly picker option; depends on the type of the mote
+        public FloatRange Speed => PickedMoteParam.speed;
+        public FloatRange Rotation => PickedMoteParam.rotation;
+        public ThingDef MoteDef => PickedMoteParam.moteDef;
 
         public ThingDef ImpactMoteDef => projectileOption.impactMoteParam.moteDef;
-
         public SoundDef ThrowSoundDef => projectileOption.throwSound;
 
         public List<MoteThrown> MoteThrownList = new List<MoteThrown>();
 
         public bool HasGameProjectile => gameProjectile != null;
-
         public bool HasProjectileOption => projectileOption != null;
 
         public bool HasPickedMoteOption => HasProjectileOption && projectileOption.moteParam != null;
+        public bool HasPickedShadowMoteOption => HasProjectileOption && projectileOption.shadowMoteParam != null;
+
         public bool HasImpactMote => HasProjectileOption && projectileOption.impactMoteParam != null;
         public bool HasThrowSound => HasProjectileOption && projectileOption.throwSound!= null;
 
-        public bool HasAtLeastOneOption => HasPickedMoteOption || HasImpactMote || HasThrowSound;
+        //public bool HasAtLeastOneOption => HasPickedMoteOption || HasImpactMote || HasThrowSound;
+        public bool HasAtLeastOneOption => HasPickedShadowMoteOption || HasPickedMoteOption || HasImpactMote || HasThrowSound;
 
         public bool HasPickedOption => HasProjectileOption && HasAtLeastOneOption;
 
@@ -136,7 +140,7 @@ namespace MoharGamez
                 Tools.Warn(MyName + " WatchTickAction - Trying to SetParameters", myDebug);
                 bool DidIt = SetParameters();
 
-                Tools.Warn(MyName + " WatchTickAction - No thrownProjectileParameters - DidIt:" + DidIt + " ; attempts:" + AttemptNum, myDebug);
+                Tools.Warn(MyName + " WatchTickAction - DidIt:" + DidIt + " ; attempts:" + AttemptNum, myDebug);
                 return;
             }
 
@@ -147,8 +151,9 @@ namespace MoharGamez
 
                 if (HasPickedMoteOption)
                 {
-                    Thing mote = this.MoteSpawner_ThrowObjectAt();
-                    MoteThrownList.Add((MoteThrown)mote);
+                    MoteThrownList.Add((MoteThrown)this.MoteSpawner_ThrowObjectAt());
+                }else if (HasPickedShadowMoteOption){
+                    MoteThrownList.Add((MoteThrown)this.ShadowMoteSpawner_ThrowObjectAt());
                 }
 
                 if (HasThrowSound)
@@ -171,7 +176,7 @@ namespace MoharGamez
                 if (curMote == null || !curMote.Spawned)
                 {
                     MotesToForget.Add(i);
-                    Tools.Warn(MyName + "ManageOldMotes - Deadmote - Adding mote n°" + i + " to MotesToForget" , myDebug);
+                    //Tools.Warn(MyName + "ManageOldMotes - Deadmote - Adding mote n°" + i + " to MotesToForget" , myDebug);
                     continue;
                 }
 
@@ -184,7 +189,7 @@ namespace MoharGamez
                         StopSustainer();
 
                     MotesToForget.Add(i);
-                    Tools.Warn(MyName + "ManageOldMotes - Non moving mote - Adding mote n°" + i + " to MotesToForget", myDebug);
+                    //Tools.Warn(MyName + "ManageOldMotes - Non moving mote - Adding mote n°" + i + " to MotesToForget", myDebug);
                 }
             }
             for (int i = MoteThrownList.Count - 1; i >= 0; i--)
@@ -192,7 +197,7 @@ namespace MoharGamez
                 if (MotesToForget.Contains(i))
                 {
                     MoteThrownList.RemoveAt(i);
-                    Tools.Warn(MyName + "ManageOldMotes - Deleted mote n°" + i, myDebug);
+                    //Tools.Warn(MyName + "ManageOldMotes - Deleted mote n°" + i, myDebug);
                 }
                     
             }

@@ -9,12 +9,6 @@ namespace MoharGamez
 
     public class GameProjectileClass : Thing
     {
-        /*
-        {
-            new GameMotesDef def => base.def as GameMotesDef;
-        }
-        */
-        #region Properties
         public GameProjectileDef Def
         {
             get
@@ -22,7 +16,6 @@ namespace MoharGamez
                 return def as GameProjectileDef;
             }
         }
-        #endregion
     }
 
     public class GameProjectileDef : ThingDef
@@ -45,12 +38,15 @@ namespace MoharGamez
     public class ProjectileOption
     {
         public MoteParameter moteParam = null;
+        public MoteParameter shadowMoteParam = null;
+
         public ImpactMoteParameter impactMoteParam = null;
         public SoundDef throwSound = null;
 
         public float weight;
 
         public bool HasMoteProjectiles => moteParam != null;
+        public bool HasShadowMoteProjectiles => shadowMoteParam != null;
     }
 
     public class MoteParameter
