@@ -35,31 +35,33 @@ namespace MoharGamez
                 }
             }
 
-            Tools.Warn("GetWeightedRandomIndex : failed to return proper index, returning -1", GP.Debug);
+            Tools.Warn("GetWeightedRandomIndex : failed to return proper index, returning -1", GP.debug);
 
             return -1;
         }
         public static bool RetrieveProjectileParam(this JobDriver_PlayGenericTargetingGame PGTG)
         {
+            bool myDebug = PGTG.gameProjectile.debug;
+
             string DebugStr = PGTG.pawn.LabelShort + " - RetrieveProjectileParam";
-            Tools.Warn(DebugStr + " - Entering", PGTG.gameProjectile.Debug);
+            Tools.Warn(DebugStr + " - Entering", myDebug);
 
             int randomIndex = PGTG.gameProjectile.GetWeightedRandomIndex();
             PGTG.projectileOption = PGTG.gameProjectile.projectileOptionList[randomIndex];
 
-            if (PGTG.projectileOption.HasMoteProjectiles)
+            if (PGTG.projectileOption.IsMoteType)
             {
-                PGTG.PickedMoteParam = PGTG.projectileOption.moteParam;
-                Tools.Warn( DebugStr + " - Found mote => " + PGTG.MoteDef.defName, PGTG.gameProjectile.Debug);
+                PGTG.PickedMoteParam = PGTG.projectileOption.mote;
+                Tools.Warn( DebugStr + " - Found mote => " + PGTG.MoteDef.defName, myDebug);
             }
-            else if (PGTG.projectileOption.HasShadowMoteProjectiles)
+            else if (PGTG.projectileOption.IsShadowMoteType)
             {
-                PGTG.PickedMoteParam = PGTG.projectileOption.shadowMoteParam;
-                Tools.Warn(DebugStr + " - Found shadow mote", PGTG.gameProjectile.Debug);
+                PGTG.PickedMoteParam = PGTG.projectileOption.shadowMote;
+                Tools.Warn(DebugStr + " - Found shadow mote", myDebug);
             }
             else
             {
-                Tools.Warn(DebugStr + " - Found nothing", PGTG.gameProjectile.Debug);
+                Tools.Warn(DebugStr + " - Found nothing", myDebug);
             }
 
             return PGTG.HasProjectileOption;
@@ -67,6 +69,7 @@ namespace MoharGamez
 
         public static void ResetPickedOption(this JobDriver_PlayGenericTargetingGame PGTG)
         {
+            PGTG.projectileOption = null;
             PGTG.PickedMoteParam = null;
             PGTG.RetrieveProjectileParam();
         }

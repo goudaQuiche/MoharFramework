@@ -15,7 +15,7 @@ namespace MoharGamez
          make ball detect other balls ?
          */
         string MyName = "JobDriver_PlayGenericTargetingGame";
-        readonly bool myDebug = true;
+        readonly bool myDebug = false;
 
         //Available parameters
         public List<GameProjectile> gameProjectileList = null;
@@ -36,47 +36,21 @@ namespace MoharGamez
         public FloatRange Rotation => PickedMoteParam.rotation;
         public ThingDef MoteDef => PickedMoteParam.moteDef;
 
-        public ThingDef ImpactMoteDef => projectileOption.impactMoteParam.moteDef;
-        public SoundDef ThrowSoundDef => projectileOption.throwSound;
-
         public List<MoteThrown> MoteThrownList = new List<MoteThrown>();
 
         public bool HasGameProjectile => gameProjectile != null;
         public bool HasProjectileOption => projectileOption != null;
 
-        public bool HasPickedMoteOption => HasProjectileOption && projectileOption.moteParam != null;
-        public bool HasPickedShadowMoteOption => HasProjectileOption && projectileOption.shadowMoteParam != null;
+        public bool HasPickedMoteOption => HasProjectileOption && projectileOption.IsMoteType;
+        public bool HasPickedShadowMoteOption => HasProjectileOption && projectileOption.IsShadowMoteType;
 
-        public bool HasImpactMote => HasProjectileOption && projectileOption.impactMoteParam != null;
-        public bool HasThrowSound => HasProjectileOption && projectileOption.throwSound!= null;
-
-        //public bool HasAtLeastOneOption => HasPickedMoteOption || HasImpactMote || HasThrowSound;
-        public bool HasAtLeastOneOption => HasPickedShadowMoteOption || HasPickedMoteOption || HasImpactMote || HasThrowSound;
+        public bool HasAtLeastOneOption => HasPickedShadowMoteOption || HasPickedMoteOption;
 
         public bool HasPickedOption => HasProjectileOption && HasAtLeastOneOption;
-
-        private Sustainer throwSustainer = null;
 
         public IntVec3 PetanqueSpotCell => TargetA.Cell;
 
         int AttemptNum = 0;
-
-        void StartSustainer()
-        {
-            throwSustainer = projectileOption.throwSound.TrySpawnSustainer(new TargetInfo(pawn.Position, base.Map));
-        }
-        void KeepSustainer()
-        {
-            throwSustainer.Maintain();
-        }
-        private void StopSustainer()
-        {
-            if (throwSustainer != null)
-            {
-                throwSustainer.End();
-                throwSustainer = null;
-            }
-        }
 
         bool SetParameters()
         {
@@ -109,7 +83,8 @@ namespace MoharGamez
             Tools.Warn(
                 MyName + " SetParameters " + 
                 " - 02 RetrieveProjectileParam:" + Didit + 
-                " - HasPickedMoteOption: "+ HasPickedMoteOption
+                " - HasPickedMoteOption: "+ HasPickedMoteOption +
+                " - HasPickedShadowMoteOption: " + HasPickedShadowMoteOption
                 //" - HasPickedEffecterOption: " + HasPickedEffecterOption
                 , myDebug);
 
@@ -123,49 +98,54 @@ namespace MoharGamez
         }
         */
 
-            /*
-        public override void SetInitialPosture()
+        bool ParameterInitialization()
         {
-            pawn.rotationTracker.FaceCell(base.TargetA.Cell);
+            if (HasGameProjectile)
+                return true;
+
+            if (AttemptNum > 20)
+                return false;
+
+            Tools.Warn(MyName + " WatchTickAction - Trying to ParameterInitialization - SetParameters", myDebug);
+            AttemptNum++;
+
+            bool DidIt = SetParameters();
+            Tools.Warn(MyName + " WatchTickAction - DidIt:" + DidIt + " ; attempts:" + AttemptNum, myDebug);
+
+            return DidIt;
         }
-        */
+
+        void ThrowProjectile()
+        {
+            if (!IsTimeToThrow)
+                return;
+
+            this.ResetPickedOption();
+            if (!HasAtLeastOneOption)
+                return;
+
+            pawn.rotationTracker.FaceCell(PetanqueSpotCell);
+
+            if (HasPickedMoteOption)
+            {
+                MoteThrownList.Add((MoteThrown)this.MoteSpawner_ThrowObjectAt());
+            }
+            else if (HasPickedShadowMoteOption)
+            {
+                MoteThrownList.Add((MoteThrown)this.ShadowMoteSpawner_ThrowObjectAt());
+            }
+        }
 
         protected override void WatchTickAction()
         {
             //Tools.Warn( MyName + " WatchTickAction - Entering WatchTickAction", myDebug);
-
-            if (!HasProjectileOption && AttemptNum < 20)
-            {
-                AttemptNum++;
-                Tools.Warn(MyName + " WatchTickAction - Trying to SetParameters", myDebug);
-                bool DidIt = SetParameters();
-
-                Tools.Warn(MyName + " WatchTickAction - DidIt:" + DidIt + " ; attempts:" + AttemptNum, myDebug);
+            if (!ParameterInitialization())
                 return;
-            }
 
-
-            if( HasAtLeastOneOption && IsTimeToThrow)
-            {
-                pawn.rotationTracker.FaceCell(PetanqueSpotCell);
-
-                if (HasPickedMoteOption)
-                {
-                    MoteThrownList.Add((MoteThrown)this.MoteSpawner_ThrowObjectAt());
-                }else if (HasPickedShadowMoteOption){
-                    MoteThrownList.Add((MoteThrown)this.ShadowMoteSpawner_ThrowObjectAt());
-                }
-
-                if (HasThrowSound)
-                    StartSustainer();
-
-                this.ResetPickedOption();
-            }
-
-            if (HasThrowSound || HasImpactMote)
-                ManageOldMotes();
+            ThrowProjectile();
         }
 
+        /*
         void ManageOldMotes()
         {
             List<int> MotesToForget = new List<int>();
@@ -185,8 +165,6 @@ namespace MoharGamez
                 {
                     if (HasImpactMote)
                         this.ThrowImpactMote(curMote);
-                    if (HasThrowSound)
-                        StopSustainer();
 
                     MotesToForget.Add(i);
                     //Tools.Warn(MyName + "ManageOldMotes - Non moving mote - Adding mote n°" + i + " to MotesToForget", myDebug);
@@ -202,6 +180,7 @@ namespace MoharGamez
                     
             }
         }
+        */
 
     }
 }

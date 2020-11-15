@@ -9,7 +9,32 @@ namespace MoharGamez
 
     public class ShadownMoteDef : ThingDef
     {
-        public ThingDef shadowMaterialTex;
+        public MoteSubEffect moteSubEffect;
+        //public bool HasMSE => moteSubEffect != null;
     }
-    
+
+    public class MoteSubEffect
+    {
+        public ThingDef flyingShadowRessource;
+        public SoundDef throwSound;
+        public SoundDef skiddingSustainSound;
+        public ImpactMoteParameter impactMote;
+
+        public bool HasImpactMote => impactMote != null;
+        public bool HasThrowSound => throwSound != null;
+        public bool HasSkiddingSound => skiddingSustainSound != null;
+        public bool HasflyingShadowRessource => flyingShadowRessource != null;
+
+        public bool debug = false;
+    }
+
+    public class ImpactMoteParameter
+    {
+        public ThingDef moteDef;
+        public FloatRange speed;
+        public FloatRange angle;
+        public FloatRange scale;
+        public FloatRange rotationRate;
+    }
+
 }

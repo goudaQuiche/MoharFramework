@@ -44,31 +44,29 @@ namespace MoharGamez
 
             ThingDef moteDef = PGTG.MoteDef;
 
-            if (thrower.Position.ShouldSpawnMotesAt(thrower.Map) && !thrower.Map.moteCounter.Saturated)
-            {
-                float randomSpeed = PGTG.Speed.RandomInRange;
-                Vector3 destinationCell =
-                    targetCell.ToVector3Shifted() +
-                    Vector3Utility.RandomHorizontalOffset((1f - (float)thrower.skills.GetSkill(skillDef).Level / 20f) * 1.8f);
+            if (!thrower.AllowedMoteSpawn())
+                return null;
 
-                destinationCell.y = thrower.DrawPos.y;
-                ShadowMote moteThrown = (ShadowMote)ThingMaker.MakeThing(moteDef);
+            float randomSpeed = PGTG.Speed.RandomInRange;
+            Vector3 destinationCell =
+                targetCell.ToVector3Shifted() +
+                Vector3Utility.RandomHorizontalOffset((1f - (float)thrower.skills.GetSkill(skillDef).Level / 20f) * 1.8f);
 
-                moteThrown.Initialization(thrower.DrawPos, destinationCell);
+            destinationCell.y = thrower.DrawPos.y;
+            ShadowMote moteThrown = (ShadowMote)ThingMaker.MakeThing(moteDef);
 
-                moteThrown.Scale = 1f;
-                moteThrown.rotationRate = PGTG.Rotation.RandomInRange;
-                moteThrown.exactPosition = thrower.DrawPos;
-                moteThrown.SetVelocity((destinationCell - moteThrown.exactPosition).AngleFlat(), randomSpeed);
+            moteThrown.Initialization(thrower.DrawPos, destinationCell);
 
-                moteThrown.airTimeLeft = Mathf.RoundToInt((moteThrown.exactPosition - destinationCell).MagnitudeHorizontal() / randomSpeed);
+            moteThrown.Scale = 1f;
+            moteThrown.rotationRate = PGTG.Rotation.RandomInRange;
+            moteThrown.exactPosition = thrower.DrawPos;
+            moteThrown.SetVelocity((destinationCell - moteThrown.exactPosition).AngleFlat(), randomSpeed);
 
-                return GenSpawn.Spawn(moteThrown, thrower.Position, thrower.Map);
-            }
+            moteThrown.airTimeLeft = Mathf.RoundToInt((moteThrown.exactPosition - destinationCell).MagnitudeHorizontal() / randomSpeed);
 
-            return null;
+            return GenSpawn.Spawn(moteThrown, thrower.Position, thrower.Map);
         }
-
+        
         public static Thing MoteSpawner_ThrowObjectAt(this JobDriver_PlayGenericTargetingGame PGTG)
         {
             IntVec3 targetCell = PGTG.PetanqueSpotCell;
@@ -95,38 +93,66 @@ namespace MoharGamez
 
                 return GenSpawn.Spawn(moteThrown, thrower.Position, thrower.Map);
             }
-
             return null;
         }
+        
 
-        private static MoteThrown NewBaseImpactMote(this JobDriver_PlayGenericTargetingGame PGTG)
+        private static bool NewBaseImpactMote(this MoteSubEffect MSE, out MoteThrown moteThrown)
         {
-            MoteThrown obj = (MoteThrown)ThingMaker.MakeThing(PGTG.ImpactMoteDef);
-            obj.Scale = PGTG.projectileOption.impactMoteParam.scale.RandomInRange;
-            obj.rotationRate = PGTG.projectileOption.impactMoteParam.rotationRate.RandomInRange;
+            if (!MSE.HasImpactMote)
+            {
+                Tools.Warn("NewBaseImpactMote - Failed to find impact mote; giving up", MSE.debug);
+                moteThrown = null;
+                return false;
+            }
 
-            return obj;
+            moteThrown = (MoteThrown)ThingMaker.MakeThing(MSE.impactMote.moteDef);
+            moteThrown.Scale = MSE.impactMote.scale.RandomInRange;
+            moteThrown.rotationRate = MSE.impactMote.rotationRate.RandomInRange;
+
+            Tools.Warn("NewBaseImpactMote - ok", MSE.debug);
+
+            return true;
         }
 
-        public static void ThrowImpactMote(this JobDriver_PlayGenericTargetingGame PGTG, MoteThrown projectileMote)
+        public static void ThrowImpactMote(this ShadowMote shadowMote)
         {
-            Vector3 loc = projectileMote.DrawPos;
-            Map map = PGTG.pawn.Map;
+            if (!shadowMote.HasMSE || !shadowMote.MSE.HasImpactMote)
+                return;
 
-            if (loc.ToIntVec3().ShouldSpawnMotesAt(map) && !map.moteCounter.SaturatedLowPriority)
+            Vector3 loc = shadowMote.exactPosition;
+            Map map = shadowMote.Map;
+
+            MoteSubEffect MSE = shadowMote.MSE;
+
+            //Tools.Warn("ThrowImpactMote ; has MSE; has impactMote", MSE.debug);
+
+            if (!loc.AllowedMoteSpawn(map))
+                return;
+            //Tools.Warn("ThrowImpactMote ; AllowedMoteSpawn", MSE.debug);
+
+            if(!MSE.NewBaseImpactMote(out MoteThrown moteThrown))
             {
-                MoteThrown moteThrown = PGTG.NewBaseImpactMote();
-                moteThrown.exactPosition = loc;
-
-                moteThrown.exactPosition += new Vector3(Rand.Range(-0.02f, 0.02f), 0f, Rand.Range(-0.02f, 0.02f));
-
-                moteThrown.SetVelocity(
-                    PGTG.projectileOption.impactMoteParam.angle.RandomInRange, 
-                    PGTG.projectileOption.impactMoteParam.speed.RandomInRange
-                );
-
-                GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map);
+                Tools.Warn("ThrowImpactMote ; NewBaseImpactMote ko; giving up", MSE.debug);
+                return;
             }
+            
+
+            moteThrown.exactPosition = loc;
+            //Tools.Warn("ThrowImpactMote ; what", MSE.debug);
+            moteThrown.exactPosition += new Vector3(Rand.Range(-0.02f, 0.02f), 0f, Rand.Range(-0.02f, 0.02f));
+
+            //Tools.Warn("ThrowImpactMote ; exactPosition ok", MSE.debug);
+
+            moteThrown.SetVelocity(
+                MSE.impactMote.angle.RandomInRange,
+                MSE.impactMote.speed.RandomInRange
+            );
+
+            //Tools.Warn("ThrowImpactMote ; SetVelocity ok", MSE.debug);
+
+            GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map);
+            Tools.Warn("ThrowImpactMote ; GenSpawn.Spawn ok", MSE.debug);
         }
     }
 }

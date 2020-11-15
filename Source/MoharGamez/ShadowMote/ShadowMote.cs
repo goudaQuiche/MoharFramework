@@ -13,26 +13,93 @@ namespace MoharGamez
 
         private Graphic_Shadow GroundShadowGraphic;
 
-        public ShadownMoteDef Def
-        {
-            get
-            {
-                return def as ShadownMoteDef;
-            }
-        }
-        public float DistanceCoveredFraction => Mathf.Clamp01(BaseDistance == 0 ? 1 : (1 - CurrentDistance / BaseDistance));
-        public Quaternion ExactRotation => Quaternion.LookRotation((destination - origin).Yto0());
+        public ShadownMoteDef Def => def as ShadownMoteDef;
 
-        public bool HasFlyingShadow => def.projectile.shadowSize > 0f;
-        public Material FlyingShadowMaterial => Def.shadowMaterialTex.DrawMatSingle;
+        public MoteSubEffect MSE => Def?.moteSubEffect ?? null;
+        public bool HasMSE => MSE != null;
+
+        // Flying shadow
+        public ThingDef FlyingShadowTex => Def?.moteSubEffect?.flyingShadowRessource ?? null;
+        public bool HasFlyingShadowTex => FlyingShadowTex != null;
+        public Material FlyingShadowMaterial => FlyingShadowTex?.DrawMatSingle ?? null;
         public bool HasFlyingShadowMaterial => FlyingShadowMaterial != null;
+        public ProjectileProperties FlyingShadowData => def?.projectile ?? null;
+        public bool HasFlyingShadowData => FlyingShadowData != null;
 
-        public ShadowData GroundShadowData => def.graphicData?.shadowData;
-        public bool HasGroundShadowData => GroundShadowData != null;
+        // Ground shadow
         public bool HasGroundShadowGraphic => GroundShadowGraphic != null;
+        public ShadowData GroundShadowData => def?.graphicData?.shadowData ?? null;
+        public bool HasGroundShadowData => GroundShadowData != null;
+
+        //Impact
+        public bool HasImpactMote => MSE.HasImpactMote;
+
+        // Sound
+        public SoundDef ThrowSound => MSE.throwSound ?? null;
+        public SoundDef SkiddingSustainSound => MSE.skiddingSustainSound ?? null;
+        public bool HasThrowSound => MSE.HasThrowSound;
+        public bool HasSkiddingSound => MSE.HasSkiddingSound;
+
+        // Needed
+        public bool HasGroundShadow => HasGroundShadowData && HasGroundShadowGraphic;
+        public bool HasFlyingShadow => HasFlyingShadowMaterial && HasFlyingShadowData;
+
+        // Nature defining
+        public bool IsGroundShadowOnly => !HasFlyingShadow && HasGroundShadow;
+        public bool IsFlyingAndGroundShadow => HasFlyingShadow && HasGroundShadow;
 
         private bool IsGrounded => airTimeLeft <= 0;
         private bool IsFlying => !IsGrounded;
+        public float DistanceCoveredFraction => Mathf.Clamp01(BaseDistance == 0 ? 1 : (1 - CurrentDistance / BaseDistance));
+        public Quaternion ExactRotation => Quaternion.LookRotation((destination - origin).Yto0());
+
+        private Sustainer skiddingSustainer = null;
+        private bool ImpactOccured = false;
+        private bool ActiveSustainer => skiddingSustainer != null;
+
+        void StartSustainer()
+        {
+            skiddingSustainer = SkiddingSustainSound.TrySpawnSustainer(new TargetInfo(Position, Map));
+        }
+
+        private void StopSustainer()
+        {
+            if (skiddingSustainer == null)
+                return;
+
+            skiddingSustainer.End();
+            skiddingSustainer = null;
+        }
+
+        public override void SpawnSetup(Map map, bool respawningAfterLoad)
+        {
+            base.SpawnSetup(map, respawningAfterLoad);
+            if (HasThrowSound)
+                ThrowSound.PlayOneShot(new TargetInfo(DrawPos.ToIntVec3(), Map));
+        }
+
+        protected override void TimeInterval(float deltaTime)
+        {
+            base.TimeInterval(deltaTime);
+            if (Destroyed)
+                return;
+
+            if (!ImpactOccured)
+            {
+                if ( (IsFlyingAndGroundShadow && !IsFlying) || IsGroundShadowOnly)
+                {
+                    ImpactOccured = true;
+                    StartSustainer();
+
+                    if (HasImpactMote)
+                        this.ThrowImpactMote();
+                }
+            }
+
+            if (ActiveSustainer && Speed < 0.01)
+                StopSustainer();
+        }
+
 
         public void Initialization(Vector3 nOrigin, Vector3 nDestination)
         {
@@ -52,7 +119,9 @@ namespace MoharGamez
 
         private void InitGroundShadowGraphic()
         {
-            if (GroundShadowGraphic != null || !HasGroundShadowData)
+            if (HasGroundShadowGraphic)
+                return;
+            if (!HasGroundShadowData)
                 return;
 
             GroundShadowGraphic = new Graphic_Shadow(GroundShadowData);
@@ -62,20 +131,17 @@ namespace MoharGamez
         {
             get
             {
-                Vector3 flatCurPos = new Vector3();
-                flatCurPos.x = DrawPos.x;
-                flatCurPos.y = 0;
-                flatCurPos.z = DrawPos.z;
+                Vector3 flatCurPos = new Vector3
+                {
+                    x = DrawPos.x,
+                    y = 0,
+                    z = DrawPos.z
+                };
 
                 return Vector3.Distance(flatOrigin, flatCurPos);
             }
         }
 
-        protected override void TimeInterval(float deltaTime)
-        {
-            base.TimeInterval(deltaTime);
-            
-        }
         /*
         protected virtual Vector3 NextExactPosition(float deltaTime)
         {
@@ -97,27 +163,27 @@ namespace MoharGamez
             }
         }
 
+        float ArcRatio => IsFlyingAndGroundShadow ? ArcHeightFactor * GenMath.InverseParabola(DistanceCoveredFraction) : 0;
+
         public override void Draw()
         {
-            float num = ArcHeightFactor * GenMath.InverseParabola(DistanceCoveredFraction);
+            float num = ArcRatio;
             Vector3 position = DrawPos + new Vector3(0f, 0f, 1f) * num;
             position.y = def.altitudeLayer.AltitudeFor();
 
             if (IsFlying)
             {
-                if (HasFlyingShadow)
+                if (IsFlyingAndGroundShadow)
                     DrawFlyingShadow(DrawPos, num);
+                else if(IsGroundShadowOnly)
+                    GroundShadowGraphic.Draw(position, Rot4.North, this);
             }
             else if (IsGrounded)
             {
                 if (HasGroundShadowGraphic)
-                {
-                    /*
-                    Vector3 groundShadowPos = DrawPos;
-                    groundShadowPos.y = def.altitudeLayer.AltitudeFor();
-                    */
+                { 
                     GroundShadowGraphic.Draw(position, Rot4.North, this);
-                    Log.Warning("ShadownMote Position:" + position + " - shadow layer:" + AltitudeLayer.Shadows.AltitudeFor());
+                    //Log.Warning("ShadownMote Position:" + position + " - shadow layer:" + AltitudeLayer.Shadows.AltitudeFor());
                 }
 
             }
@@ -136,8 +202,8 @@ namespace MoharGamez
             Vector3 b = new Vector3(0f, -0.01f, 0f);
             Matrix4x4 matrix = default(Matrix4x4);
             matrix.SetTRS(drawLoc + b, Quaternion.identity, s);
-            Graphics.DrawMesh(MeshPool.plane10, matrix, FlyingShadowMaterial, 0);
 
+            Graphics.DrawMesh(MeshPool.plane10, matrix, FlyingShadowMaterial, 0);
         }
     }
 

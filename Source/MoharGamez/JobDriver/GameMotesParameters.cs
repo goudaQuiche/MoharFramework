@@ -32,21 +32,39 @@ namespace MoharGamez
         public IntRange throwInterval;
 
         public List<ProjectileOption> projectileOptionList;
-        public bool Debug = false;
+        public bool debug = false;
     }
 
     public class ProjectileOption
     {
-        public MoteParameter moteParam = null;
-        public MoteParameter shadowMoteParam = null;
+        public MoteParameter mote = null;
+        public MoteParameter shadowMote = null;
 
-        public ImpactMoteParameter impactMoteParam = null;
-        public SoundDef throwSound = null;
+        public ThoughtParameter thought = null;
 
         public float weight;
 
-        public bool HasMoteProjectiles => moteParam != null;
-        public bool HasShadowMoteProjectiles => shadowMoteParam != null;
+        public bool IsMoteType => mote != null;
+        public bool IsShadowMoteType => shadowMote != null;
+
+        public bool HasThought => thought != null;
+    }
+
+    public class ThoughtParameter
+    {
+        public PlayPool goodPlayThoughtPool;
+        public PlayPool badPlayThoughtPool;
+
+        public List<string> goodPlayIconPool;
+        public List<string> badPlayIconPool;
+    }
+    public class PlayPool
+    {
+        public float triggerChance;
+        public float rivalryAdditionnalChance;
+        public float distanceThreshold;
+
+        public List<ThoughtDef> thoughtList;
     }
 
     public class MoteParameter
@@ -56,19 +74,8 @@ namespace MoharGamez
         public FloatRange rotation;
     }
 
-    public class ImpactMoteParameter
-    {
-        public ThingDef moteDef;
-        public FloatRange speed;
-        public FloatRange angle;
-        public FloatRange scale;
-        public FloatRange rotationRate;
-    }
-    /*
-    public class EffecterParameter
-    {
-        public EffecterDef effecterDef;
-    }
-    */
+    //
+    //public class MoteRecord
+    
 
 }
