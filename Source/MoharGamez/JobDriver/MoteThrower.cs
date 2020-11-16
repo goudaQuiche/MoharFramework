@@ -55,7 +55,7 @@ namespace MoharGamez
             destinationCell.y = thrower.DrawPos.y;
             ShadowMote moteThrown = (ShadowMote)ThingMaker.MakeThing(moteDef);
 
-            moteThrown.Initialization(thrower.DrawPos, destinationCell);
+            moteThrown.Initialization(thrower.DrawPos, destinationCell, PGTG.PetanqueSpotCell.ToVector3Shifted(), thrower);
 
             moteThrown.Scale = 1f;
             moteThrown.rotationRate = PGTG.Rotation.RandomInRange;
@@ -66,7 +66,7 @@ namespace MoharGamez
 
             return GenSpawn.Spawn(moteThrown, thrower.Position, thrower.Map);
         }
-        
+
         public static Thing MoteSpawner_ThrowObjectAt(this JobDriver_PlayGenericTargetingGame PGTG)
         {
             IntVec3 targetCell = PGTG.PetanqueSpotCell;

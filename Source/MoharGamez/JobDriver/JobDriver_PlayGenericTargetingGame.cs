@@ -1,7 +1,8 @@
 using RimWorld;
 using Verse;
 using System.Collections.Generic;
-using Verse.Sound;
+
+using UnityEngine;
 
 namespace MoharGamez
 {
@@ -28,6 +29,7 @@ namespace MoharGamez
         // Common to all projectiles parameters
         public SkillDef SkillDefScaling => gameProjectile.skillDefScaling;
 
+        // period
         public IntRange ThrowInterval => gameProjectile.throwInterval;
         public bool IsTimeToThrow => pawn.IsHashIntervalTick(ThrowInterval.RandomInRange);
 
@@ -35,8 +37,6 @@ namespace MoharGamez
         public FloatRange Speed => PickedMoteParam.speed;
         public FloatRange Rotation => PickedMoteParam.rotation;
         public ThingDef MoteDef => PickedMoteParam.moteDef;
-
-        public List<MoteThrown> MoteThrownList = new List<MoteThrown>();
 
         public bool HasGameProjectile => gameProjectile != null;
         public bool HasProjectileOption => projectileOption != null;
@@ -81,9 +81,9 @@ namespace MoharGamez
             bool Didit = this.RetrieveProjectileParam();
 
             Tools.Warn(
-                MyName + " SetParameters " + 
-                " - 02 RetrieveProjectileParam:" + Didit + 
-                " - HasPickedMoteOption: "+ HasPickedMoteOption +
+                MyName + " SetParameters " +
+                " - 02 RetrieveProjectileParam:" + Didit +
+                " - HasPickedMoteOption: " + HasPickedMoteOption +
                 " - HasPickedShadowMoteOption: " + HasPickedShadowMoteOption
                 //" - HasPickedEffecterOption: " + HasPickedEffecterOption
                 , myDebug);
@@ -128,11 +128,12 @@ namespace MoharGamez
 
             if (HasPickedMoteOption)
             {
-                MoteThrownList.Add((MoteThrown)this.MoteSpawner_ThrowObjectAt());
+                this.MoteSpawner_ThrowObjectAt();
             }
             else if (HasPickedShadowMoteOption)
             {
-                MoteThrownList.Add((MoteThrown)this.ShadowMoteSpawner_ThrowObjectAt());
+                this.ShadowMoteSpawner_ThrowObjectAt();
+                //this.CalculateThrowDistance(destinationCell);
             }
         }
 

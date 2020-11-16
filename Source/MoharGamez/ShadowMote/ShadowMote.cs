@@ -11,12 +11,17 @@ namespace MoharGamez
         public Vector3 destination;
         public float BaseDistance;
 
+        public Vector3 targetBuildingCoordinates;
+        public Pawn pawn;
+
         private Graphic_Shadow GroundShadowGraphic;
 
         public ShadownMoteDef Def => def as ShadownMoteDef;
 
         public MoteSubEffect MSE => Def?.moteSubEffect ?? null;
         public bool HasMSE => MSE != null;
+
+        public bool myDebug = true;
 
         // Flying shadow
         public ThingDef FlyingShadowTex => Def?.moteSubEffect?.flyingShadowRessource ?? null;
@@ -57,6 +62,8 @@ namespace MoharGamez
         private bool ImpactOccured = false;
         private bool ActiveSustainer => skiddingSustainer != null;
 
+        private bool LoggedCoordinates = false;
+
         void StartSustainer()
         {
             skiddingSustainer = SkiddingSustainSound.TrySpawnSustainer(new TargetInfo(Position, Map));
@@ -76,6 +83,9 @@ namespace MoharGamez
             base.SpawnSetup(map, respawningAfterLoad);
             if (HasThrowSound)
                 ThrowSound.PlayOneShot(new TargetInfo(DrawPos.ToIntVec3(), Map));
+
+            if (HasMSE)
+                myDebug = MSE.debug;
         }
 
         protected override void TimeInterval(float deltaTime)
@@ -98,16 +108,32 @@ namespace MoharGamez
 
             if (ActiveSustainer && Speed < 0.01)
                 StopSustainer();
+
+            if (!LoggedCoordinates && Speed == 0)
+            {
+                Tools.Warn(
+                    pawn.LabelShort +
+                    " non moving projectile" +
+                    " drawPos: " + DrawPos +
+                    " exactPosition: " + exactPosition +
+                    " Position: " + Position +
+                    " MyPosition: " + MyPosition +
+                    " targetBuildingCoordinates: " + targetBuildingCoordinates
+                    , myDebug
+                );
+                pawn.CalculateThrowDistance(targetBuildingCoordinates, MyPosition, myDebug);
+                LoggedCoordinates = true;
+            }
         }
 
 
-        public void Initialization(Vector3 nOrigin, Vector3 nDestination)
+        public void Initialization(Vector3 nOrigin, Vector3 nDestination, Vector3 nTarget, Pawn p)
         {
-            InitCoordinates(nOrigin, nDestination);
+            InitCoordinates(nOrigin, nDestination, nTarget, p);
             InitGroundShadowGraphic();
         }
 
-        private void InitCoordinates(Vector3 nOrigin, Vector3 nDestination)
+        private void InitCoordinates(Vector3 nOrigin, Vector3 nDestination, Vector3 nTarget, Pawn p)
         {
             origin = nOrigin;
             destination = nDestination;
@@ -115,6 +141,9 @@ namespace MoharGamez
 
             flatOrigin.y = nDestination.y = 0;
             BaseDistance = Vector3.Distance(flatOrigin, nDestination);
+
+            targetBuildingCoordinates = nTarget;
+            pawn = p;
         }
 
         private void InitGroundShadowGraphic()
@@ -164,17 +193,17 @@ namespace MoharGamez
         }
 
         float ArcRatio => IsFlyingAndGroundShadow ? ArcHeightFactor * GenMath.InverseParabola(DistanceCoveredFraction) : 0;
+        Vector3 MyPosition => DrawPos + Vector3.forward * ArcRatio;
 
         public override void Draw()
         {
-            float num = ArcRatio;
-            Vector3 position = DrawPos + new Vector3(0f, 0f, 1f) * num;
+            Vector3 position = MyPosition;
             position.y = def.altitudeLayer.AltitudeFor();
 
             if (IsFlying)
             {
                 if (IsFlyingAndGroundShadow)
-                    DrawFlyingShadow(DrawPos, num);
+                    DrawFlyingShadow(DrawPos, ArcRatio);
                 else if(IsGroundShadowOnly)
                     GroundShadowGraphic.Draw(position, Rot4.North, this);
             }

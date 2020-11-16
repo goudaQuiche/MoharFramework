@@ -50,23 +50,6 @@ namespace MoharGamez
         public bool HasThought => thought != null;
     }
 
-    public class ThoughtParameter
-    {
-        public PlayPool goodPlayThoughtPool;
-        public PlayPool badPlayThoughtPool;
-
-        public List<string> goodPlayIconPool;
-        public List<string> badPlayIconPool;
-    }
-    public class PlayPool
-    {
-        public float triggerChance;
-        public float rivalryAdditionnalChance;
-        public float distanceThreshold;
-
-        public List<ThoughtDef> thoughtList;
-    }
-
     public class MoteParameter
     {
         public ThingDef moteDef;
@@ -74,8 +57,24 @@ namespace MoharGamez
         public FloatRange rotation;
     }
 
-    //
-    //public class MoteRecord
-    
+    public class ThoughtParameter
+    {
+        public PlayPool goodPlayThoughtPool;
+        public PlayPool badPlayThoughtPool;
+
+        public List<string> goodPlayIconPool;
+        public List<string> badPlayIconPool;
+
+        public bool onlyOneThoughtPerJob = false;
+    }
+    public class PlayPool
+    {
+        public float triggerChance;
+        public float rivalryAdditionnalChance;
+
+        public float distanceThreshold;
+
+        public List<ThoughtDef> thoughtList;
+    }
 
 }
