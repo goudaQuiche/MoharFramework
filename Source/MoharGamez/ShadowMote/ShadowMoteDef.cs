@@ -7,7 +7,7 @@ namespace MoharGamez
 {
     //[StaticConstructorOnStartup]
 
-    public class ShadownMoteDef : ThingDef
+    public class ShadowMoteDef : ThingDef
     {
         public MoteSubEffect moteSubEffect;
         //public bool HasMSE => moteSubEffect != null;

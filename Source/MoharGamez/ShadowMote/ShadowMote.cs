@@ -16,7 +16,7 @@ namespace MoharGamez
 
         private Graphic_Shadow GroundShadowGraphic;
 
-        public ShadownMoteDef Def => def as ShadownMoteDef;
+        public ShadowMoteDef Def => def as ShadowMoteDef;
 
         public MoteSubEffect MSE => Def?.moteSubEffect ?? null;
         public bool HasMSE => MSE != null;

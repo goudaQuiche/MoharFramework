@@ -53,8 +53,12 @@ namespace MoharGamez
     public class MoteParameter
     {
         public ThingDef moteDef;
+        public List<ThingDef> stuffMotePool;
         public FloatRange speed;
         public FloatRange rotation;
+
+        public bool HasRegularMoteDef => moteDef != null;
+        public bool HasStuffMotePool => !stuffMotePool.NullOrEmpty();
     }
 
     public class ThoughtParameter

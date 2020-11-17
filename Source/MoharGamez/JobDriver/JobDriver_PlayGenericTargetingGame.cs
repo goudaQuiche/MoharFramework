@@ -1,7 +1,7 @@
 using RimWorld;
 using Verse;
 using System.Collections.Generic;
-
+using System.Linq;
 using UnityEngine;
 
 namespace MoharGamez
@@ -36,7 +36,7 @@ namespace MoharGamez
         // Depending on Randomly picker option; depends on the type of the mote
         public FloatRange Speed => PickedMoteParam.speed;
         public FloatRange Rotation => PickedMoteParam.rotation;
-        public ThingDef MoteDef => PickedMoteParam.moteDef;
+        
 
         public bool HasGameProjectile => gameProjectile != null;
         public bool HasProjectileOption => projectileOption != null;
@@ -50,38 +50,109 @@ namespace MoharGamez
 
         public IntVec3 PetanqueSpotCell => TargetA.Cell;
 
+        public ThingDef JoyBuildingStuff;
+        public bool HasStuff => JoyBuildingStuff != null;
+
         int AttemptNum = 0;
+
+        public ThingDef MoteDef {
+            get
+            {
+                if (PickedMoteParam.HasRegularMoteDef)
+                    return PickedMoteParam.moteDef;
+                else if (PickedMoteParam.HasStuffMotePool)
+                    return RetrieveStuffMoteDef;
+
+                return null;
+            }
+        }
+
+        public ThingDef RetrieveStuffMoteDef
+        {
+            get
+            {
+                if (!HasStuff)
+                {
+                    Tools.Warn("RetrieveStuffMoteDef building stuff not found => null ", myDebug);
+                    return null;
+                }
+
+                foreach(ThingDef curStuffMoteDef in PickedMoteParam.stuffMotePool)
+                    if (curStuffMoteDef.graphicData.color == JoyBuildingStuff.stuffProps.color)
+                    {
+                        Tools.Warn("RetrieveStuffMoteDef found " + curStuffMoteDef, myDebug);
+                        return curStuffMoteDef;
+                    }
+
+                Tools.Warn("RetrieveStuffMoteDef found nothing, default=" + PickedMoteParam.stuffMotePool[0], myDebug);
+
+                return PickedMoteParam.stuffMotePool[0];
+            }
+        }
 
         bool SetParameters()
         {
-            MyName = pawn.LabelShort + " " + MyName;
+            string DebugStr = pawn.LabelShort + " " + MyName + " SetParameters";
 
-            Tools.Warn(MyName + " Entering SetParameters ", myDebug);
+            Tools.Warn(DebugStr + " - Entering", myDebug);
 
-            GameProjectileDef myGPD = DefDatabase<GameProjectileDef>.AllDefs.FirstOrFallback();
-            if (myGPD == null)
+            if (pawn.CurJob == null)
             {
-                Tools.Warn(MyName + " SetParameters " + " - 00 no GameProjectileDef found", myDebug);
+                Tools.Warn(DebugStr + " - no job for pawn", myDebug);
+                return false;
+            } else
+                Tools.Warn(
+                    DebugStr + 
+                    " - pawn job: " + pawn.CurJobDef +
+                    " - GetType(): " + GetType()
+                    , myDebug
+                );
+
+            IEnumerable<GameProjectileDef> myGPDList =
+                DefDatabase<GameProjectileDef>.AllDefs
+                .Where(gpd => 
+                    gpd.gameProjectileList.Any(gp => gp.driverClass == GetType() && pawn.CurJobDef == gp.jobDef)
+                );
+            if (myGPDList.EnumerableNullOrEmpty())
+            {
+                Tools.Warn(DebugStr + " - 00 no GameProjectileDef found", myDebug);
                 return false;
             }
+            else
+                Tools.Warn(DebugStr + " - found " + myGPDList.EnumerableCount() + " GPD", myDebug);
 
-            foreach (GameProjectile curGP in myGPD.gameProjectileList)
-                if ((curGP.driverClass == this.GetType()) && (pawn.CurJob != null && pawn.CurJobDef == curGP.jobDef))
+            foreach (GameProjectileDef curGPD in myGPDList)
+            {
+                IEnumerable<GameProjectile> myGPDItem = curGPD.gameProjectileList;
+                foreach (GameProjectile curGP in myGPDItem)
                 {
-                    gameProjectile = curGP;
-                    break;
+                    if ((curGP.driverClass == GetType()) && (pawn.CurJobDef == curGP.jobDef))
+                    {
+                        gameProjectile = curGP;
+                        Tools.Warn(DebugStr + " - found JobDef" + curGP.jobDef, myDebug);
+                        break;
+                    }
+                    Tools.Warn(DebugStr +
+                        " - GetType():" + GetType() +
+                        " curGP.driverClass: " + curGP.driverClass +
+                        " curGP.jobDef: " + curGP.jobDef +
+                        "  pawn.CurJobDef: " + pawn.CurJobDef
+                        , myDebug
+                    );
                 }
+            }
+
 
             if (!HasGameProjectile)
             {
-                Tools.Warn(MyName + " SetParameters " + " - 01 no GameProjectile item found", myDebug);
+                Tools.Warn(DebugStr + " - 01 no GameProjectile item found", myDebug);
                 return false;
             }
 
             bool Didit = this.RetrieveProjectileParam();
 
             Tools.Warn(
-                MyName + " SetParameters " +
+                DebugStr +
                 " - 02 RetrieveProjectileParam:" + Didit +
                 " - HasPickedMoteOption: " + HasPickedMoteOption +
                 " - HasPickedShadowMoteOption: " + HasPickedShadowMoteOption
@@ -98,20 +169,46 @@ namespace MoharGamez
         }
         */
 
+        void SetStuff()
+        {
+            string DebugStr = pawn.LabelShort + " " + MyName + " SetStuff";
+
+            if (TargetA.Thing == null)
+            {
+                Tools.Warn(DebugStr + " null TargetA.Thing", myDebug);
+                return;
+            }
+
+            Thing JoyBuilding = TargetA.Thing;
+
+            if (!JoyBuilding.def.MadeFromStuff || JoyBuilding.Stuff == null)
+            {
+                Tools.Warn(DebugStr + " JoyBuilding not made from stuff or stuff = null", myDebug);
+                return;
+            }
+
+            Tools.Warn(DebugStr + "found stuff=" + JoyBuilding.Stuff, myDebug);
+
+            JoyBuildingStuff = JoyBuilding.Stuff;
+        }
+
         bool ParameterInitialization()
         {
+            string DebugStr = pawn.LabelShort + " " + MyName + " WatchTickAction";
+
             if (HasGameProjectile)
                 return true;
 
             if (AttemptNum > 20)
                 return false;
 
-            Tools.Warn(MyName + " WatchTickAction - Trying to ParameterInitialization - SetParameters", myDebug);
+            Tools.Warn(DebugStr + " Trying to ParameterInitialization - SetParameters", myDebug);
             AttemptNum++;
 
             bool DidIt = SetParameters();
-            Tools.Warn(MyName + " WatchTickAction - DidIt:" + DidIt + " ; attempts:" + AttemptNum, myDebug);
+            Tools.Warn(DebugStr + " DidIt:" + DidIt + " ; attempts:" + AttemptNum, myDebug);
 
+            SetStuff();
             return DidIt;
         }
 
