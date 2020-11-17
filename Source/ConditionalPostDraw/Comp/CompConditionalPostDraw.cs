@@ -8,7 +8,10 @@ using System.Collections.ObjectModel;
 using System.Collections.Concurrent;
 using System.Linq;
 
-// OLB stands for OverLayed Building
+// ConPoDra stands for Conditionnal PostDraw
+
+    //Todo
+//WatchBuildingUtility.CalculateWatchCells
 namespace ConPoDra
 {
     public class CompConditionalPostDraw : ThingComp
@@ -22,39 +25,49 @@ namespace ConPoDra
         public CompRefuelable compFuel = null;
 
         IEnumerable<ReservationManager.Reservation> reservations;
-        //List<ReservationManager.Reservation> reservations;
 
-        //List<int> MaterialIndexList;
-        int[] MaterialIndexList;
+        List<int> MaterialIndexList = new List<int>();
         int CurMaterialIndex => MaterialIndexList[PostDrawIndex];
-        //int CurMaterialIndex =;
-
-        bool MyDebug => Props.debug;
-
-        public bool HasFuelComp => compFuel != null;
-        public bool HasPowerComp => compPower != null;
-        public bool HasWorker => worker != null;
-
-        public bool HasPower => HasPowerComp && compPower.PowerOn;
-        public bool HasFuel => HasFuelComp && compFuel.Fuel > 0;
-
-
-        public bool IsBuilding => building != null;
-        public bool HasInteractionCells => IsBuilding && building.InteractionCell != null;
 
         int PostDrawIndex = 0;
 
         public PostDrawTask CurPostDrawTask => PostDrawIndex >= Props.postDraw.Count ? null : Props.postDraw[PostDrawIndex];
 
+        bool HasRegularMaterial => !CurPostDrawTask.materialPool.NullOrEmpty();
+        bool HasStuffMaterial => !CurPostDrawTask.stuffMaterialPool.NullOrEmpty();
+
+        ThingDef CurrentStuffThingDef => CurMaterialIndex >= CurPostDrawTask.stuffMaterialPool.Count ? null : CurPostDrawTask.stuffMaterialPool[CurMaterialIndex].material;
+        ThingDef CurrentRegularThingDef => CurMaterialIndex >= CurPostDrawTask.materialPool.Count ? null : CurPostDrawTask.materialPool[CurMaterialIndex];
+        Material CurrentMaterial => CurrentThingDef?.DrawMatSingle ?? null;
+
+        public bool AnyTaskWithStuffMaterial => Props.postDraw.Any(p => p.HasStuffMaterialPool);
+
+        AltitudeLayer CurrentAltitudeLayer => CurrentThingDef?.altitudeLayer ?? 0;
+
+        //Nature of parent
+        public bool HasFuelComp => compFuel != null;
+        public bool HasPowerComp => compPower != null;
+        public bool IsMadeOfStuff => parent.def.MadeFromStuff && parent.Stuff != null;
+
+
+        public bool HasWorker => worker != null;
+
+        public bool HasPower => HasPowerComp && compPower.PowerOn;
+        public bool HasFuel => HasFuelComp && compFuel.Fuel > 0;
+
+        public bool IsBuilding => building != null;
+        public bool HasInteractionCells => IsBuilding && building.InteractionCell != null;
+
         public Conditions CurCondition => CurPostDrawTask?.condition ?? null;
 
-        //public bool RequiresFuelCheck => CurCondition == null ? false : CurCondition.ifFueled && HasFuelComp;
+        //Condition
         public bool RequiresFuelCheck => CurCondition?.ifFueled ?? false && HasFuelComp ;
         public bool RequiresPowerCheck => CurCondition?.ifPowered ?? false && HasPowerComp;
-        
+        //Condition reserved
         public bool RequiresReserved => (CurCondition?.ifReserved ?? false);
         public bool RequiresNotReserved => (CurCondition?.ifNotReserved ?? false);
         public bool RequiresReservationCheck => RequiresReserved || RequiresNotReserved;
+        public bool IsTimeToUpdateReservation => AnyTaskRequiresReservationCheck && (Find.TickManager.TicksGame % Props.workerReservationUpdateFrequency == 0);
 
         public bool AnyTaskRequiresReservationCheck => Props.postDraw.Any(p => p.condition.ifReserved || p.condition.ifNotReserved);
 
@@ -64,6 +77,7 @@ namespace ConPoDra
         
         bool IsReserved => !reservations.EnumerableNullOrEmpty();
         bool IsOccupied => IsReserved && reservations.FirstOrDefault().Claimant.Position == building.InteractionCell;
+
         bool IsSelected => Find.Selector.IsSelected(parent);
 
         public float CurScale => CurPostDrawTask?.scale ?? 0;
@@ -71,11 +85,22 @@ namespace ConPoDra
         public bool CurAllowBrowse => CurPostDrawTask?.allowMaterialBrowse ?? false;
         public string CurLabel => CurPostDrawTask?.label ?? "empty";
 
-        ThingDef CurMatRes => CurMaterialIndex >= CurPostDrawTask.materialPool.Count ? null : CurPostDrawTask.materialPool[CurMaterialIndex];
-        Material CurrentMaterial => CurMatRes?.DrawMatSingle ?? null;
-        AltitudeLayer CurrentAltitudeLayer => CurMatRes?.altitudeLayer ?? 0;
+        bool MyDebug => Props.debug;
 
-        public bool IsTimeToUpdateReservation => AnyTaskRequiresReservationCheck && (Find.TickManager.TicksGame % Props.workerReservationUpdateFrequency == 0);
+        public ThingDef CurrentThingDef
+        {
+            get
+            {
+                if (HasRegularMaterial)
+                {
+                    return CurrentRegularThingDef;
+                }else if (HasStuffMaterial)
+                {
+                    return CurrentStuffThingDef;
+                }
+                return null;
+            }
+        }
 
         public override void PostDraw()
         {
@@ -119,8 +144,36 @@ namespace ConPoDra
 
                 Graphics.DrawMesh(MeshPool.plane10, MaterialMatrix, material, 0);
             }
+        }
 
+        public void SetStuffMaterialIndexes()
+        {
+            if (!IsMadeOfStuff)
+            {
+                Tools.Warn(parent.Label + " is not made of stuff", MyDebug);
+                return;
+            }
+            ThingDef stuffIngredient = parent.Stuff;
 
+            for (int i = 0; i < Props.postDraw.Count; i++)
+            {
+                PostDrawTask PDT = Props.postDraw[i];
+                if (PDT.HasStuffMaterialPool)
+                {
+                    for (int j = 0; j < PDT.stuffMaterialPool.Count; j++)
+                    {
+                        if (stuffIngredient == PDT.stuffMaterialPool[j].stuff)
+                            MaterialIndexList[i] = j;
+                        Tools.Warn(
+                            "Found " + PDT.stuffMaterialPool[j].stuff +
+                            " => chose " + PDT.stuffMaterialPool[j].material.defName +
+                            " ; i: " + i +
+                            " ; j:" + j
+                            , MyDebug
+                        );
+                    }
+                }
+            }
         }
 
         public override void PostExposeData()
@@ -129,16 +182,16 @@ namespace ConPoDra
 
             //Scribe_Values.Look(ref MaterialIndexList, "MaterialIndexList");
             //Scribe_Collections.Look(ref MaterialIndexList, "MaterialIndexList", LookMode.Reference);
-            /*
+            
+            //Scribe_Collections.Look(ref MaterialIndexList, "MaterialIndexList", LookMode.Value, new object[0]);
             Scribe_Collections.Look(ref MaterialIndexList, "MaterialIndexList", LookMode.Value, new object[0]);
             if (Scribe.mode == LoadSaveMode.PostLoadInit && this.MaterialIndexList == null)
             {
                 MaterialIndexList = new List<int>();
             }
-            */
 
             //Scribe_Values.Look(ref reservations, "reservation");
-            //Scribe_Collections.Look(ref reservations, "reservation", LookMode.Reference, new object[0]);
+            //Scribe_Collections.Look(ref reservations, "reservation");
         }
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
@@ -148,22 +201,30 @@ namespace ConPoDra
             if (parent is Building b)
                 building = b;
 
-            if (!respawningAfterLoad)
+            if (respawningAfterLoad)
+            {
+                if (RequiresReservationCheck) UpdateReservation();
                 return;
+            }
 
-            MaterialIndexList = new int[Props.postDraw.Count];
+            //MaterialIndexList = new int[Props.postDraw.Count];
             //MaterialIndexList = new List<int>();
-            /*
+            
             for (PostDrawIndex = 0; PostDrawIndex < Props.postDraw.Count; PostDrawIndex++)
             {
                 MaterialIndexList.Add(0);
             }
-            */
-                
-
             Tools.Warn("MaterialIndexList size:" + MaterialIndexList.Count(), MyDebug);
 
-            //if (RequiresReservationCheck) UpdateReservation();
+            if (AnyTaskWithStuffMaterial && IsMadeOfStuff)
+            {
+                Tools.Warn(parent.Label + " is made of " + parent.Stuff, MyDebug);
+                SetStuffMaterialIndexes();
+            }
+
+            
+
+            
         }
 
         bool UpdateReservation()
@@ -193,33 +254,21 @@ namespace ConPoDra
             if (parent.Negligeable())
                 return;
 
-            Tools.Warn(parent?.LabelShort + "CompTick requiresreservation?" + AnyTaskRequiresReservationCheck, MyDebug);
+            //Tools.Warn(parent?.LabelShort + "CompTick requiresreservation?" + AnyTaskRequiresReservationCheck, MyDebug);
 
             if (IsTimeToUpdateReservation)
             {
                 bool DoHaveReservation = UpdateReservation();
-                Tools.Warn(parent?.LabelShort + " reservation: " + DoHaveReservation + " worker: " + worker?.LabelShort, MyDebug);
+                //Tools.Warn(parent?.LabelShort + " reservation: " + DoHaveReservation + " worker: " + worker?.LabelShort, MyDebug);
             }
         }
 
         public int NextIndex(int materialIndex, int postDrawTaskIndex)
         {
-            /*
-            MaterialIndex++;
-            if (MaterialIndex >= Props.materialPool.Count)
-                MaterialIndex = 0;
-                */
-
-            //Tools.Warn("NextIndex CurPostDrawTask?" + CurPostDrawTask, MyDebug);
             Tools.Warn("NextIndex postDrawTaskIndex?" + postDrawTaskIndex, MyDebug);
 
-            /*
-             * if (CurPostDrawTask == null)
-                return 0;
-                */
-
             int newValue = materialIndex + 1;
-           //if (newValue >= CurPostDrawTask.materialPool.Count)
+
             if (newValue >= Props.postDraw[postDrawTaskIndex].materialPool.Count)
                 newValue = 0;
 
@@ -228,28 +277,6 @@ namespace ConPoDra
             return newValue;
         }
 
-        /*
-        public override IEnumerable<Gizmo> CompGetGizmosExtra()
-        {
-            for (PostDrawIndex = 0; PostDrawIndex < Props.postDraw.Count; PostDrawIndex++)
-            {
-                if (CurAllowBrowse)
-                {
-                    yield return new Command_Action
-                    {
-                        defaultLabel = "#" + PostDrawIndex + " - change material",
-                        defaultDesc = "browse #" + PostDrawIndex + " - "+CurLabel,
-                        icon = ContentFinder<Texture2D>.Get("UI/Commands/Debug", true),
-                        //icon = TexCommand.Attack,
-                        action = delegate
-                        {
-                            CurMaterialIndex = NextIndex(CurMaterialIndex, PostDrawIndex);
-                        }
-                    };
-                }
-            }
-        }
-        */
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
             for (int i = 0; i < Props.postDraw.Count; i++)
@@ -263,8 +290,9 @@ namespace ConPoDra
                     int preEvaluate = i;
                     yield return new Command_Action
                     {
-                        defaultLabel = "#" + preEvaluate + " " + curLabel + " - change material",
-                        defaultDesc = "browse #" + preEvaluate + ":"+ curMatIndex + " -> " + (curMatIndex + 1),
+                        defaultLabel = curLabel,
+                        //defaultLabel = "#" + preEvaluate + " " + curLabel + " - change material",
+                        //defaultDesc = "browse #" + preEvaluate + ":"+ curMatIndex + " -> " + (curMatIndex + 1),
                         icon = TexCommand.Attack,
                         action = delegate
                         {

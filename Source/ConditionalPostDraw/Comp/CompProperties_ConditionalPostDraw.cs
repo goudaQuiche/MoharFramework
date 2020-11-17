@@ -35,9 +35,10 @@ namespace ConPoDra
 
     public class PostDrawTask
     {
-        public string label;
+        public string label = "browse materials";
 
         public List<ThingDef> materialPool;
+        public List<StuffMaterialItem> stuffMaterialPool;
 
         public Conditions condition;
 
@@ -46,6 +47,9 @@ namespace ConPoDra
 
         public float scale = 1f;
         public bool vanillaPulse = false;
+
+        public bool HasRegularMaterialPool => !materialPool.NullOrEmpty();
+        public bool HasStuffMaterialPool => !stuffMaterialPool.NullOrEmpty();
     }
 
     public class Conditions
@@ -60,5 +64,11 @@ namespace ConPoDra
         public bool ifSelected = false;
 
         public bool noCondition = false;
+    }
+
+    public class StuffMaterialItem
+    {
+        public ThingDef material;
+        public ThingDef stuff;
     }
 }
