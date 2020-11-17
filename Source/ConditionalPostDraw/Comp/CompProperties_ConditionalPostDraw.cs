@@ -45,7 +45,16 @@ namespace ConPoDra
         public bool allowMaterialBrowse = false;
         public bool allowMaterialBrowseIfDevMode = false;
 
-        public float scale = 1f;
+        public Vector3 offset;
+
+        public Vector2 scale = Vector2.one;
+        public bool tickDrivenScale = false;
+        public FloatRange xScaleRange = new FloatRange(1, 1);
+        public FloatRange yScaleRange = new FloatRange(1, 1);
+
+        public bool tickDrivenRotation = false;
+        public float rotationSpeed = 1f;
+
         public bool vanillaPulse = false;
 
         public bool HasRegularMaterialPool => !materialPool.NullOrEmpty();

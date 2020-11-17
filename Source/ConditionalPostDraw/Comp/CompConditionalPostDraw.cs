@@ -80,7 +80,16 @@ namespace ConPoDra
 
         bool IsSelected => Find.Selector.IsSelected(parent);
 
-        public float CurScale => CurPostDrawTask?.scale ?? 0;
+        public Vector3 CurScale => CurPostDrawTask?.scale ?? Vector3.one;
+
+        public bool CurTickDrivenScale => CurPostDrawTask?.tickDrivenScale ?? false;
+        public FloatRange CurXScaleRange => CurPostDrawTask?.xScaleRange?? new FloatRange(0,0);
+        public FloatRange CurYScaleRange => CurPostDrawTask?.yScaleRange?? new FloatRange(0, 0);
+
+        public bool CurTickDrivenRotation => CurPostDrawTask?.tickDrivenRotation ?? false;
+        public float CurRotationSpeed => CurPostDrawTask?.rotationSpeed ?? 1;
+
+        public Vector3 CurOffset => CurPostDrawTask?.offset ?? Vector3.zero;
         public bool CurVanillaPulse => CurPostDrawTask?.vanillaPulse ?? false;
         public bool CurAllowBrowse => CurPostDrawTask?.allowMaterialBrowse ?? false;
         public string CurLabel => CurPostDrawTask?.label ?? "empty";
@@ -124,23 +133,40 @@ namespace ConPoDra
                         continue;
                     else if (RequiresNotReserved && IsReserved)
                         continue;
-                        
+
                     if (RequiresInteractionCellCheck && !IsOccupied)
                         continue;
-                    if(RequiresSelection && !IsSelected)
+                    if (RequiresSelection && !IsSelected)
                         continue;
                 }
 
                 Vector3 drawPos = parent.DrawPos;
                 drawPos.y = CurrentAltitudeLayer.AltitudeFor();
-                float drawSize = parent.def.graphicData.drawSize.x * CurScale;
+                drawPos = drawPos + CurOffset;
 
-                Vector3 MaterialSize = new Vector3(drawSize, 1f, drawSize);
+                Vector2 parentDrawSize = parent.def.graphicData.drawSize;
+                //float drawSize = .x * CurScale;
+                Vector3 MaterialSize = new Vector3(parentDrawSize.x * CurScale.x, 1f, parentDrawSize.y * CurScale.y);
+                if (CurTickDrivenScale)
+                {
+                    float tickFactor = parent.Mirror1();
+                    MaterialSize.x += CurXScaleRange.min + CurXScaleRange.Span * tickFactor;
+                    MaterialSize.z += CurYScaleRange.min + CurYScaleRange.Span * tickFactor;
+                }
 
                 Material material = CurVanillaPulse ? FadedMaterialPool.FadedVersionOf(CurrentMaterial, parent.VanillaPulse()) : CurrentMaterial;
 
                 Matrix4x4 MaterialMatrix = default(Matrix4x4);
-                MaterialMatrix.SetTRS(drawPos, Quaternion.AngleAxis(0, Vector3.up), MaterialSize);
+
+                Quaternion quaternion;
+                if (CurTickDrivenRotation) {
+                    quaternion = Quaternion.AngleAxis(parent.Loop360( CurRotationSpeed), Vector3.up);
+                }
+                else
+                {
+                    quaternion = Quaternion.AngleAxis(0, Vector3.up);
+                }
+                MaterialMatrix.SetTRS(drawPos, quaternion, MaterialSize);
 
                 Graphics.DrawMesh(MeshPool.plane10, MaterialMatrix, material, 0);
             }
@@ -254,6 +280,10 @@ namespace ConPoDra
             if (parent.Negligeable())
                 return;
 
+
+            //Tools.Warn("another loop:" + parent.AnotherLoop(1, 10000, 1, true), MyDebug);
+            //parent.Mirror1(1, true);
+            //parent.Loop360(1, true);
             //Tools.Warn(parent?.LabelShort + "CompTick requiresreservation?" + AnyTaskRequiresReservationCheck, MyDebug);
 
             if (IsTimeToUpdateReservation)
