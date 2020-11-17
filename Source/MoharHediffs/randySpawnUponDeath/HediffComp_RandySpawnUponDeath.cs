@@ -27,6 +27,9 @@ namespace MoharHediffs
             (randomlyChosenIndex != -1 && !Props.pawnOrThingParameters.NullOrEmpty() && 
             randomlyChosenIndex < Props.pawnOrThingParameters.Count) ? Props.pawnOrThingParameters[randomlyChosenIndex] : null;
 
+        public bool HasSeverityRequirement => Props.requiredMinSeverity > 0;
+        public bool FulfilsSeverityRequirement => parent.Severity > Props.requiredMinSeverity;
+
         public bool HasValidIP => CurIP != null;
 
         public override void CompExposeData()
@@ -119,6 +122,8 @@ namespace MoharHediffs
         private bool CheckShouldSpawn()
         {
             if (Pawn.Corpse.Negligeable())
+                return false;
+            if (HasSeverityRequirement && !FulfilsSeverityRequirement)
                 return false;
 
             bool didSpawn = TryDoSpawn(Pawn.Corpse, Pawn.Corpse.Map);

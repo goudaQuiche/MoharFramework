@@ -5,6 +5,8 @@ namespace MoharHediffs
 {
 	public class HediffCompProperties_RandySpawnUponDeath : HediffCompProperties
 	{
+        public float requiredMinSeverity = 0f;
+
         public List<PawnOrThingParameter> pawnOrThingParameters;
 
         //how
