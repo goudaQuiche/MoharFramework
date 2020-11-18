@@ -12,16 +12,28 @@ namespace MoharGamez
         public float BaseDistance;
 
         public Vector3 targetBuildingCoordinates;
-        public Pawn pawn;
 
-        private Graphic_Shadow GroundShadowGraphic;
+        public Pawn pawn => TG_parent?.pawn ?? null;
+        public string PawnLabel => HasTargetingGameParent?TG_parent.PawnLabel:"unknown";
+
+        public JobDriver_PlayGenericTargetingGame TG_parent;
+        public bool HasTargetingGameParent => TG_parent != null;
+        public bool HasGameSettings => HasTargetingGameParent && TG_parent.HasGameSettings;
+        public bool HasTargetingGameParentWithThoughts => HasGameSettings && TG_parent.gameSettings.HasThought;
+
+        public bool IsPlayerPlayingTargetingGame =>
+            !pawn.NegligeablePawn() && HasTargetingGameParent && TG_parent.HasGameSettings &&
+            pawn.CurJob != null && pawn.CurJobDef == TG_parent.gameSettings.jobDef;
+
+        public Graphic_Shadow GroundShadowGraphic;
 
         public ShadowMoteDef Def => def as ShadowMoteDef;
 
         public MoteSubEffect MSE => Def?.moteSubEffect ?? null;
         public bool HasMSE => MSE != null;
 
-        public bool myDebug = true;
+        public bool ThoughtDebug => HasGameSettings && TG_parent.gameSettings.debug;
+        public bool MoteSubEffectDebug => HasMSE && MSE.debug;
 
         // Flying shadow
         public ThingDef FlyingShadowTex => Def?.moteSubEffect?.flyingShadowRessource ?? null;
@@ -44,6 +56,9 @@ namespace MoharGamez
         public SoundDef SkiddingSustainSound => MSE.skiddingSustainSound ?? null;
         public bool HasThrowSound => MSE.HasThrowSound;
         public bool HasSkiddingSound => MSE.HasSkiddingSound;
+        public bool SustainerNeedsToStop => ActiveSustainer && Speed < 0.01;
+        private Sustainer skiddingSustainer = null;
+        private bool ActiveSustainer => skiddingSustainer != null;
 
         // Needed
         public bool HasGroundShadow => HasGroundShadowData && HasGroundShadowGraphic;
@@ -58,11 +73,9 @@ namespace MoharGamez
         public float DistanceCoveredFraction => Mathf.Clamp01(BaseDistance == 0 ? 1 : (1 - CurrentDistance / BaseDistance));
         public Quaternion ExactRotation => Quaternion.LookRotation((destination - origin).Yto0());
 
-        private Sustainer skiddingSustainer = null;
         private bool ImpactOccured = false;
-        private bool ActiveSustainer => skiddingSustainer != null;
-
         private bool LoggedCoordinates = false;
+        private bool ProjectileStoppedMovingForFirstTime => !LoggedCoordinates && Speed == 0;
 
         void StartSustainer()
         {
@@ -83,9 +96,6 @@ namespace MoharGamez
             base.SpawnSetup(map, respawningAfterLoad);
             if (HasThrowSound)
                 ThrowSound.PlayOneShot(new TargetInfo(DrawPos.ToIntVec3(), Map));
-
-            if (HasMSE)
-                myDebug = MSE.debug;
         }
 
         protected override void TimeInterval(float deltaTime)
@@ -96,64 +106,50 @@ namespace MoharGamez
 
             if (!ImpactOccured)
             {
-                if ( (IsFlyingAndGroundShadow && !IsFlying) || IsGroundShadowOnly)
+                if ((IsFlyingAndGroundShadow && !IsFlying) || IsGroundShadowOnly)
                 {
                     ImpactOccured = true;
                     StartSustainer();
+                    //Tools.Warn("")
 
                     if (HasImpactMote)
                         this.ThrowImpactMote();
                 }
             }
 
-            if (ActiveSustainer && Speed < 0.01)
+            if (SustainerNeedsToStop)
                 StopSustainer();
 
-            if (!LoggedCoordinates && Speed == 0)
-            {
-                Tools.Warn(
-                    pawn.LabelShort +
-                    " non moving projectile" +
-                    " drawPos: " + DrawPos +
-                    " exactPosition: " + exactPosition +
-                    " Position: " + Position +
-                    " MyPosition: " + MyPosition +
+            /*
+            Tools.Warn(
+                   pawn.LabelShort +
+                   " non moving projectile" +
+                   " drawPos: " + DrawPos +
+                   " exactPosition: " + exactPosition +
+                   " Position: " + Position +
+                   " MyPosition: " + MyPosition +
+                   " targetBuildingCoordinates: " + targetBuildingCoordinates
+                   , myDebug
+            );*/
+            if (ProjectileStoppedMovingForFirstTime) {
+                /*
+                Tools.Warn( PawnLabel + " ProjectileStoppedMovingForFirstTime " +
+                    " drawPos: " + DrawPos + " exactPosition: " + exactPosition +
+                    " Position: " + Position + " MyPosition: " + MyPosition +
                     " targetBuildingCoordinates: " + targetBuildingCoordinates
-                    , myDebug
+                    , ThoughtDebug
                 );
-                pawn.CalculateThrowDistance(targetBuildingCoordinates, MyPosition, myDebug);
+                */
                 LoggedCoordinates = true;
+                if (HasTargetingGameParentWithThoughts) {
+                    //Tools.Warn(PawnLabel + " ProjectileStoppedMovingForFirstTime ", ThoughtDebug);
+                    if (IsPlayerPlayingTargetingGame) {
+                        //Tools.Warn(PawnLabel + " IsPlayerPlayingTargetingGame ", ThoughtDebug);
+                        float ThrowDistance = pawn.CalculateThrowDistance(targetBuildingCoordinates, MyPosition, ThoughtDebug);
+                        TG_parent.ComputeThrowQuality(ThrowDistance, ThoughtDebug);
+                    }
+                }
             }
-        }
-
-
-        public void Initialization(Vector3 nOrigin, Vector3 nDestination, Vector3 nTarget, Pawn p)
-        {
-            InitCoordinates(nOrigin, nDestination, nTarget, p);
-            InitGroundShadowGraphic();
-        }
-
-        private void InitCoordinates(Vector3 nOrigin, Vector3 nDestination, Vector3 nTarget, Pawn p)
-        {
-            origin = nOrigin;
-            destination = nDestination;
-            flatOrigin = origin;
-
-            flatOrigin.y = nDestination.y = 0;
-            BaseDistance = Vector3.Distance(flatOrigin, nDestination);
-
-            targetBuildingCoordinates = nTarget;
-            pawn = p;
-        }
-
-        private void InitGroundShadowGraphic()
-        {
-            if (HasGroundShadowGraphic)
-                return;
-            if (!HasGroundShadowData)
-                return;
-
-            GroundShadowGraphic = new Graphic_Shadow(GroundShadowData);
         }
 
         public float CurrentDistance

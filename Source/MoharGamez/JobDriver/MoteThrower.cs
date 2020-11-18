@@ -55,7 +55,8 @@ namespace MoharGamez
             destinationCell.y = thrower.DrawPos.y;
             ShadowMote moteThrown = (ShadowMote)ThingMaker.MakeThing(moteDef);
 
-            moteThrown.Initialization(thrower.DrawPos, destinationCell, PGTG.PetanqueSpotCell.ToVector3Shifted(), thrower);
+            //moteThrown.Initialization(thrower.DrawPos, destinationCell, PGTG.PetanqueSpotCell.ToVector3Shifted(), thrower);
+            moteThrown.Initialization(PGTG, destinationCell);
 
             moteThrown.Scale = 1f;
             moteThrown.rotationRate = PGTG.Rotation.RandomInRange;

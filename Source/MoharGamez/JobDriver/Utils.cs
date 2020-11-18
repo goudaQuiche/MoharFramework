@@ -8,11 +8,11 @@ namespace MoharGamez
 {
     public static class JobInitialize
     {
-        public static float TotalWeight(this GameProjectile GP)
+        public static float TotalWeight(this GameSettings GS)
         {
             float total = 0;
 
-            List<ProjectileOption> POL = GP.projectileOptionList;
+            List<ProjectileOption> POL = GS.projectileOptionList;
 
             for (int i = 0; i < POL.Count; i++)
                 total += POL[i].weight;
@@ -21,10 +21,10 @@ namespace MoharGamez
             return total;
         }
 
-        public static int GetWeightedRandomIndex(this GameProjectile GP)
+        public static int GetWeightedRandomIndex(this GameSettings GS)
         {
-            float DiceThrow = Rand.Range(0, GP.TotalWeight());
-            List<ProjectileOption> POL = GP.projectileOptionList;
+            float DiceThrow = Rand.Range(0, GS.TotalWeight());
+            List<ProjectileOption> POL = GS.projectileOptionList;
 
             for (int i = 0; i < POL.Count; i++)
             {
@@ -35,19 +35,19 @@ namespace MoharGamez
                 }
             }
 
-            Tools.Warn("GetWeightedRandomIndex : failed to return proper index, returning -1", GP.debug);
+            Tools.Warn("GetWeightedRandomIndex : failed to return proper index, returning -1", GS.debug);
 
             return -1;
         }
         public static bool RetrieveProjectileParam(this JobDriver_PlayGenericTargetingGame PGTG)
         {
-            bool myDebug = PGTG.gameProjectile.debug;
+            bool myDebug = PGTG.gameSettings.debug;
 
             string DebugStr = PGTG.pawn.LabelShort + " - RetrieveProjectileParam";
             Tools.Warn(DebugStr + " - Entering", myDebug);
 
-            int randomIndex = PGTG.gameProjectile.GetWeightedRandomIndex();
-            PGTG.projectileOption = PGTG.gameProjectile.projectileOptionList[randomIndex];
+            int randomIndex = PGTG.gameSettings.GetWeightedRandomIndex();
+            PGTG.projectileOption = PGTG.gameSettings.projectileOptionList[randomIndex];
 
             if (PGTG.projectileOption.IsMoteType)
             {

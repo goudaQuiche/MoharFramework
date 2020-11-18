@@ -15,22 +15,23 @@ namespace MoharGamez
          https://github.com/Chillu1/RimWorldDecompiled/blob/a917643cda263dc432279afa8b9aa7ed8936eaf2/Verse/Projectile.cs
          make ball detect other balls ?
          */
-        string MyName = "JobDriver_PlayGenericTargetingGame";
+        readonly string MyName = "JobDriver_PlayGenericTargetingGame";
         readonly bool myDebug = false;
+        public string PawnLabel => pawn.LabelShort;
 
         //Available parameters
-        public List<GameProjectile> gameProjectileList = null;
-        public GameProjectile gameProjectile = null;
+        //public List<GameSettings> gameSettingsList = null;
+        public GameSettings gameSettings = null;
 
         //Random weighted parameter
         public ProjectileOption projectileOption = null;
         public MoteParameter PickedMoteParam = null;
 
         // Common to all projectiles parameters
-        public SkillDef SkillDefScaling => gameProjectile.skillDefScaling;
+        public SkillDef SkillDefScaling => gameSettings.skillDefScaling;
 
         // period
-        public IntRange ThrowInterval => gameProjectile.throwInterval;
+        public IntRange ThrowInterval => gameSettings.throwInterval;
         public bool IsTimeToThrow => pawn.IsHashIntervalTick(ThrowInterval.RandomInRange);
 
         // Depending on Randomly picker option; depends on the type of the mote
@@ -38,7 +39,7 @@ namespace MoharGamez
         public FloatRange Rotation => PickedMoteParam.rotation;
         
 
-        public bool HasGameProjectile => gameProjectile != null;
+        public bool HasGameSettings => gameSettings != null;
         public bool HasProjectileOption => projectileOption != null;
 
         public bool HasPickedMoteOption => HasProjectileOption && projectileOption.IsMoteType;
@@ -92,7 +93,7 @@ namespace MoharGamez
 
         bool SetParameters()
         {
-            string DebugStr = pawn.LabelShort + " " + MyName + " SetParameters";
+            string DebugStr =  PawnLabel + " " + MyName + " SetParameters";
 
             Tools.Warn(DebugStr + " - Entering", myDebug);
 
@@ -108,44 +109,43 @@ namespace MoharGamez
                     , myDebug
                 );
 
-            IEnumerable<GameProjectileDef> myGPDList =
-                DefDatabase<GameProjectileDef>.AllDefs
-                .Where(gpd => 
-                    gpd.gameProjectileList.Any(gp => gp.driverClass == GetType() && pawn.CurJobDef == gp.jobDef)
+            IEnumerable<GameSettingsDef> myGSDList =
+                DefDatabase<GameSettingsDef>.AllDefs
+                .Where(gsd =>
+                    gsd.gameSettingsList.Any(gs => gs.driverClass == GetType() && pawn.CurJobDef == gs.jobDef)
                 );
-            if (myGPDList.EnumerableNullOrEmpty())
+            if (myGSDList.EnumerableNullOrEmpty())
             {
                 Tools.Warn(DebugStr + " - 00 no GameProjectileDef found", myDebug);
                 return false;
             }
             else
-                Tools.Warn(DebugStr + " - found " + myGPDList.EnumerableCount() + " GPD", myDebug);
+                Tools.Warn(DebugStr + " - found " + myGSDList.EnumerableCount() + " GSD", myDebug);
 
-            foreach (GameProjectileDef curGPD in myGPDList)
+            foreach (GameSettingsDef curGSD in myGSDList)
             {
-                IEnumerable<GameProjectile> myGPDItem = curGPD.gameProjectileList;
-                foreach (GameProjectile curGP in myGPDItem)
+                IEnumerable<GameSettings> myGPDItem = curGSD.gameSettingsList;
+                foreach (GameSettings curGS in myGPDItem)
                 {
-                    if ((curGP.driverClass == GetType()) && (pawn.CurJobDef == curGP.jobDef))
+                    if ((curGS.driverClass == GetType()) && (pawn.CurJobDef == curGS.jobDef))
                     {
-                        gameProjectile = curGP;
-                        Tools.Warn(DebugStr + " - found JobDef" + curGP.jobDef, myDebug);
+                        gameSettings = curGS;
+                        Tools.Warn(DebugStr + " - found JobDef" + curGS.jobDef, myDebug);
                         break;
                     }
                     Tools.Warn(DebugStr +
                         " - GetType():" + GetType() +
-                        " curGP.driverClass: " + curGP.driverClass +
-                        " curGP.jobDef: " + curGP.jobDef +
+                        " curGP.driverClass: " + curGS.driverClass +
+                        " curGP.jobDef: " + curGS.jobDef +
                         "  pawn.CurJobDef: " + pawn.CurJobDef
                         , myDebug
                     );
                 }
             }
 
-
-            if (!HasGameProjectile)
+            if (!HasGameSettings)
             {
-                Tools.Warn(DebugStr + " - 01 no GameProjectile item found", myDebug);
+                Tools.Warn(DebugStr + " - 01 no HasGameSettings item found", myDebug);
                 return false;
             }
 
@@ -156,7 +156,6 @@ namespace MoharGamez
                 " - 02 RetrieveProjectileParam:" + Didit +
                 " - HasPickedMoteOption: " + HasPickedMoteOption +
                 " - HasPickedShadowMoteOption: " + HasPickedShadowMoteOption
-                //" - HasPickedEffecterOption: " + HasPickedEffecterOption
                 , myDebug);
 
             return Didit;
@@ -171,7 +170,7 @@ namespace MoharGamez
 
         void SetStuff()
         {
-            string DebugStr = pawn.LabelShort + " " + MyName + " SetStuff";
+            string DebugStr = PawnLabel + " " + MyName + " SetStuff";
 
             if (TargetA.Thing == null)
             {
@@ -194,9 +193,9 @@ namespace MoharGamez
 
         bool ParameterInitialization()
         {
-            string DebugStr = pawn.LabelShort + " " + MyName + " WatchTickAction";
+            string DebugStr = PawnLabel + " " + MyName + " WatchTickAction";
 
-            if (HasGameProjectile)
+            if (HasGameSettings)
                 return true;
 
             if (AttemptNum > 20)
