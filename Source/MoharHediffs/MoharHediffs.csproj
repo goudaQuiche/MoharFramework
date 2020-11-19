@@ -64,9 +64,12 @@
     <Compile Include="randySpawner\Structure\RandFactionStruct.cs" />
     <Compile Include="randySpawner\Structure\RandySpawnerUtils.cs" />
     <Compile Include="randySpawner\Structure\RandySpawnerStruct.cs" />
-    <Compile Include="randySpawnUponDeath\Structure\FactionPickerParameters.cs" />
-    <Compile Include="randySpawnUponDeath\Structure\RandySpawnerStruct.cs" />
-    <Compile Include="randySpawnUponDeath\Structure\RandySpawnerUtils.cs" />
+    <Compile Include="randySpawnUponDeath\Structure\ThingSettings.cs" />
+    <Compile Include="randySpawnUponDeath\Structure\FactionSettings.cs" />
+    <Compile Include="randySpawnUponDeath\Structure\CommonSettings.cs" />
+    <Compile Include="randySpawnUponDeath\Structure\00Main.cs" />
+    <Compile Include="randySpawnUponDeath\Utils\SpawnerUtils.cs" />
+    <Compile Include="randySpawnUponDeath\Utils\RandySpawnerUtils.cs" />
     <Compile Include="trail\HediffCompProperties_RainbowTrail.cs" />
     <Compile Include="trail\HediffCompProperties_TrailLeaver.cs" />
     <Compile Include="footprinter\HediffCompProperties_FootPrinter.cs" />

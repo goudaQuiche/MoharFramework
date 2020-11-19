@@ -13,7 +13,6 @@ namespace MoharHediffs
         public bool defaultPawnKindFaction = false;
         public bool noFaction = false;
 
-        public bool newBorn = false;
         public float weight;
 
         public bool HasInheritedFaction => inheritedFaction == true;

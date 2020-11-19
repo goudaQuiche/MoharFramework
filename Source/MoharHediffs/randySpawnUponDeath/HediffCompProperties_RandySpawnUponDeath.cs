@@ -7,7 +7,11 @@ namespace MoharHediffs
 	{
         public float requiredMinSeverity = 0f;
 
-        public List<PawnOrThingParameter> pawnOrThingParameters;
+        public GeneralSettings settings;
+
+        public bool destroyBodyUponDeath = false;
+        public bool StripBeforeDeath = false;
+        //public bool destroyWeaponUponDeath = false;
 
         //how
         public int spawnMaxAdjacent = -1;
