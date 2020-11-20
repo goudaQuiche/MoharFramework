@@ -168,6 +168,14 @@ namespace MoharHediffs
             if(debug)
                 Log.Warning(warning);
         }
+        public static bool IsAlien(this Pawn pawn)
+        {
+            return pawn.def.race.Humanlike && pawn.def != ThingDefOf.Human;
+        }
+        public static bool IsHuman(this Pawn pawn)
+        {
+            return pawn.def.race.Humanlike && pawn.def == ThingDefOf.Human;
+        }
 
         public static AlienPartGenerator.AlienComp GetAlien(Pawn pawn = null)
         {

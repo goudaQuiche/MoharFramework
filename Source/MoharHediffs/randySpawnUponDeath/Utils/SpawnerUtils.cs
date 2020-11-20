@@ -22,26 +22,108 @@ namespace MoharHediffs
              7   float? fixedMelanin = null, string fixedLastName = null, string fixedBirthName = null, RoyalTitleDef fixedTitle = null);
                 */
 
+            //bool allowDead = false; bool allowDowned = false; bool canGeneratePawnRelations = true; bool mustBeCapableOfViolence = false;
+            //float colonistRelationChanceFactor = 1; bool forceAddFreeWarmLayerIfNeeded = false; bool allowGay = true; bool allowFood = true; bool allowAddictions = true;
+            //bool inhabitant = false; bool certainlyBeenInCryptosleep = false; bool forceRedressWorldPawnIfFormerColonist = false; bool worldPawnFactionDoesntMatter = false; float biocodeWeaponChance = 0;
+            //Pawn extraPawnForExtraRelationChance = null; float relationWithExtraPawnChanceFactor = 1;
+            //Predicate<Pawn> validatorPreGear = null; Predicate<Pawn> validatorPostGear = null; IEnumerable<TraitDef> forcedTraits = null; IEnumerable<TraitDef> prohibitedTraits = null; 
+            //float? minChanceToRedressWorldPawn = null; float? fixedBiologicalAge = null; float? fixedChronologicalAge = null; Gender? fixedGender = null;
             //PawnGenerationContext PGC = randomlyChosenItemfaction==Faction.OfPlayer ? PawnGenerationContext.
 
             PawnKindDef PKD = comp.PawnOfChoice;
 
-            PawnGenerationRequest request = new PawnGenerationRequest(PKD, comp.randomlyChosenItemfaction, PawnGenerationContext.NonPlayer, -1, false, TS.newBorn);
+            PawnGenerationRequest request = 
+                new PawnGenerationRequest(
+                    kind: PKD, faction: comp.randomlyChosenItemfaction, context: PawnGenerationContext.NonPlayer, tile: -1, forceGenerateNewPawn: false,
+                    newborn: TS.newBorn, colonistRelationChanceFactor: 0, allowAddictions: false, allowFood: false, relationWithExtraPawnChanceFactor:0
+                    );
 
             for (int i = 0; i < randomQuantity; i++)
             {
                 Pawn NewPawn = PawnGenerator.GeneratePawn(request);
 
                 comp.SetAge(NewPawn);
-                comp.SetName(NewPawn);
+                if (TS.IsCopier)
+                {
+                    comp.SetName(NewPawn);
+                    comp.SetGender(NewPawn);
+
+                    comp.SetMelanin(NewPawn);
+                    comp.SetAlienSkinColor(NewPawn);
+                    comp.SetBodyType(NewPawn);
+                    comp.SetCrownType(NewPawn);
+                    comp.SetHair(NewPawn);
+                    comp.SetHairColor(NewPawn);
+
+                    comp.SetHediff(NewPawn);
+
+                    PawnCopyUtils.InitRememberBackstories(out Backstory rememberChildBS, out Backstory rememberAdultBS);
+                    if (comp.ChosenItem.copyParent.passions || comp.ChosenItem.copyParent.traits)
+                    {
+                        comp.RememberBackstories(NewPawn, out rememberChildBS, out rememberAdultBS);
+                        comp.ResetBackstories(NewPawn);
+                        //comp.ResetDisabledWorks(NewPawn, comp.MyDebug);
+
+                        comp.SetPassions(NewPawn);
+                        comp.SetSkills(NewPawn);
+                        comp.SetTraits(NewPawn);
+                        //comp.CopyDisabledWorks(NewPawn, comp.MyDebug);
+                    }
+                    if (rememberChildBS != null || rememberAdultBS != null)
+                        comp.ReinjectBackstories(NewPawn, rememberChildBS, rememberAdultBS);
+
+                    comp.SetBackstories(NewPawn);
+                    comp.UpdateDisabilities(NewPawn);
+                }
+
+                if (TS.IsRedresser)
+                {
+                    comp.DestroyApparel(NewPawn);
+                    comp.DestroyEquipment(NewPawn);
+                    comp.DestroyInventory(NewPawn);
+                }
 
                 GenSpawn.Spawn(NewPawn, position, map, WipeMode.Vanish);
 
-                if (comp.HasFilth)
-                    FilthMaker.TryMakeFilth(position, map, comp.FilthToSpawn, 1);
+                comp.TrySpawnAllFilth();
+
+                Tools.Warn("------------------", comp.MyDebug);
             }
 
             return true;
+        }
+
+        public static void TrySpawnAllFilth(this HediffComp_RandySpawnUponDeath comp, bool debug = false) {
+            Tools.Warn(comp.Pawn.LabelShort + " - TrySpawnAllFilth", debug);
+
+            if (!comp.HasFilth)
+            {
+                Tools.Warn("no filth found", debug);
+                return;
+            }
+
+
+            int randFilthNum = comp.FilthNum.RandomInRange;
+
+            for (int i = 0; i < randFilthNum; i++)
+            {
+                Tools.Warn(
+                    "filth " + i + "/" + randFilthNum +
+                    " - fDef:" + comp.FilthToSpawn +
+                    " - pos:" + comp.Pawn.Position + 
+                    " - map null?" + (comp.Pawn.Map == null)
+                    , debug);
+                TrySpawnFilth(comp.Pawn.Corpse, comp.FilthRadius.RandomInRange, comp.FilthToSpawn);
+            }
+
+        }
+
+        public static void TrySpawnFilth(Thing refT, float filthRadius, ThingDef filthDef)
+        {
+            if (refT.Map != null && CellFinder.TryFindRandomReachableCellNear(refT.Position, refT.Map, filthRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors), (IntVec3 x) => x.Standable(refT.Map), (Region x) => true, out IntVec3 result))
+            {
+                FilthMaker.TryMakeFilth(result, refT.Map, filthDef);
+            }
         }
 
         public static bool TrySpawnThing(this HediffComp_RandySpawnUponDeath comp, Thing thing, int randomQuantity, Map map)

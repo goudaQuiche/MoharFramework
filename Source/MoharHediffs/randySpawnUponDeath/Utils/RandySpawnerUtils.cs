@@ -2,6 +2,8 @@ using Verse;
 using RimWorld;
 using System.Collections.Generic;
 using System.Linq;
+using AlienRace;
+using UnityEngine;
 
 namespace MoharHediffs
 {
@@ -152,18 +154,6 @@ namespace MoharHediffs
             return null;
         }
 
-        public static void SetAge(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
-        {
-            if (comp.ChosenItem.ageRange != null)
-                newPawn.ageTracker.AgeBiologicalTicks = 3600000 * comp.ChosenItem.ageRange.RandomInRange;
-            else if (comp.ChosenItem.copyParentAge)
-                newPawn.ageTracker.AgeBiologicalTicks = comp.parent.pawn.ageTracker.AgeBiologicalTicks;
-        }
-
-        public static void SetName(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
-        {
-            if (comp.ChosenItem.copyParentName)
-                newPawn.Name = comp.Pawn.Name;
-        }
+        
     }
 }

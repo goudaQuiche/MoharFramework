@@ -55,6 +55,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="GfxEffects.cs" />
+    <Compile Include="randySpawnUponDeath\Structure\CommonSettings.cs" />
     <Compile Include="randySpawnUponDeath\HediffCompProperties_RandySpawnUponDeath.cs" />
     <Compile Include="randySpawnUponDeath\HediffComp_RandySpawnUponDeath.cs" />
     <Compile Include="randySpawner\HediffCompProperties_RandySpawner.cs" />
@@ -64,12 +65,17 @@
     <Compile Include="randySpawner\Structure\RandFactionStruct.cs" />
     <Compile Include="randySpawner\Structure\RandySpawnerUtils.cs" />
     <Compile Include="randySpawner\Structure\RandySpawnerStruct.cs" />
+    <Compile Include="randySpawnUponDeath\Structure\RedressSettings.cs" />
+    <Compile Include="randySpawnUponDeath\Structure\CopyPawnSettings.cs" />
     <Compile Include="randySpawnUponDeath\Structure\ThingSettings.cs" />
     <Compile Include="randySpawnUponDeath\Structure\FactionSettings.cs" />
-    <Compile Include="randySpawnUponDeath\Structure\CommonSettings.cs" />
     <Compile Include="randySpawnUponDeath\Structure\00Main.cs" />
+    <Compile Include="randySpawnUponDeath\Utils\PawnRedressUtils.cs" />
+    <Compile Include="randySpawnUponDeath\Utils\PawnCopyUtils.cs" />
     <Compile Include="randySpawnUponDeath\Utils\SpawnerUtils.cs" />
     <Compile Include="randySpawnUponDeath\Utils\RandySpawnerUtils.cs" />
+    <Compile Include="MyDefs.cs" />
+    <Compile Include="ModActiveCheck.cs" />
     <Compile Include="trail\HediffCompProperties_RainbowTrail.cs" />
     <Compile Include="trail\HediffCompProperties_TrailLeaver.cs" />
     <Compile Include="footprinter\HediffCompProperties_FootPrinter.cs" />
@@ -107,6 +113,7 @@
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>

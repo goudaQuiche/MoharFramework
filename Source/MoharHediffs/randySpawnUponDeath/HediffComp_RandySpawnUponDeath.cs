@@ -30,10 +30,15 @@ namespace MoharHediffs
         public bool FulfilsSeverityRequirement => parent.Severity > Props.requiredMinSeverity;
 
         public bool HasChosenThing => ChosenItem != null && ChosenItem.thingToSpawn != null;
-        public bool HasChosenPawn => ChosenItem != null && (ChosenItem.pawnKindToSpawn != null || ChosenItem.copyParentPawnKind);
+        public bool HasChosenPawn => ChosenItem != null && (ChosenItem.pawnKindToSpawn != null || IsParentPawnKindCopier);
 
+        public bool IsParentPawnKindCopier => ChosenItem.IsCopier && ChosenItem.copyParent.pawnKind;
 
         public ThingDef ThingOfChoice => HasChosenThing ? ChosenItem.thingToSpawn : null;
+
+        public Pawn_SkillTracker rememberSkillTracker = null;
+        public int lastSkillUpdateTick = -1;
+
         public PawnKindDef PawnOfChoice
         {
             get
@@ -41,7 +46,7 @@ namespace MoharHediffs
                 if (!HasChosenPawn)
                     return null;
 
-                if (ChosenItem.copyParentPawnKind)
+                if (IsParentPawnKindCopier)
                     return Pawn.kindDef;
 
                 return ChosenItem.pawnKindToSpawn;
@@ -55,10 +60,10 @@ namespace MoharHediffs
         {
             get
             {
-                if(HasChosenThing && ChosenItem.HasSpecificSettings)
-                    return ChosenItem.specificSettings.spawnCount.RandomInRange;
+                if(HasChosenThing && ChosenItem.HasStackSettings)
+                    return ChosenItem.specificSettings.stack.spawnCount.RandomInRange;
                 else if (Props.settings.HasDefaultSettings)
-                    return Props.settings.defaultSettings.spawnCount.RandomInRange;
+                    return Props.settings.defaultSettings.stack.spawnCount.RandomInRange;
 
                 return 1;
             }
@@ -68,10 +73,10 @@ namespace MoharHediffs
         {
             get
             {
-                 if (HasChosenThing && ChosenItem.HasSpecificSettings)
-                    return ChosenItem.specificSettings.weightedSpawnCount;
+                 if (HasChosenThing && ChosenItem.HasStackSettings)
+                    return ChosenItem.specificSettings.stack.weightedSpawnCount;
                 else if (Props.settings.HasDefaultSettings)
-                    return Props.settings.defaultSettings.weightedSpawnCount;
+                    return Props.settings.defaultSettings.stack.weightedSpawnCount;
 
                 return false;
             }
@@ -81,18 +86,42 @@ namespace MoharHediffs
         {
             get
             {
-                if (HasChosenThing && ChosenItem.HasSpecificSettings)
-                    return ChosenItem.specificSettings.filthDef;
+                if (HasChosenThing && ChosenItem.HasFilthSettings)
+                    return ChosenItem.specificSettings.filth.filthDef;
                 else if (Props.settings.HasDefaultSettings)
-                    return Props.settings.defaultSettings.filthDef;
+                    return Props.settings.defaultSettings.filth.filthDef;
 
                 return null;
+            }
+        }
+        public FloatRange FilthRadius
+        {
+            get
+            {
+                if (HasChosenThing && ChosenItem.HasFilthSettings)
+                    return ChosenItem.specificSettings.filth.filthRadius;
+                else if (Props.settings.HasDefaultSettings)
+                    return Props.settings.defaultSettings.filth.filthRadius;
+
+                return new FloatRange(0,1);
+            }
+        }
+        public IntRange FilthNum
+        {
+            get
+            {
+                if (HasChosenThing && ChosenItem.HasFilthSettings)
+                    return ChosenItem.specificSettings.filth.filthNum;
+                else if (Props.settings.HasDefaultSettings)
+                    return Props.settings.defaultSettings.filth.filthNum;
+
+                return new IntRange(0, 0);
             }
         }
 
         public override void CompExposeData()
         {
-            Scribe_Values.Look(ref randomlyChosenItemfaction, "randomlyChosenItemfaction");
+            Scribe_References.Look(ref randomlyChosenItemfaction, "randomlyChosenItemfaction");
             //Scribe_Values.Look(ref randomlyChosenQuantity, "randomlyChosenQuantity");
             Scribe_Values.Look(ref randomlyChosenIndex, "randomlyChosenIndex");
         }
@@ -100,6 +129,9 @@ namespace MoharHediffs
         public override void CompPostMake()
         {
             Tools.Warn(">>> " + Pawn?.Label + " - " + parent.def.defName + " - CompPostMake start", MyDebug);
+
+            if(ModCompatibilityCheck.MoharCheckAndDisplay() == false)
+                BlockAndDestroy();
 
             CalculateValues();
         }
@@ -184,7 +216,7 @@ namespace MoharHediffs
 
         public void BlockAndDestroy(string ErrorLog = "", bool myDebug = false)
         {
-            Tools.Warn(ErrorLog, myDebug);
+            Tools.Warn(ErrorLog, myDebug && !ErrorLog.NullOrEmpty());
             blockSpawn = true;
             Tools.DestroyParentHediff(parent, myDebug);
         }
@@ -229,6 +261,37 @@ namespace MoharHediffs
             return didSomething;
         }
 
+        /*
+        public override void CompPostTick(ref float severityAdjustment)
+        {
+            base.CompPostTick(ref severityAdjustment);
+            //updateSkills();
+        }
+        */
 
+            /*
+        public override void Notify_PawnPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
+        {
+            base.Notify_PawnPostApplyDamage(dinfo, totalDamageDealt);
+
+            Tools.Warn("Notify_PawnPostApplyDamage", MyDebug);
+
+            //updateSkills();
+        }
+        */
+
+            /*
+        public void updateSkills()
+        {
+            if (rememberSkillTracker == null)
+                rememberSkillTracker = new Pawn_SkillTracker(Pawn);
+
+            if (Find.TickManager.TicksGame - lastSkillUpdateTick - 120 > 0)
+            {
+                rememberSkillTracker.skills = Pawn.skills.skills.ListFullCopy();
+                lastSkillUpdateTick = Find.TickManager.TicksGame;
+            }
+        }
+*/
     }
 }
