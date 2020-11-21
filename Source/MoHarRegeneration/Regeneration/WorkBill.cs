@@ -10,6 +10,9 @@ namespace MoHarRegeneration
     {
         public static bool CanPayHungerBill(this Pawn p, float cost, bool myDebug=false)
         {
+            if (!p.HasFoodNeed())
+                return true;
+
             if (p.needs.food.CurLevel < cost)
                 return false;
 
@@ -17,11 +20,17 @@ namespace MoHarRegeneration
         }
         public static void PayHungerBill(this Pawn p, float cost, bool myDebug= false)
         {
+            if (!p.HasFoodNeed())
+                return;
+
             p.needs.food.CurLevel -= cost;
         }
 
         public static bool HungerTransaction(this Pawn p, float CostRatio, float WorkDone, bool myDebug= false)
         {
+            if (!p.HasFoodNeed())
+                return true;
+
             if (CostRatio > 0)
             {
                 float HungerCost = WorkDone * CostRatio;
@@ -38,19 +47,26 @@ namespace MoHarRegeneration
 
         public static bool CanPayRestBill(this Pawn p, float cost, bool myDebug = false)
         {
+            if (!p.HasRestNeed())
+                return true;
+
             if (p.needs.rest.CurLevel < cost)
                 return false;
 
             return true;
         }
+
         public static void PayRestBill(this Pawn p, float cost, bool myDebug = false)
         {
+            if (!p.HasRestNeed())
+                return;
+
             p.needs.rest.CurLevel -= cost;
         }
 
         public static bool RestTransaction(this Pawn p, float CostRatio, float WorkDone, bool myDebug = false)
         {
-            if (CostRatio > 0)
+            if (CostRatio > 0 && p.HasRestNeed())
             {
                 float RestCost = WorkDone * CostRatio;
                 if (!p.CanPayRestBill(RestCost))
@@ -73,9 +89,9 @@ namespace MoHarRegeneration
                 p.LabelShort + " HungerAndRestTransaction " +
                 " Quality:" + WorkDone +
                 "; RestCost: " + RestCost +
-                "; p.rest: " + p.needs.rest.CurLevel +
+                "; p.rest: " + p.needs.rest?.CurLevel +
                 "; HungerCost: " + HungerCost +
-                "; p.hunger: " + p.needs.food.CurLevel,
+                "; p.hunger: " + p.needs.food?.CurLevel,
                 myDebug
             );
 
@@ -89,8 +105,13 @@ namespace MoHarRegeneration
                 else
                 {
                     Tools.Warn(p.LabelShort + " will pay both RestCost/HungerCost ", myDebug);
-                    p.PayRestBill(RestCost);
-                    p.PayHungerBill(HungerCost);
+
+                    if(p.needs.rest != null)
+                        p.PayRestBill(RestCost);
+
+                    if (p.needs.food != null)
+                        p.PayHungerBill(HungerCost);
+
                     return true;
                 }
             }

@@ -56,6 +56,10 @@ namespace MoHarRegeneration
         public override void CompPostMake()
         {
             Tools.Warn("HediffComp_Regeneration - CompPostMake", MyDebug);
+
+            if (!ModCompatibilityCheck.MoharCheckAndDisplay())
+                return;
+
             InitCheckCounter();
             InitBodyPartsHP();
             //regenerationPriority = new RegenerationPriority(this);

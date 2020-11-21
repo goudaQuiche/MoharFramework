@@ -144,5 +144,15 @@ namespace MoHarRegeneration
         {
             return pawn == null || pawn.Map == null || !pawn.Spawned;
         }
+
+        public static bool HasRestNeed(this Pawn p)
+        {
+            return p.needs.rest != null;
+        }
+
+        public static bool HasFoodNeed(this Pawn p)
+        {
+            return p.needs.food != null;
+        }
     }
 }
