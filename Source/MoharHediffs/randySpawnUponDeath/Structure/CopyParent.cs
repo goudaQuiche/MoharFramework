@@ -23,6 +23,8 @@ namespace MoharHediffs
 
         public bool hediff = false;
         public List<HediffDef> excludeHediff;
+        public bool excludeTendableHediffs = false;
+        public bool excludePermanentHediffs = false;
 
         public bool childBS = false;
         public bool adultBS = false;

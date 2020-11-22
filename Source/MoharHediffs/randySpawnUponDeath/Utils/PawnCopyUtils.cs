@@ -22,7 +22,9 @@ namespace MoharHediffs
 
                 newPawn.ageTracker.AgeBiologicalTicks = (long)(LSAge.minAge * MyDefs.OneYearTicks);
                 newPawn.ageTracker.AgeChronologicalTicks = Math.Max(comp.Pawn.ageTracker.AgeBiologicalTicks, comp.Pawn.ageTracker.AgeChronologicalTicks);
+                return;
             }
+            /*
             else if (TS.HasAgeRange)
             {
                 if(TS.HasBiologicalAgeRange)
@@ -30,7 +32,10 @@ namespace MoharHediffs
                 if (TS.HasChronologicalAgeRange)
                     newPawn.ageTracker.AgeBiologicalTicks = MyDefs.OneYearTicks * TS.chronologicalAgeRange.RandomInRange;
             }
-                
+            */
+            newPawn.ageTracker.AgeBiologicalTicks = MyDefs.OneYearTicks * TS.biologicalAgeRange.RandomInRange;
+            newPawn.ageTracker.AgeChronologicalTicks = MyDefs.OneYearTicks * TS.chronologicalAgeRange.RandomInRange + newPawn.ageTracker.AgeBiologicalTicks;
+            
         }
 
         public static void SetName(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
@@ -114,10 +119,12 @@ namespace MoharHediffs
 
             newPawn.health.hediffSet.hediffs = new List<Hediff>();
             List<Hediff> newHediffSet =
-                comp.ChosenItem.copyParent.HasHediffExclusion
-                ?
-                comp.Pawn.health.hediffSet.hediffs.ListFullCopy().Where(h => !comp.ChosenItem.copyParent.excludeHediff.Contains(h.def)).ToList()
-                :
+                comp.ChosenItem.copyParent.HasHediffExclusion ?
+                comp.Pawn.health.hediffSet.hediffs.ListFullCopy().Where(
+                    h => !comp.ChosenItem.copyParent.excludeHediff.Contains(h.def) &&
+                    (comp.ChosenItem.copyParent.excludeTendableHediffs ? !h.def.tendable : true) &&
+                    (comp.ChosenItem.copyParent.excludePermanentHediffs ? h.TryGetComp<HediffComp_GetsPermanent>() == null : true)
+                ).ToList() :
                 comp.Pawn.health.hediffSet.hediffs.ListFullCopy();
 
 

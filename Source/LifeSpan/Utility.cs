@@ -79,6 +79,11 @@ namespace CustomLifeSpan
                 spawnPos = refThing.Position;
             }
 
+            if (map == null)
+            {
+                Log.Warning("map is null");
+                return false;
+            }
 
             if (spawnMaxAdjacent >= 0)
             {
@@ -86,6 +91,12 @@ namespace CustomLifeSpan
                 for (int i = 0; i < 9; i++)
                 {
                     IntVec3 c = spawnPos + GenAdj.AdjacentCellsAndInside[i];
+                    if (!c.IsValid || c==IntVec3.Invalid)
+                    {
+                        Log.Warning("IntVec3 c is invalid");
+                        return false;
+                    }
+
                     if (!c.InBounds(map))
                     {
                         continue;

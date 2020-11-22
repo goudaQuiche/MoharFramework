@@ -10,8 +10,9 @@ namespace MoharHediffs
 	{
         private bool blockSpawn = false;
 
-        private int randomlyChosenIndex = -1;
-        public Faction randomlyChosenItemfaction = null;
+        private int RandomIndex = -1;
+        public Faction RandomFaction = null;
+        private int RandomQuantity = 0;
 
         //public bool newBorn = false;
 
@@ -22,19 +23,30 @@ namespace MoharHediffs
 
         public bool MyDebug => Props.debug;
 
-        public bool ValidIndex => randomlyChosenIndex != -1 && Props.settings.HasSomethingToSpawn && randomlyChosenIndex < NumberOfItems;
+        public bool ValidIndex => RandomIndex != -1 && Props.settings.HasSomethingToSpawn && RandomIndex < NumberOfItems;
+        public bool ValidQuantity => RandomQuantity > 0;
 
-        public ThingSettings ChosenItem => ValidIndex ? Props.settings.things[randomlyChosenIndex] : null;
+        public ThingSettings ChosenItem => ValidIndex ? Props.settings.things[RandomIndex] : null;
 
-        public bool HasSeverityRequirement => Props.requiredMinSeverity > 0;
-        public bool FulfilsSeverityRequirement => parent.Severity > Props.requiredMinSeverity;
+        public bool HasRequirement => Props.HasRequirements && Props.requirements.HasAtLeastOneRequirementSetting;
+
+        public bool HasHediffRequirement => Props.HasRequirements && Props.requirements.HasHediffRequirement;
+        public bool HasThingRequirement => Props.HasRequirements && Props.requirements.HasThingRequirement;
+
+        public bool HasCustomSpawn => HasThingRequirement && Props.requirements.thing.Any(t => t.HasCustomSpawn);
+        public bool HasContainerSpawn => HasThingRequirement && Props.requirements.thing.Any(t => t.HasContainerSpawn);
 
         public bool HasChosenThing => ChosenItem != null && ChosenItem.thingToSpawn != null;
         public bool HasChosenPawn => ChosenItem != null && (ChosenItem.pawnKindToSpawn != null || IsParentPawnKindCopier);
 
         public bool IsParentPawnKindCopier => ChosenItem.IsCopier && ChosenItem.copyParent.pawnKind;
+        public bool PrecedentIterationsExclusion => Props.excludeAlreadyPickedOptions;
+
+        public bool HasColorCondition => Props.settings.things.Any(t => t.HasColorCondition);
 
         public ThingDef ThingOfChoice => HasChosenThing ? ChosenItem.thingToSpawn : null;
+
+        public List<ThingSettings> FullOptionList => Props.settings.things;
 
         public Pawn_SkillTracker rememberSkillTracker = null;
         public int lastSkillUpdateTick = -1;
@@ -121,9 +133,9 @@ namespace MoharHediffs
 
         public override void CompExposeData()
         {
-            Scribe_References.Look(ref randomlyChosenItemfaction, "randomlyChosenItemfaction");
+            //Scribe_References.Look(ref randomlyChosenItemfaction, "randomlyChosenItemfaction");
             //Scribe_Values.Look(ref randomlyChosenQuantity, "randomlyChosenQuantity");
-            Scribe_Values.Look(ref randomlyChosenIndex, "randomlyChosenIndex");
+            //Scribe_Values.Look(ref randomlyChosenIndex, "randomlyChosenIndex");
         }
 
         public override void CompPostMake()
@@ -133,86 +145,112 @@ namespace MoharHediffs
             if(ModCompatibilityCheck.MoharCheckAndDisplay() == false)
                 BlockAndDestroy();
 
-            CalculateValues();
+           // CalculateValues();
         }
 
         public override void Notify_PawnDied()
         {
-            Tools.Warn("Entering HediffComp_RandySpawnUponDeath Notify_PawnDied", MyDebug);
+            string debugStr = MyDebug ? Pawn.LabelShort + " HediffComp_RandySpawnUponDeath Notify_PawnDied" : "";
+
+            Tools.Warn(debugStr + " Entering", MyDebug);
+
+            bool failure = false;
+
             if (Pawn.Corpse.Negligeable())
             {
-                Tools.Warn("Corpse is no more, cant find its position - giving up", MyDebug);
-                base.Notify_PawnDied();
-                return;
+                Tools.Warn(debugStr + " Corpse is no more, cant find its position - giving up", MyDebug);
+                failure = true;
             }
-                
 
             if (blockSpawn)
             {
-                Tools.Warn("blockSpawn for some reason- giving up", MyDebug);
+                Tools.Warn(debugStr + " blockSpawn for some reason- giving up", MyDebug);
+                failure = true;
+            }
+
+            Thing closestContainerThing = null;
+
+            if(!this.FulfilsRequirement(out closestContainerThing))
+            {
+                Tools.Warn(debugStr + "not Fulfiling requirements- giving up", MyDebug);
+                failure = true;
+            }
+
+            if (failure)
+            {
                 base.Notify_PawnDied();
                 return;
             }
 
-            if (HasSeverityRequirement && !FulfilsSeverityRequirement)
-            {
-                Tools.Warn("hediff severity not fulfiled", MyDebug);
-                base.Notify_PawnDied();
-                return;
-            }
+            int RandomIteration = Props.iterationRange.RandomInRange;
+            List<int> AlreadyPickedOptions = new List<int>();
 
-            if (Pawn.Corpse.Negligeable())
-            {
-                Tools.Warn("corpse negligeable", MyDebug);
-                base.Notify_PawnDied();
-                return;
-            }
+            Tools.Warn(debugStr + "iterationNum: "+ RandomIteration, MyDebug);
 
-            if (CheckShouldSpawn())
-            {
-                Tools.Warn("Spawn occured", MyDebug);
-            }
+            for (int i = 0; i < RandomIteration; i++){
 
+                Tools.Warn(debugStr + " Trying to spawn " + i + "/" + (RandomIteration-1), MyDebug);
+
+                if (!DiceThrow(AlreadyPickedOptions))
+                {
+                    Tools.Warn(debugStr + " DiceThrow wrong results", MyDebug);
+                    base.Notify_PawnDied();
+                    return;
+                }
+                else
+                    Tools.Warn(
+                        debugStr +
+                        " index: " + RandomIndex + " quantity: " + RandomQuantity +
+                        " nature: " + ChosenItem.ItemDump
+                        , MyDebug
+                    );
+
+                if(PrecedentIterationsExclusion)
+                    AlreadyPickedOptions.Add(RandomIndex);
+
+                if (CheckShouldSpawn(closestContainerThing))
+                {
+                    Tools.Warn(
+                        debugStr +
+                        " Spawn " + i + "/" + (RandomIteration - 1) + " occured " +
+                        " nature: t:" + ChosenItem.ItemDump
+                        , MyDebug
+                    );
+                }
+
+                Tools.Warn("#################", MyDebug);
+            }
             if (CheckShouldHandleCorpse())
             {
-                Tools.Warn("Corpse handled", MyDebug);
+                Tools.Warn(debugStr + " Corpse handled", MyDebug);
             }
 
             base.Notify_PawnDied();
         }
 
-        private void CalculateValues()
+        //
+        public bool DiceThrow(List<int> AlreadyPickedOptions)
         {
-            randomlyChosenIndex = this.GetWeightedRandomIndex();
+            RandomIndex = this.GetWeightedRandomIndex(AlreadyPickedOptions);
+
             if (HasChosenPawn && ChosenItem.HasFactionParams)
                     this.ComputeRandomFaction();
+            RandomQuantity = this.ComputeSpawnCount();
 
-            if(!ValidIndex)
+            if (!ValidIndex)
             {
                 BlockAndDestroy(">ERROR< failed to find an index for IP, check and adjust your hediff props", MyDebug);
-                return;
+                return false;
             }
-        }
 
-        /*
-        private void CheckCalculatedValues()
-        {
-            if (randomlyChosenQuantity > spawnCountErrorLimit)
+            if(!ValidQuantity)
             {
-                BlockAndDestroy(">ERROR< calculatedQuantity is too high: " + randomlyChosenQuantity + "(>" + spawnCountErrorLimit + "), check and adjust your hediff props", MyDebug);
-                return;
+                Tools.Warn("random quantity: " + RandomQuantity + " - impossible to spawn anything", MyDebug);
+                return false;
             }
-        }
 
-        private void DumpCalculatedValues()
-        {
-            Tools.Warn(
-                "<<< " +
-                "; randomlyChosenQuantity: " + randomlyChosenQuantity + "; "
-                , MyDebug
-            );
+            return true;
         }
-        */
 
         public void BlockAndDestroy(string ErrorLog = "", bool myDebug = false)
         {
@@ -221,19 +259,20 @@ namespace MoharHediffs
             Tools.DestroyParentHediff(parent, myDebug);
         }
 
-        private bool CheckShouldSpawn()
+        private bool CheckShouldSpawn(Thing closestThing)
         {
             Tools.Warn(Pawn.LabelShort + " CheckShouldSpawn", MyDebug);
 
-            int randomQuantity = this.ComputeSpawnCount();
             Tools.Warn(
-                " Trying to spawn " + randomQuantity + " " +
+                " Trying to spawn " + RandomQuantity + " " +
                 ThingOfChoice + "/" +
                 PawnOfChoice
                 , MyDebug
             );
 
-            bool didSpawn = this.TryDoSpawn(Pawn.Corpse, randomQuantity, Pawn.Corpse.Map);
+            Thing referenceThing = HasCustomSpawn ? closestThing : Pawn.Corpse;
+
+            bool didSpawn = this.TryDoSpawn(referenceThing, RandomQuantity);
             Tools.Warn("TryDoSpawn: " + didSpawn, MyDebug);
 
             return didSpawn;
@@ -245,18 +284,8 @@ namespace MoharHediffs
 
             bool didSomething = false;
 
-            if (Props.StripBeforeDeath && corpse.AnythingToStrip())
-            {
-                corpse.Strip();
-                didSomething = true;
-            }
-                
-
-            if (Props.destroyBodyUponDeath)
-            {
-                corpse.DeSpawn();
-                didSomething = true;
-            }
+            didSomething |= this.StripCorpse(corpse);
+            didSomething |= this.DestroyCorpse(corpse);
 
             return didSomething;
         }

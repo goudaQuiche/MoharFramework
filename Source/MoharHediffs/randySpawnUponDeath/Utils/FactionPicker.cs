@@ -7,22 +7,8 @@ using UnityEngine;
 
 namespace MoharHediffs
 {
-    public static class RandySpawnerUpoenDeathUtils
+    public static class FactionPickerUtils
     {
-        public static float ThingsTotalWeight(this HediffComp_RandySpawnUponDeath comp)
-        {
-            float total = 0;
-            if (!comp.Props.settings.HasSomethingToSpawn)
-                return 0;
-
-            List<ThingSettings> TSList = comp.Props.settings.things;
-
-            for (int i = 0; i < TSList.Count; i++)
-                total += TSList[i].weight;
-
-            return total;
-        }
-
         public static float FactionTotalWeight(this List<FactionPickerParameters> FPP)
         {
             float total = 0;
@@ -47,60 +33,13 @@ namespace MoharHediffs
             }
 
             //comp.newBorn = comp.CurIP.factionPickerParameters[FactionIndex].newBorn;
-            FactionPickerParameters FPP = comp.ChosenItem.factionPickerParameters[FactionIndex];
+            FactionPickerParameters FPP = comp.ChosenItem.faction[FactionIndex];
             if (comp.MyDebug)
                 FPP.Dump();
 
-            comp.randomlyChosenItemfaction = comp.GetFaction(FPP);
-            Tools.Warn("ComputeRandomFaction - found:" + comp.randomlyChosenItemfaction?.GetCallLabel(), comp.MyDebug);
+            comp.RandomFaction = comp.GetFaction(FPP);
+            Tools.Warn("ComputeRandomFaction - found:" + comp.RandomFaction?.GetCallLabel(), comp.MyDebug);
 
-        }
-
-        public static float CompletudeRatio(this Pawn pawn, bool myDebug=false)
-        {
-            float pawnWeightedMeat = pawn.GetStatValue(StatDefOf.MeatAmount);
-            float pawnBasisMeat = pawn.def.statBases.GetStatValueFromList(StatDefOf.MeatAmount, 75);
-            float result;
-            if (pawnBasisMeat == 0)
-                result = pawn.health.summaryHealth.SummaryHealthPercent;
-            else
-                result = pawnWeightedMeat / pawnBasisMeat;
-
-            Tools.Warn("pawnWeightedMeat:" + pawnWeightedMeat + "; pawnBasisMeat:" + pawnBasisMeat + "=> ratio:"+result, myDebug);
-            
-            return result;
-        }
-
-        public static int ComputeSpawnCount(this HediffComp_RandySpawnUponDeath comp)
-        {
-            float answer = comp.NumberToSpawn;
-            if (comp.WeightedSpawn)
-                answer *= comp.Pawn.CompletudeRatio();
-
-            return (int)answer;
-        }
-
-        public static int GetWeightedRandomIndex(this HediffComp_RandySpawnUponDeath comp)
-        {
-            float DiceThrow = Rand.Range(0, comp.ThingsTotalWeight());
-
-            if (comp.Props.settings.HasSomethingToSpawn)
-            {
-                List<ThingSettings> TSList = comp.Props.settings.things;
-
-                for (int i = 0; i < TSList.Count; i++)
-                {
-                    if ((DiceThrow -= TSList[i].weight) < 0)
-                    {
-                        Tools.Warn("GetWeightedRandomIndex : returning thing " + i, comp.MyDebug);
-                        return i;
-                    }
-                }
-            }
-
-            Tools.Warn("GetWeightedRandomIndex : failed to return proper index, returning -1", comp.MyDebug);
-
-            return -1;
         }
 
         public static int GetWeightedRandomFaction(this HediffComp_RandySpawnUponDeath comp)
@@ -108,7 +47,7 @@ namespace MoharHediffs
             if (!(comp.HasChosenPawn && comp.ChosenItem.HasFactionParams))
                 return -1;
 
-            List<FactionPickerParameters> RFP = comp.ChosenItem.factionPickerParameters;
+            List<FactionPickerParameters> RFP = comp.ChosenItem.faction;
 
             float DiceThrow = Rand.Range(0, RFP.FactionTotalWeight());
 

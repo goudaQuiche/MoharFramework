@@ -7,10 +7,14 @@ namespace MoharHediffs
 {
     public static class SpawnerUtils
     {
-        public static bool TrySpawnPawn(this HediffComp_RandySpawnUponDeath comp, IntVec3 position, int randomQuantity, Map map)
+        public static bool TrySpawnPawn(this HediffComp_RandySpawnUponDeath comp, Thing refThing, int randomQuantity)
         {
+            string debugStr = comp.MyDebug ? (comp.Pawn.LabelShort + " TrySpawnPawn ") : "";
+
             ThingSettings TS = comp.ChosenItem;
 
+            IntVec3 position = refThing.Position;
+            Map map = refThing.Map;
             /*
              * public PawnGenerationRequest(
              1   PawnKindDef kind, Faction faction = null, PawnGenerationContext context = PawnGenerationContext.NonPlayer, int tile = -1, bool forceGenerateNewPawn = false, 
@@ -34,15 +38,16 @@ namespace MoharHediffs
 
             PawnGenerationRequest request = 
                 new PawnGenerationRequest(
-                    kind: PKD, faction: comp.randomlyChosenItemfaction, context: PawnGenerationContext.NonPlayer, tile: -1, forceGenerateNewPawn: false,
+                    kind: PKD, faction: comp.RandomFaction, context: PawnGenerationContext.NonPlayer, tile: -1, forceGenerateNewPawn: false,
                     newborn: TS.newBorn, colonistRelationChanceFactor: 0, allowAddictions: false, allowFood: false, relationWithExtraPawnChanceFactor:0
-                    );
+                );
 
             for (int i = 0; i < randomQuantity; i++)
             {
                 Pawn NewPawn = PawnGenerator.GeneratePawn(request);
 
                 comp.SetAge(NewPawn);
+
                 if (TS.IsCopier)
                 {
                     comp.SetName(NewPawn);
@@ -83,9 +88,20 @@ namespace MoharHediffs
                     comp.DestroyInventory(NewPawn);
                 }
 
-                GenSpawn.Spawn(NewPawn, position, map, WipeMode.Vanish);
+                if (comp.HasContainerSpawn)
+                {
+                    if( refThing is Building_Casket Casket)
+                    {
+                        if (!Casket.TryAcceptThing(NewPawn))
+                        {
+                            Tools.Warn(debugStr + " tried to add " + NewPawn.LabelShort + " to " + refThing.Label + ", but failed", comp.MyDebug);
+                        }
+                    }
+                }
+                else
+                    GenSpawn.Spawn(NewPawn, position, map, WipeMode.Vanish);
 
-                comp.TrySpawnAllFilth();
+                comp.TrySpawnAllFilth(refThing);
 
                 Tools.Warn("------------------", comp.MyDebug);
             }
@@ -93,7 +109,7 @@ namespace MoharHediffs
             return true;
         }
 
-        public static void TrySpawnAllFilth(this HediffComp_RandySpawnUponDeath comp, bool debug = false) {
+        public static void TrySpawnAllFilth(this HediffComp_RandySpawnUponDeath comp, Thing refThing, bool debug = false) {
             Tools.Warn(comp.Pawn.LabelShort + " - TrySpawnAllFilth", debug);
 
             if (!comp.HasFilth)
@@ -110,10 +126,10 @@ namespace MoharHediffs
                 Tools.Warn(
                     "filth " + i + "/" + randFilthNum +
                     " - fDef:" + comp.FilthToSpawn +
-                    " - pos:" + comp.Pawn.Position + 
-                    " - map null?" + (comp.Pawn.Map == null)
+                    " - pos:" + refThing.Position + 
+                    " - map null?" + (refThing.Map == null)
                     , debug);
-                TrySpawnFilth(comp.Pawn.Corpse, comp.FilthRadius.RandomInRange, comp.FilthToSpawn);
+                TrySpawnFilth(refThing, comp.FilthRadius.RandomInRange, comp.FilthToSpawn);
             }
 
         }
@@ -126,8 +142,10 @@ namespace MoharHediffs
             }
         }
 
-        public static bool TrySpawnThing(this HediffComp_RandySpawnUponDeath comp, Thing thing, int randomQuantity, Map map)
+        public static bool TrySpawnThing(this HediffComp_RandySpawnUponDeath comp, Thing thing, int randomQuantity)
         {
+            Map map = thing.Map;
+
             if (comp.Props.spawnMaxAdjacent >= 0)
             {
                 int num = 0;
@@ -194,33 +212,26 @@ namespace MoharHediffs
             return false;
         }
 
-        public static bool TryDoSpawn(this HediffComp_RandySpawnUponDeath comp, Thing thing, int randomQuantity, Map map)
+        public static bool TryDoSpawn(this HediffComp_RandySpawnUponDeath comp, Thing thing, int randomQuantity)
         {
-
             if (thing.Negligeable())
             {
-                Tools.Warn("TryDoSpawn - pawn null", comp.MyDebug);
+                Tools.Warn("TryDoSpawn - negligeable", comp.MyDebug);
                 return false;
             }
 
             if (comp.HasChosenPawn)
             {
                 Tools.Warn("TryDoSpawn -> TrySpawnPawn", comp.MyDebug);
-                return comp.TrySpawnPawn(thing.Position, randomQuantity, map);
+                return comp.TrySpawnPawn(thing, randomQuantity);
             }
             else if (comp.HasChosenThing)
             {
                 Tools.Warn("TryDoSpawn -> TrySpawnPawn", comp.MyDebug);
-                return comp.TrySpawnThing(thing, randomQuantity, map);
+                return comp.TrySpawnThing(thing, randomQuantity);
             }
 
             return false;
-
-            //else if (CurIP.ThingSpawner)
-            // Thing case NON animal
-            // Trying to stack with an existing pile
-
-            
         }
 
         public static bool TryFindSpawnCell(this HediffComp_RandySpawnUponDeath comp, Thing refThing, int randomQuantity, Map map, out IntVec3 result)

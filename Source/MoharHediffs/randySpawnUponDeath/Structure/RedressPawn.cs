@@ -10,5 +10,7 @@ namespace MoharHediffs
         public bool destroyApparel = false;
         public bool destroyEquipment = false;
         public bool destroyInventory = false;
+        public bool strip = false;
+        public bool destroyCorpse = false;
     }
 }
