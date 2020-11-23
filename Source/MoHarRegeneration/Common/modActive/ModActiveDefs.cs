@@ -9,8 +9,8 @@ namespace MoHarRegeneration
 {
     public static class ModActiveDefs
     {
-        public static readonly string MoharHediffModPackageId = "goudaquiche.MoharHediffs";
-        public static readonly string MoharHediffModName = "MoHAR hediffs";
+        public static readonly string MoharHediffModPackageId = "goudaquiche.MoharFramework";
+        public static readonly string MoharHediffModName = "MoHAR framework";
         public static readonly string MoharHediffMissingMessage = 
             "Please consider using the MoharHediffs mod. "+
             "Picking assemblies to add to your mod may hurt the player experience. "+
