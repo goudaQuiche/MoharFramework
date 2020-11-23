@@ -1,17 +1,26 @@
 ﻿using RimWorld;
 using Verse;
 using System.Reflection;
+using UnityEngine;
 
 namespace OLB
 {
     public static class Tools
     {
-        public static bool ImpossibleMote(Map map, IntVec3 cell)
+        public static bool ImpossibleMote(this IntVec3 cell, Map map)
         {
             if (map == null || !cell.IsValid)
                 return true;
 
             return !cell.InBounds(map) || (!cell.ShouldSpawnMotesAt(map)) || map.moteCounter.SaturatedLowPriority;
+        }
+
+        public static bool ImpossibleMote(this Vector3 vector3, Map map)
+        {
+            if (map == null)
+                return true;
+
+            return vector3.ToIntVec3().ImpossibleMote(map);
         }
 
         public static bool Negligeable(this Thing thing)

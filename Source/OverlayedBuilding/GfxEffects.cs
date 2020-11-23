@@ -1,11 +1,7 @@
 ﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Verse;
 
-using AlienRace;
 
 
 namespace OLB
@@ -83,7 +79,7 @@ namespace OLB
             return answer + new Vector3(0f, 0f, 0.38f);
         }
 
-        public static Thing SpawnMote(MoteDecoration decoration, MoteTracing tracer, Building building, Pawn worker)
+        public static Thing SpawnMote(MoteDecoration Item, Building building, Pawn worker)
         {
             if (building.Negligeable())
                 return null;
@@ -91,26 +87,30 @@ namespace OLB
             Map map = building.Map;
 
             // drawpos and actual position
-            MyDefs.GetDrawPos(tracer.origin, building, worker, out IntVec3 cell, out Vector3 drawPos);
+            DisplayOrigin.GetDrawPos(Item.origin, building, worker, out IntVec3 cell, out Vector3 drawPos);
 
-            if (Tools.ImpossibleMote(map, cell))
+            if (drawPos.ImpossibleMote(map))
                 return null;
 
-            MoteThrown mote = (MoteThrown)ThingMaker.MakeThing(decoration.moteDef, null);
+            DisplayTransformation myItemData = Item.transformation;
+
+            MoteThrown mote = (MoteThrown)ThingMaker.MakeThing(Item.moteDef, null);
 
             // more drawpos
-            Vector3 randomV3 = new Vector3(decoration.randomOffset.RandomInRange, 0, decoration.randomOffset.RandomInRange);
+            Vector3 randomV3 = new Vector3(myItemData.randomXOffset.RandomInRange, 0, myItemData.randomYOffset.RandomInRange);
             Vector3 myOffset = new Vector3(Offset.GetOffset(building.Rotation).x + randomV3.x, 0, Offset.GetOffset(building.Rotation).y + randomV3.y);
             mote.exactPosition = drawPos + myOffset.RotatedBy(building.Rotation.AsAngle);
-            //mote.exactPosition = drawPos + Vector3.up.RotatedBy(building.Rotation.AsAngle);
 
             // rotation
-            mote.rotationRate = decoration.rotationRate.RandomInRange;
-            mote.exactRotation = decoration.exactRotation.RandomInRange;
+            mote.rotationRate = myItemData.rotationRate.RandomInRange;
+            mote.exactRotation = myItemData.exactRotation.RandomInRange;
+            if (Rand.Chance(myItemData.randomHalfRotation.RandomInRange))
+                mote.exactRotation += 180;
+
             //scale
-            mote.Scale = decoration.scale.RandomInRange;
+            mote.Scale = myItemData.scale.RandomInRange;
             // velocity
-            mote.SetVelocity(decoration.xVelocity.RandomInRange, decoration.yVelocity.RandomInRange);
+            mote.SetVelocity(myItemData.xVelocity.RandomInRange, myItemData.yVelocity.RandomInRange);
 
             return GenSpawn.Spawn(mote, cell, map, WipeMode.Vanish);
         }

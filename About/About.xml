@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-	<name>MoHAR hediffs</name>
+	<name>MoHAR framework</name>
 	<author>Gouda quiche</author>
 	<url>https://github.com/goudaQuiche</url>
 	<supportedVersions>
 		<li>1.2</li>
 	</supportedVersions>
-	<packageId>goudaquiche.MoharHediffs</packageId>
+	<packageId>goudaquiche.MoharFramework</packageId>
 
 	<modDependencies>
 		<li>
@@ -16,32 +16,7 @@
 		</li>
 	</modDependencies>
 
-	<description>Adds hediffs for humanlike beings.
-
-- Make immune to (x) hediffs based on their HediffDef, (y) times or forever
-- Make a pawn a spawner of animals or materials
-- Destroy (x) hediffs based on their HediffDef or on a HediffDef.defName pattern, then apply 1 hediff on a bodyPart
-- make the pawn puff some steam
-- Adds one hediff per lifestage to customize bodyaddons graphics depending on pawn lifestage
-
-To test :
-- Use dev mode; Spawn pawn; choose a Mohar pawnkind
-- Use the scenario
-
-Mod creators: 
-The mod comes with ressources to allow some fast tests :
-- Textures
-- Xml hediff
-- Xml backstories
-- Xml race definition
-- Xml scenario definitions
-- Xml faction definitions
-- Xml pawnkind definitions
-
-To allow your pawns to use these hediffs,  you only need : 
-- Dll in your mod assembly directory
-- Xml hediff definitions
-- A way to give your race the hediff. I used backstories but there are other ways.</description>
+	<description>Adds hediffs and other components</description>
 
 
 </ModMetaData>

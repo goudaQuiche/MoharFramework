@@ -19,10 +19,10 @@ namespace MoharHediffs
                     );
                 */
                 return
-                    ModsConfig.IsActive(MyDefs.MoharHediffModPackageId) &&
+                    ModsConfig.IsActive(ModActiveData.MoharHediffModPackageId) &&
                     ModsConfig.ActiveModsInLoadOrder.Any(
                         m =>
-                        m.Name == MyDefs.MoharHediffModName
+                        m.Name == ModActiveData.MoharHediffModName
                         //m.GetPublishedFileId()).ToString() == MyDefs.MoharPublishedId
                         //&& m.SteamAppId == MyDefs.MoharPublishedId
                     );
@@ -32,7 +32,7 @@ namespace MoharHediffs
 
         public static void DisplayMessage()
         {
-            Log.ErrorOnce(MyDefs.MoharHediffMissingMessage, 655481347);
+            Log.ErrorOnce(ModActiveData.MoharHediffMissingMessage, 655481347);
         }
 
         public static bool MoharCheckAndDisplay()

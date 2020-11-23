@@ -54,15 +54,25 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CompProperties_Decorate.cs" />
-    <Compile Include="CompDecorate.cs" />
+    <Compile Include="00structure\Conditions\Reservation.cs" />
+    <Compile Include="00structure\Conditions\FuelAndPower.cs" />
+    <Compile Include="comp\CompProperties_Decorate.cs" />
+    <Compile Include="comp\CompDecorate.cs" />
+    <Compile Include="comp\Utils\SetupCheck.cs" />
+    <Compile Include="comp\Utils\ReservationUtils.cs" />
     <Compile Include="GfxEffects.cs" />
-    <Compile Include="MyDefs.cs" />
+    <Compile Include="00structure\sub structure\DisplayOriginEnum.cs" />
+    <Compile Include="ModActive\ModActiveCheck.cs" />
+    <Compile Include="ModActive\ModActiveData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="structure\MatDecoration.cs" />
-    <Compile Include="structure\MoteDecoration.cs" />
-    <Compile Include="structure\MoteTracing.cs" />
-    <Compile Include="structure\Offset.cs" />
+    <Compile Include="00structure\Conditions\GraceTicks.cs" />
+    <Compile Include="00structure\Conditions\Coexisting.cs" />
+    <Compile Include="00structure\sub structure\DisplayCondition.cs" />
+    <Compile Include="00structure\sub structure\DisplayTransformation.cs" />
+    <Compile Include="00structure\MoteDecoration.cs" />
+    <Compile Include="00structure\sub structure\Offset.cs" />
+    <Compile Include="00structure\work structure\MoteTracer.cs" />
+    <Compile Include="00structure\work structure\MoteTracerUtils.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
@@ -71,22 +81,11 @@
       <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.1\Assemblies\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="0JecsTools">
-      <HintPath>..\..\..\..\..\..\workshop\content\294100\932008009\Assemblies\0JecsTools.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="AbilityUser">
-      <HintPath>..\..\..\..\..\..\workshop\content\294100\932008009\Assemblies\AbilityUser.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="AlienRace">
-      <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.1\Assemblies\AlienRace.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -96,5 +95,6 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

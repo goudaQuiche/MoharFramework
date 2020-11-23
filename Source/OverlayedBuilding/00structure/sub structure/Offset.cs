@@ -9,25 +9,25 @@ namespace OLB
 
     public class Offset
     {
-        public static Vector2 North = new Vector2(0, 0);
-        public static Vector2 East = new Vector2(0, 0);
-        public static Vector2 South = new Vector2(0, 0);
-        public static Vector2 West = new Vector2(0, 0);
+        public static Vector2 north = new Vector2(0, 0);
+        public static Vector2 east = new Vector2(0, 0);
+        public static Vector2 south = new Vector2(0, 0);
+        public static Vector2 west = new Vector2(0, 0);
 
         public static Vector2 GetOffset(Rot4 rot)
         {
             switch (rot.AsInt)
             {
                 case 0:
-                    return North;
+                    return north;
                 case 1:
-                    return East;
+                    return east;
                 case 2:
-                    return South;
+                    return south;
                 case 3:
-                    return West;
+                    return west;
                 default:
-                    return North;
+                    return north;
             }
         }
     }
