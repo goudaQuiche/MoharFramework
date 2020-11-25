@@ -17,6 +17,14 @@ namespace MoharHediffs
             parentHediff.Severity = 0;
         }
 
+        public static void DestroyHediff(this Pawn pawn, Hediff hediff, bool debug = false)
+        {
+            if (hediff.pawn != null && hediff.def.defName != null)
+                Warn(hediff.pawn.Label + "'s Hediff: " + hediff.def.defName + " says goodbye.", debug);
+
+            pawn.health.RemoveHediff(hediff);
+        }
+
         public static float GetPawnAgeOverlifeExpectancyRatio(Pawn pawn, bool debug = false)
         {
             float ratio = 1f;

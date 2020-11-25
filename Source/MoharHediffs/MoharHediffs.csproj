@@ -54,7 +54,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AnotherRandom\Utils\conditionBuilder.cs" />
+    <Compile Include="AnotherRandom\Utils\randomPicker.cs" />
+    <Compile Include="AnotherRandom\Utils\conditionValidation.cs" />
     <Compile Include="GfxEffects.cs" />
+    <Compile Include="AnotherRandom\HediffCompProperties_AnotherRandom.cs" />
+    <Compile Include="AnotherRandom\HediffComp_AnotherRandom.cs" />
+    <Compile Include="AnotherRandom\Structure\HediffItem.cs" />
+    <Compile Include="AnotherRandom\Structure\HediffCondition.cs" />
     <Compile Include="randySpawnUponDeath\Structure\CommonSettings.cs" />
     <Compile Include="randySpawnUponDeath\HediffCompProperties_RandySpawnUponDeath.cs" />
     <Compile Include="randySpawnUponDeath\HediffComp_RandySpawnUponDeath.cs" />

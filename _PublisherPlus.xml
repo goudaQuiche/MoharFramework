@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Configuration>
   <Excluded>
-    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\MoHAR hediffs\.git</exclude>
-    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\MoHAR hediffs\README.md</exclude>
-    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\MoHAR hediffs\Source</exclude>
+    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\MoHAR_Framework\.git</exclude>
+    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\MoHAR_Framework\README.md</exclude>
+    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\MoHAR_Framework\Source</exclude>
   </Excluded>
 </Configuration>

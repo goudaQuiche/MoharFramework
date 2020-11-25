@@ -117,6 +117,7 @@ namespace MoharHediffs
                 ApplyHediff(pawn);
 
             // suicide
+            //Pawn.DestroyHediff(parent, myDebug);
             Tools.DestroyParentHediff(parent, myDebug);
         }
     }

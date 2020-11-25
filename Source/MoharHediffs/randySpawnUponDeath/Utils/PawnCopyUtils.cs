@@ -57,9 +57,10 @@ namespace MoharHediffs
         }
         public static void SetAlienSkinColor(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
         {
+            /*
             if (!(comp.Pawn.IsAlien() || newPawn.IsAlien()))
                 return;
-
+            */
             AlienPartGenerator.AlienComp templateAlien = comp.Pawn.TryGetComp<AlienPartGenerator.AlienComp>();
             AlienPartGenerator.AlienComp copyAlien = newPawn?.TryGetComp<AlienPartGenerator.AlienComp>();
 
@@ -283,36 +284,5 @@ namespace MoharHediffs
         {
             newPawn.skills.Notify_SkillDisablesChanged();
         }
-
-        /*
-        public static void ResetDisabledWorks(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn, bool debug=false)
-        {
-            string myDebugSr = newPawn.LabelShort + " - ResetDisabledWorks - ";
-
-            List<WorkTypeDef> Disabilities = newPawn.GetDisabledWorkTypes(true);
-
-            Tools.Warn(myDebugSr + "Entered disabilities to remove:" + Disabilities.Count, debug);
-            for (int i = Disabilities.Count() - 1; i >= 0; i--)
-            {
-                Tools.Warn(myDebugSr + "Trying to remove " + Disabilities[i], debug);
-                newPawn.GetDisabledWorkTypes(true).RemoveAt(i);
-            }
-            newPawn.Notify_DisabledWorkTypesChanged();
-        }
-
-        public static void CopyDisabledWorks(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn, bool debug = false)
-        {
-            string myDebugSr = newPawn.LabelShort + " - CopyDisabledWorks - ";
-            List<WorkTypeDef> Disabilities = comp.Pawn.GetDisabledWorkTypes(true);
-
-            Tools.Warn(myDebugSr + "Entered disabilities to remove:" + Disabilities.Count, debug);
-            foreach (WorkTypeDef WTD in Disabilities)
-            {
-                Tools.Warn(myDebugSr + "Trying to add " + WTD, debug);
-                newPawn.GetDisabledWorkTypes(true).Add(WTD);
-            }
-            newPawn.Notify_DisabledWorkTypesChanged();
-        }
-        */
     }
 }
