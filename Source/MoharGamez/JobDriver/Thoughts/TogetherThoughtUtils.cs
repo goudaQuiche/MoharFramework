@@ -84,7 +84,7 @@ namespace MoharGamez
 
         public static float AgregatedOpinion(Pawn p1, Pawn p2)
         {
-            return (p1.relations.OpinionOf(p2) + p2.relations.OpinionOf(p1)) / 125f;
+            return (p1.relations.OpinionOf(p2) + p2.relations.OpinionOf(p1)) / 150f;
         }
 
         public static void TryApplyTogetherThought(Pawn player1, Pawn player2, ThoughtDef thoughtDef, Texture2D icon, ThingDef bubble, List<ThingDef> DestroyingBubbles = null, List<ThingDef> ResistantBubbles = null, bool debug = false)

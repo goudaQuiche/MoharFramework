@@ -39,6 +39,7 @@ namespace ConPoDra
 
         public List<ThingDef> materialPool;
         public List<StuffMaterialItem> stuffMaterialPool;
+        public SoundMaterial soundMaterialPool = null;
 
         public Conditions condition;
 
@@ -58,7 +59,21 @@ namespace ConPoDra
         public bool vanillaPulse = false;
 
         public bool HasRegularMaterialPool => !materialPool.NullOrEmpty();
+        public bool HasSoundMaterialPool => soundMaterialPool != null && soundMaterialPool.AtleastOne;
         public bool HasStuffMaterialPool => !stuffMaterialPool.NullOrEmpty();
+    }
+
+    public class SoundMaterial
+    {
+        public SoundDef soundOnStart = null;
+        public SoundDef soundOnStop = null;
+        public SoundDef soundSustain = null;
+
+        public bool HasStartSound => soundOnStart != null;
+        public bool HasStopSound => soundOnStop != null;
+        public bool HasSustainSound => soundSustain != null;
+
+        public bool AtleastOne => HasStartSound || HasStopSound || HasSustainSound;
     }
 
     public class Conditions
@@ -66,13 +81,26 @@ namespace ConPoDra
         public bool ifFueled = false;
         public bool ifPowered = false;
 
-        public bool ifReserved = false;
-        public bool ifNotReserved = false;
+        public bool ifWorker = false;
+        public bool ifNoWorker = false;
 
-        public bool ifClaimantOnInteractionCell = false;
+        public bool ifWorkerOnInteractionCell = false;
+        public bool ifWorkerOnWatchArea = false;
+        public bool ifWorkerTouch = false;
         public bool ifSelected = false;
 
+        public List<JobDef> includeJob;
+        public List<JobDef> excludeJob;
+        public List<RecipeDef> includeRecipe;
+        public List<RecipeDef> excludeRecipe;
+
         public bool noCondition = false;
+
+        public bool HasIncludedJob => !includeJob.NullOrEmpty();
+        public bool HasExcludedJob => !excludeJob.NullOrEmpty();
+
+        public bool HasIncludedRecipe => !includeRecipe.NullOrEmpty();
+        public bool HasExcludedRecipe => !excludeRecipe.NullOrEmpty();
     }
 
     public class StuffMaterialItem

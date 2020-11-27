@@ -1,17 +1,16 @@
 using UnityEngine;
 using RimWorld;
+using Verse.Sound;
 using Verse;
 using Verse.AI;
-using System.Collections.Generic;
 using System;
-using System.Collections.ObjectModel;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 
 // ConPoDra stands for Conditionnal PostDraw
 
     //Todo
-//WatchBuildingUtility.CalculateWatchCells
+//post expose data
 namespace ConPoDra
 {
     public class CompConditionalPostDraw : ThingComp
@@ -19,15 +18,17 @@ namespace ConPoDra
         public CompProperties_ConditionalPostDraw Props => (CompProperties_ConditionalPostDraw)props;
 
         Building building = null;
-        public Pawn worker = null;
+        public Pawn Worker = null;
 
         public CompPowerTrader compPower = null;
         public CompRefuelable compFuel = null;
 
-        IEnumerable<ReservationManager.Reservation> reservations;
+        public IEnumerable<ReservationManager.Reservation> reservations;
+        List<IntVec3> WatchCells = new List<IntVec3>();
+        public bool HasWatchCells => HasWatchArea && !WatchCells.EnumerableNullOrEmpty();
 
-        List<int> MaterialIndexList = new List<int>();
-        int CurMaterialIndex => MaterialIndexList[PostDrawIndex];
+        List<Tracer> MaterialIndexList = new List<Tracer>();
+        int CurMaterialIndex => MaterialIndexList[PostDrawIndex].Index;
 
         int PostDrawIndex = 0;
 
@@ -49,36 +50,49 @@ namespace ConPoDra
         public bool HasPowerComp => compPower != null;
         public bool IsMadeOfStuff => parent.def.MadeFromStuff && parent.Stuff != null;
 
-
-        public bool HasWorker => worker != null;
-
         public bool HasPower => HasPowerComp && compPower.PowerOn;
         public bool HasFuel => HasFuelComp && compFuel.Fuel > 0;
-
+        
         public bool IsBuilding => building != null;
         public bool HasInteractionCells => IsBuilding && building.InteractionCell != null;
+        public bool HasWatchArea => IsBuilding && building.def.PlaceWorkers != null && building.def.PlaceWorkers.Any((PlaceWorker y) => y is PlaceWorker_WatchArea);
 
         public Conditions CurCondition => CurPostDrawTask?.condition ?? null;
 
         //Condition
+        public bool RequiresWorker => CurCondition?.ifWorker ?? false;
+        public bool RequiresNoWorker => CurCondition?.ifNoWorker ?? false;
+
         public bool RequiresFuelCheck => CurCondition?.ifFueled ?? false && HasFuelComp ;
         public bool RequiresPowerCheck => CurCondition?.ifPowered ?? false && HasPowerComp;
         //Condition reserved
-        public bool RequiresReserved => (CurCondition?.ifReserved ?? false);
-        public bool RequiresNotReserved => (CurCondition?.ifNotReserved ?? false);
-        public bool RequiresReservationCheck => RequiresReserved || RequiresNotReserved;
         public bool IsTimeToUpdateReservation => AnyTaskRequiresReservationCheck && (Find.TickManager.TicksGame % Props.workerReservationUpdateFrequency == 0);
 
-        public bool AnyTaskRequiresReservationCheck => Props.postDraw.Any(p => p.condition.ifReserved || p.condition.ifNotReserved);
+        public bool AnyTaskRequiresReservationCheck => Props.postDraw.Any(p => p.condition.ifWorker || p.condition.ifNoWorker);
+        public bool RequiresReservationUpdate = false;
 
-        public bool RequiresInteractionCellCheck => CurCondition?.ifClaimantOnInteractionCell ?? false && HasInteractionCells;
+        public bool IsReserved => !reservations.EnumerableNullOrEmpty();
+        public ReservationManager.Reservation FirstReservation => reservations.FirstOrDefault() ?? null;
+        public bool HasWorker => Worker != null;
+        public bool HasNonMovingWorker => IsReserved && HasWorker && !Worker.pather.MovingNow;
+
+        public bool RequiresInteractionCellCheck => CurCondition?.ifWorkerOnInteractionCell ?? false && HasInteractionCells;
+        public bool RequiresWorkerTouching => CurCondition?.ifWorkerTouch?? false;
+        public bool RequiresWorkerWatching => CurCondition?.ifWorkerOnWatchArea ?? false && HasWatchCells;
+
         public bool RequiresSelection => CurCondition?.ifSelected ?? false && parent.def.selectable;
         public bool RequiresNothing => CurCondition?.noCondition ?? false;
         
-        bool IsReserved => !reservations.EnumerableNullOrEmpty();
-        bool IsOccupied => IsReserved && reservations.FirstOrDefault().Claimant.Position == building.InteractionCell;
+        public bool HasWorkerOnInteractionCell => HasNonMovingWorker && Worker.Position == building.InteractionCell;
+        public bool HasWorkerTouchingBuilding => HasNonMovingWorker && building.OccupiedRect().AdjacentCells.Contains(Worker.Position);
+        public bool HasWorkerInWatchArea => HasNonMovingWorker && HasWatchCells && WatchCells.Contains(Worker.Position);
+
+        public bool IsTimeToUpdate => Find.TickManager.TicksGame % Props.workerReservationUpdateFrequency == 0;
 
         bool IsSelected => Find.Selector.IsSelected(parent);
+
+        bool TriggersSoundActivityOnStop => CurPostDrawTask.HasSoundMaterialPool && (CurPostDrawTask.soundMaterialPool.HasStopSound || CurPostDrawTask.soundMaterialPool.HasSustainSound);
+        bool TriggersSoundActivityOnStart => (CurPostDrawTask.HasSoundMaterialPool && (CurPostDrawTask.soundMaterialPool.HasStartSound || CurPostDrawTask.soundMaterialPool.HasSustainSound));
 
         public Vector3 CurScale => CurPostDrawTask?.scale ?? Vector3.one;
 
@@ -94,7 +108,7 @@ namespace ConPoDra
         public bool CurAllowBrowse => CurPostDrawTask?.allowMaterialBrowse ?? false;
         public string CurLabel => CurPostDrawTask?.label ?? "empty";
 
-        bool MyDebug => Props.debug;
+        public bool MyDebug => Props.debug;
 
         public ThingDef CurrentThingDef
         {
@@ -120,25 +134,8 @@ namespace ConPoDra
 
             for (PostDrawIndex = 0; PostDrawIndex < Props.postDraw.Count; PostDrawIndex++)
             {
-                if (CurrentMaterial == null)
+                if (!MaterialIndexList[PostDrawIndex].Displayed)
                     continue;
-
-                if (!RequiresNothing) {
-                    if (RequiresFuelCheck && !HasFuel)
-                        continue;
-                    if (RequiresPowerCheck && !HasPower)
-                        continue;
-
-                    if (RequiresReserved && !IsReserved)
-                        continue;
-                    else if (RequiresNotReserved && IsReserved)
-                        continue;
-
-                    if (RequiresInteractionCellCheck && !IsOccupied)
-                        continue;
-                    if (RequiresSelection && !IsSelected)
-                        continue;
-                }
 
                 Vector3 drawPos = parent.DrawPos;
                 drawPos.y = CurrentAltitudeLayer.AltitudeFor();
@@ -189,7 +186,7 @@ namespace ConPoDra
                     for (int j = 0; j < PDT.stuffMaterialPool.Count; j++)
                     {
                         if (stuffIngredient == PDT.stuffMaterialPool[j].stuff)
-                            MaterialIndexList[i] = j;
+                            MaterialIndexList[i].Index = j;
                         Tools.Warn(
                             "Found " + PDT.stuffMaterialPool[j].stuff +
                             " => chose " + PDT.stuffMaterialPool[j].material.defName +
@@ -201,44 +198,60 @@ namespace ConPoDra
                 }
             }
         }
-
+        
         public override void PostExposeData()
         {
             base.PostExposeData();
 
-            //Scribe_Values.Look(ref MaterialIndexList, "MaterialIndexList");
-            //Scribe_Collections.Look(ref MaterialIndexList, "MaterialIndexList", LookMode.Reference);
-            
-            //Scribe_Collections.Look(ref MaterialIndexList, "MaterialIndexList", LookMode.Value, new object[0]);
-            Scribe_Collections.Look(ref MaterialIndexList, "MaterialIndexList", LookMode.Value, new object[0]);
-            if (Scribe.mode == LoadSaveMode.PostLoadInit && this.MaterialIndexList == null)
+            Scribe_Collections.Look(ref WatchCells, "WatchCells", LookMode.Value, new object[0]);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit && MaterialIndexList == null)
             {
-                MaterialIndexList = new List<int>();
+                WatchCells = new List<IntVec3>();
             }
 
-            //Scribe_Values.Look(ref reservations, "reservation");
-            //Scribe_Collections.Look(ref reservations, "reservation");
-        }
+            Scribe_Collections.Look(ref MaterialIndexList, "MaterialIndexList", LookMode.Deep, new object[0]);
+            if (Scribe.mode == LoadSaveMode.PostLoadInit && MaterialIndexList == null)
+            {
+                MaterialIndexList = new List<Tracer>();
+            }
 
+        }
+        
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
+            string debugStr = MyDebug ? parent.LabelShort + " PostSpawnSetup -" : "";
+
             compFuel = parent.TryGetComp<CompRefuelable>();
             compPower = parent.TryGetComp<CompPowerTrader>();
             if (parent is Building b)
                 building = b;
 
+            RequiresReservationUpdate = AnyTaskRequiresReservationCheck;
+            if (RequiresReservationUpdate)
+            {
+                this.UpdateReservationAndWorker();
+                Tools.Warn(debugStr + "updated reservation", MyDebug);
+            }
+
             if (respawningAfterLoad)
             {
-                if (RequiresReservationCheck) UpdateReservation();
+                for (PostDrawIndex = 0; PostDrawIndex < Props.postDraw.Count; PostDrawIndex++)
+                    if(MaterialIndexList[PostDrawIndex].Displayed == true && CurPostDrawTask.HasSoundMaterialPool && CurPostDrawTask.soundMaterialPool.HasSustainSound)
+                        MaterialIndexList[PostDrawIndex].sustainer = CurPostDrawTask.soundMaterialPool.soundSustain.TrySpawnSustainer(new TargetInfo(parent.Position, parent.Map));
+
                 return;
             }
 
-            //MaterialIndexList = new int[Props.postDraw.Count];
-            //MaterialIndexList = new List<int>();
-            
+            if (HasWatchArea)
+            {
+                WatchCells = WatchBuildingUtility.CalculateWatchCells(parent.def, parent.Position, parent.Rotation, parent.Map).ToList();
+                Tools.Warn(debugStr + "updated WatchCells " + (HasWatchCells ? WatchCells.Count().ToString() : ""), MyDebug);
+            }
+
             for (PostDrawIndex = 0; PostDrawIndex < Props.postDraw.Count; PostDrawIndex++)
             {
-                MaterialIndexList.Add(0);
+                //MaterialIndexList.Add(0);
+                MaterialIndexList.Add( new Tracer( 0, false));
             }
             Tools.Warn("MaterialIndexList size:" + MaterialIndexList.Count(), MyDebug);
 
@@ -247,49 +260,76 @@ namespace ConPoDra
                 Tools.Warn(parent.Label + " is made of " + parent.Stuff, MyDebug);
                 SetStuffMaterialIndexes();
             }
-
-            
-
-            
-        }
-
-        bool UpdateReservation()
-        {
-            reservations = parent.Map.reservationManager.ReservationsReadOnly.Where(
-                r =>
-                r.Target == new LocalTargetInfo(parent) &&
-                r.Job.def != JobDefOf.Maintain && r.Job.def != JobDefOf.Deconstruct && r.Job.def != JobDefOf.Repair &&
-                r.Faction == Faction.OfPlayer
-            ).ToList();
-
-            if(IsReserved)
-                UpdateWorker();
-
-            return !reservations.EnumerableNullOrEmpty();
-        }
-
-        void UpdateWorker()
-        {
-            worker = IsOccupied ? reservations.FirstOrDefault().Claimant : null;
         }
 
         public override void CompTick()
         {
             base.CompTick();
 
+            //string debugStr = MyDebug ? parent.LabelShort + " CompTick -" : "";
+
             if (parent.Negligeable())
                 return;
 
+            this.MaybeUpdateReservations();
 
-            //Tools.Warn("another loop:" + parent.AnotherLoop(1, 10000, 1, true), MyDebug);
-            //parent.Mirror1(1, true);
-            //parent.Loop360(1, true);
-            //Tools.Warn(parent?.LabelShort + "CompTick requiresreservation?" + AnyTaskRequiresReservationCheck, MyDebug);
-
-            if (IsTimeToUpdateReservation)
+            for (PostDrawIndex = 0; PostDrawIndex < Props.postDraw.Count; PostDrawIndex++)
             {
-                bool DoHaveReservation = UpdateReservation();
-                //Tools.Warn(parent?.LabelShort + " reservation: " + DoHaveReservation + " worker: " + worker?.LabelShort, MyDebug);
+                if (CurrentMaterial == null)
+                {
+                    MaterialIndexList[PostDrawIndex].Displayed = false;
+                    continue;
+                }
+                if (RequiresNothing)
+                {
+                    MaterialIndexList[PostDrawIndex].Displayed = true;
+                    continue;
+                }
+
+                if ((RequiresFuelCheck && !HasFuel) || (RequiresPowerCheck && !HasPower) ||
+                    (RequiresWorker && !HasWorker) || (RequiresNoWorker && HasWorker) ||
+
+                    (RequiresWorkerWatching && !HasWorkerInWatchArea) ||
+                    (RequiresWorkerTouching && !HasWorkerTouchingBuilding) ||
+                    (RequiresInteractionCellCheck && !HasWorkerOnInteractionCell) ||
+
+                    (RequiresSelection && !IsSelected))
+                {
+                    if (TriggersSoundActivityOnStop && MaterialIndexList[PostDrawIndex].Displayed)
+                    {
+                        if (CurPostDrawTask.soundMaterialPool.HasStopSound)
+                            CurPostDrawTask.soundMaterialPool.soundOnStop.PlayOneShot(new TargetInfo(parent.Position, parent.Map));
+
+                        if (CurPostDrawTask.soundMaterialPool.HasSustainSound)
+                        {
+                            if (MaterialIndexList[PostDrawIndex].sustainer != null)
+                            {
+                                MaterialIndexList[PostDrawIndex].sustainer.End();
+                                MaterialIndexList[PostDrawIndex].sustainer = null;
+                            }
+                        }
+
+                    }
+
+                    MaterialIndexList[PostDrawIndex].Displayed = false;
+
+                    continue;
+                }
+
+                if (TriggersSoundActivityOnStart && !MaterialIndexList[PostDrawIndex].Displayed)
+                {
+                    if (CurPostDrawTask.soundMaterialPool.HasStartSound)
+                        CurPostDrawTask.soundMaterialPool.soundOnStart.PlayOneShot(new TargetInfo(parent.Position, parent.Map));
+
+                    if (CurPostDrawTask.soundMaterialPool.HasSustainSound)
+                    {
+                        MaterialIndexList[PostDrawIndex].sustainer = CurPostDrawTask.soundMaterialPool.soundSustain.TrySpawnSustainer(new TargetInfo(parent.Position, parent.Map));
+                    }
+
+                }
+
+                MaterialIndexList[PostDrawIndex].Displayed = true;
+
             }
         }
 
@@ -313,7 +353,7 @@ namespace ConPoDra
             {
                 bool curAllow = Props.postDraw[i].allowMaterialBrowse || Props.postDraw[i].allowMaterialBrowseIfDevMode && Prefs.DevMode;
                 string curLabel = Props.postDraw[i].label;
-                int curMatIndex = MaterialIndexList[i];
+                int curMatIndex = MaterialIndexList[i].Index;
 
                 if (curAllow)
                 {
@@ -326,7 +366,7 @@ namespace ConPoDra
                         icon = TexCommand.Attack,
                         action = delegate
                         {
-                            MaterialIndexList[preEvaluate] = NextIndex(curMatIndex, preEvaluate);
+                            MaterialIndexList[preEvaluate].Index = NextIndex(curMatIndex, preEvaluate);
                         }
                     };
                 }
