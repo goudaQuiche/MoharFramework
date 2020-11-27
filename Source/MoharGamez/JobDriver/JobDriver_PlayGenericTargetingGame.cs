@@ -16,7 +16,8 @@ namespace MoharGamez
          make ball detect other balls ?
          */
         readonly string MyName = "JobDriver_PlayGenericTargetingGame";
-        readonly bool myDebug = false;
+        bool MyDebug => gameSettings?.debug ?? false;
+        bool MyTogetherThoughtDebug => gameSettings?.debugTogetherThought ?? false;
         public string PawnLabel => pawn.LabelShort;
 
         //Available parameters
@@ -31,15 +32,44 @@ namespace MoharGamez
         public SkillDef SkillDefScaling => gameSettings.skillDefScaling;
 
         // period
-        public IntRange ThrowInterval => gameSettings.throwInterval;
-        public bool IsTimeToThrow => pawn.IsHashIntervalTick(ThrowInterval.RandomInRange);
+        public int ThrowInterval => gameSettings.throwInterval;
+        public float PlayedTogetherRatio => gameSettings.playedTogetherRatio;
+
+        // play together
+        public int PlayedTogetherThreshold => (int)(PlayedTogetherRatio * ThrowInterval);
+        List<ThoughtParameter> ThoughtsParams => (!HasPlayingTogetherThoughts ? null : gameSettings?.thoughtList?.thoughtOptionPlayingTogether);
+        public ThoughtParameter SingleTogetherThought => ThoughtsParams?.FirstOrFallback();
+
+        public ThoughtDef PlayedTogetherThought => SingleTogetherThought?.thoughtPool?.FirstOrFallback();
+        public Texture2D PlayedTogetherIcon => ContentFinder<Texture2D>.Get( SingleTogetherThought?.iconPool.RandomElementWithFallback() );
+        public ThingDef PlayedTogetherBubble => SingleTogetherThought.bubblePool.FirstOrFallback();
+        public float TogetherThoughtChance => SingleTogetherThought.triggerChance;
+        public float MinThoughtChance => SingleTogetherThought.minTriggerChance;
+
+        public int TogetherThoughtsNum = 0;
+
+        // throw interval
+        public bool IsTimeToThrow => pawn.IsHashIntervalTick(ThrowInterval);
 
         // Depending on Randomly picker option; depends on the type of the mote
         public FloatRange Speed => PickedMoteParam.speed;
         public FloatRange Rotation => PickedMoteParam.rotation;
-        
+
+        public Thing JoyBuilding => TargetA.Thing;
+
+        //
+        public List<ThingDef> DestroyingMotes => HasGameSettings && gameSettings.HasDestroyingMotes ? gameSettings.bubbleInteraction.destroyingMotes : null;
+        public List<ThingDef> ResistantMotes => HasGameSettings && gameSettings.HasResistantMotes ? gameSettings.bubbleInteraction.resistantMotes : null;
+
+        //
+        public IEnumerable<IntVec3> WatchCells;
+        public int OtherPlayersNum = 0;
+
+        //Lambda things
 
         public bool HasGameSettings => gameSettings != null;
+        public bool HasPlayingTogetherThoughts => HasGameSettings && gameSettings.HasPlayingTogetherThought;
+
         public bool HasProjectileOption => projectileOption != null;
 
         public bool HasPickedMoteOption => HasProjectileOption && projectileOption.IsMoteType;
@@ -48,6 +78,7 @@ namespace MoharGamez
         public bool HasAtLeastOneOption => HasPickedShadowMoteOption || HasPickedMoteOption;
 
         public bool HasPickedOption => HasProjectileOption && HasAtLeastOneOption;
+        public bool HasWatchCells => !WatchCells.EnumerableNullOrEmpty();
 
         public IntVec3 PetanqueSpotCell => TargetA.Cell;
 
@@ -55,6 +86,13 @@ namespace MoharGamez
         public bool HasStuff => JoyBuildingStuff != null;
 
         int AttemptNum = 0;
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+
+            Scribe_Values.Look(ref TogetherThoughtsNum, "TogetherThoughtsNum");
+        }
 
         public ThingDef MoteDef {
             get
@@ -74,18 +112,18 @@ namespace MoharGamez
             {
                 if (!HasStuff)
                 {
-                    Tools.Warn("RetrieveStuffMoteDef building stuff not found => null ", myDebug);
+                    Tools.Warn("RetrieveStuffMoteDef building stuff not found => null ", MyDebug);
                     return null;
                 }
 
                 foreach(ThingDef curStuffMoteDef in PickedMoteParam.stuffMotePool)
                     if (curStuffMoteDef.graphicData.color == JoyBuildingStuff.stuffProps.color)
                     {
-                        Tools.Warn("RetrieveStuffMoteDef found " + curStuffMoteDef, myDebug);
+                        Tools.Warn("RetrieveStuffMoteDef found " + curStuffMoteDef, MyDebug);
                         return curStuffMoteDef;
                     }
 
-                Tools.Warn("RetrieveStuffMoteDef found nothing, default=" + PickedMoteParam.stuffMotePool[0], myDebug);
+                Tools.Warn("RetrieveStuffMoteDef found nothing, default=" + PickedMoteParam.stuffMotePool[0], MyDebug);
 
                 return PickedMoteParam.stuffMotePool[0];
             }
@@ -95,18 +133,18 @@ namespace MoharGamez
         {
             string DebugStr =  PawnLabel + " " + MyName + " SetParameters";
 
-            Tools.Warn(DebugStr + " - Entering", myDebug);
+            Tools.Warn(DebugStr + " - Entering", MyDebug);
 
             if (pawn.CurJob == null)
             {
-                Tools.Warn(DebugStr + " - no job for pawn", myDebug);
+                Tools.Warn(DebugStr + " - no job for pawn", MyDebug);
                 return false;
             } else
                 Tools.Warn(
                     DebugStr + 
                     " - pawn job: " + pawn.CurJobDef +
                     " - GetType(): " + GetType()
-                    , myDebug
+                    , MyDebug
                 );
 
             IEnumerable<GameSettingsDef> myGSDList =
@@ -116,11 +154,11 @@ namespace MoharGamez
                 );
             if (myGSDList.EnumerableNullOrEmpty())
             {
-                Tools.Warn(DebugStr + " - 00 no GameProjectileDef found", myDebug);
+                Tools.Warn(DebugStr + " - 00 no GameProjectileDef found", MyDebug);
                 return false;
             }
             else
-                Tools.Warn(DebugStr + " - found " + myGSDList.EnumerableCount() + " GSD", myDebug);
+                Tools.Warn(DebugStr + " - found " + myGSDList.EnumerableCount() + " GSD", MyDebug);
 
             foreach (GameSettingsDef curGSD in myGSDList)
             {
@@ -130,7 +168,7 @@ namespace MoharGamez
                     if ((curGS.driverClass == GetType()) && (pawn.CurJobDef == curGS.jobDef))
                     {
                         gameSettings = curGS;
-                        Tools.Warn(DebugStr + " - found JobDef" + curGS.jobDef, myDebug);
+                        Tools.Warn(DebugStr + " - found JobDef" + curGS.jobDef, MyDebug);
                         break;
                     }
                     Tools.Warn(DebugStr +
@@ -138,14 +176,14 @@ namespace MoharGamez
                         " curGP.driverClass: " + curGS.driverClass +
                         " curGP.jobDef: " + curGS.jobDef +
                         "  pawn.CurJobDef: " + pawn.CurJobDef
-                        , myDebug
+                        , MyDebug
                     );
                 }
             }
 
             if (!HasGameSettings)
             {
-                Tools.Warn(DebugStr + " - 01 no HasGameSettings item found", myDebug);
+                Tools.Warn(DebugStr + " - 01 no HasGameSettings item found", MyDebug);
                 return false;
             }
 
@@ -156,7 +194,9 @@ namespace MoharGamez
                 " - 02 RetrieveProjectileParam:" + Didit +
                 " - HasPickedMoteOption: " + HasPickedMoteOption +
                 " - HasPickedShadowMoteOption: " + HasPickedShadowMoteOption
-                , myDebug);
+                , MyDebug);
+
+            WatchCells = WatchBuildingUtility.CalculateWatchCells(JoyBuilding.def, PetanqueSpotCell, JoyBuilding.Rotation, Map);
 
             return Didit;
         }
@@ -172,21 +212,21 @@ namespace MoharGamez
         {
             string DebugStr = PawnLabel + " " + MyName + " SetStuff";
 
-            if (TargetA.Thing == null)
+            if (JoyBuilding == null)
             {
-                Tools.Warn(DebugStr + " null TargetA.Thing", myDebug);
+                Tools.Warn(DebugStr + " null TargetA.Thing", MyDebug);
                 return;
             }
 
-            Thing JoyBuilding = TargetA.Thing;
+            //Thing JoyBuilding = TargetA.Thing;
 
             if (!JoyBuilding.def.MadeFromStuff || JoyBuilding.Stuff == null)
             {
-                Tools.Warn(DebugStr + " JoyBuilding not made from stuff or stuff = null", myDebug);
+                Tools.Warn(DebugStr + " JoyBuilding not made from stuff or stuff = null", MyDebug);
                 return;
             }
 
-            Tools.Warn(DebugStr + "found stuff=" + JoyBuilding.Stuff, myDebug);
+            Tools.Warn(DebugStr + "found stuff=" + JoyBuilding.Stuff, MyDebug);
 
             JoyBuildingStuff = JoyBuilding.Stuff;
         }
@@ -201,27 +241,25 @@ namespace MoharGamez
             if (AttemptNum > 20)
                 return false;
 
-            Tools.Warn(DebugStr + " Trying to ParameterInitialization - SetParameters", myDebug);
+            Tools.Warn(DebugStr + " Trying to ParameterInitialization - SetParameters",MyDebug);
             AttemptNum++;
 
             bool DidIt = SetParameters();
-            Tools.Warn(DebugStr + " DidIt:" + DidIt + " ; attempts:" + AttemptNum, myDebug);
+            Tools.Warn(DebugStr + " DidIt:" + DidIt + " ; attempts:" + AttemptNum, MyDebug);
 
             SetStuff();
             return DidIt;
         }
 
+        bool PickThrowOption()
+        {
+            this.ResetPickedOption();
+            return HasAtLeastOneOption;
+        }
+
+        // depending on the projectile option, use the adaptated mote creator
         void ThrowProjectile()
         {
-            if (!IsTimeToThrow)
-                return;
-
-            this.ResetPickedOption();
-            if (!HasAtLeastOneOption)
-                return;
-
-            pawn.rotationTracker.FaceCell(PetanqueSpotCell);
-
             if (HasPickedMoteOption)
             {
                 this.MoteSpawner_ThrowObjectAt();
@@ -229,8 +267,23 @@ namespace MoharGamez
             else if (HasPickedShadowMoteOption)
             {
                 this.ShadowMoteSpawner_ThrowObjectAt();
-                //this.CalculateThrowDistance(destinationCell);
             }
+        }
+
+        void TryThrowProjectile()
+        {
+            // depending on 
+            if (!IsTimeToThrow)
+                return;
+
+            if(!PickThrowOption())
+                return;
+
+            pawn.rotationTracker.FaceCell(PetanqueSpotCell);
+
+            ThrowProjectile();
+
+            this.IsSomeonePlayingWithMe(out OtherPlayersNum, MyTogetherThoughtDebug);
         }
 
         protected override void WatchTickAction()
@@ -239,7 +292,7 @@ namespace MoharGamez
             if (!ParameterInitialization())
                 return;
 
-            ThrowProjectile();
+            TryThrowProjectile();
         }
 
         /*

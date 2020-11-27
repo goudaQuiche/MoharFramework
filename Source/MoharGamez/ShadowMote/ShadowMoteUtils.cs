@@ -17,7 +17,7 @@ namespace MoharGamez
         }
         public static void InitCoordinates(this ShadowMote SM, Vector3 DestinationCell)
         {
-            SM.flatOrigin = SM.origin = SM.TG_parent.pawn.DrawPos;
+            SM.flatOrigin = SM.throwerOrigin = SM.TG_parent.pawn.DrawPos;
             SM.destination = DestinationCell;
             SM.flatOrigin.y = DestinationCell.y = 0;
 

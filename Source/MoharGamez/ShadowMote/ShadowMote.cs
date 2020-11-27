@@ -6,24 +6,27 @@ namespace MoharGamez
 {
     public class ShadowMote : MoteThrown
     {
-        public Vector3 origin;
+        public Vector3 throwerOrigin;
         public Vector3 flatOrigin;
         public Vector3 destination;
         public float BaseDistance;
 
         public Vector3 targetBuildingCoordinates;
 
-        public Pawn pawn => TG_parent?.pawn ?? null;
-        public string PawnLabel => HasTargetingGameParent?TG_parent.PawnLabel:"unknown";
-
         public JobDriver_PlayGenericTargetingGame TG_parent;
         public bool HasTargetingGameParent => TG_parent != null;
+        public Pawn MyPawn => TG_parent?.pawn ?? null;
+        public string PawnLabel => HasTargetingGameParent ? TG_parent.PawnLabel : "unknown";
+
+
         public bool HasGameSettings => HasTargetingGameParent && TG_parent.HasGameSettings;
-        public bool HasTargetingGameParentWithThoughts => HasGameSettings && TG_parent.gameSettings.HasThought;
+        //public bool HasTargetingGameParentWithThoughts => HasGameSettings && TG_parent.gameSettings.HasThought;
+        //public bool HasGameWithThrowThoughts => HasTargetingGameParentWithThoughts && TG_parent.gameSettings.HasThrowThought;
+        public bool HasGameWithThrowThoughts => HasGameSettings && TG_parent.gameSettings.HasThrowThought;
 
         public bool IsPlayerPlayingTargetingGame =>
-            !pawn.NegligeablePawn() && HasTargetingGameParent && TG_parent.HasGameSettings &&
-            pawn.CurJob != null && pawn.CurJobDef == TG_parent.gameSettings.jobDef;
+            !MyPawn.NegligeablePawn() && HasTargetingGameParent && TG_parent.HasGameSettings &&
+            MyPawn.CurJob != null && MyPawn.CurJobDef == TG_parent.gameSettings.jobDef;
 
         public Graphic_Shadow GroundShadowGraphic;
 
@@ -32,7 +35,7 @@ namespace MoharGamez
         public MoteSubEffect MSE => Def?.moteSubEffect ?? null;
         public bool HasMSE => MSE != null;
 
-        public bool ThoughtDebug => HasGameSettings && TG_parent.gameSettings.debug;
+        public bool ThoughtDebug => HasGameSettings && TG_parent.gameSettings.debugThrowThought;
         public bool MoteSubEffectDebug => HasMSE && MSE.debug;
 
         // Flying shadow
@@ -71,7 +74,7 @@ namespace MoharGamez
         private bool IsGrounded => airTimeLeft <= 0;
         private bool IsFlying => !IsGrounded;
         public float DistanceCoveredFraction => Mathf.Clamp01(BaseDistance == 0 ? 1 : (1 - CurrentDistance / BaseDistance));
-        public Quaternion ExactRotation => Quaternion.LookRotation((destination - origin).Yto0());
+        public Quaternion ExactRotation => Quaternion.LookRotation((destination - throwerOrigin).Yto0());
 
         private bool ImpactOccured = false;
         private bool LoggedCoordinates = false;
@@ -90,6 +93,25 @@ namespace MoharGamez
             skiddingSustainer.End();
             skiddingSustainer = null;
         }
+
+        /*
+        public override void ExposeData()
+        {
+            base.ExposeData();
+
+            Scribe_Values.Look(ref throwerOrigin, "throwerOrigin");
+            Scribe_Values.Look(ref flatOrigin, "flatOrigin");
+            Scribe_Values.Look(ref destination, "destination");
+            Scribe_Values.Look(ref BaseDistance, "BaseDistance");
+            Scribe_Values.Look(ref targetBuildingCoordinates, "targetBuildingCoordinates");
+            Scribe_Deep.Look(ref TG_parent, "TG_parent");
+            //Scribe_Values.Look(ref TG_parent, "TG_parent");
+            Scribe_Values.Look(ref skiddingSustainer, "skiddingSustainer");
+
+            Scribe_Values.Look(ref LoggedCoordinates, "LoggedCoordinates");
+            Scribe_Values.Look(ref ImpactOccured, "ImpactOccured");
+        }
+        */
 
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
@@ -141,11 +163,12 @@ namespace MoharGamez
                 );
                 */
                 LoggedCoordinates = true;
-                if (HasTargetingGameParentWithThoughts) {
+                //if (HasTargetingGameParentWithThoughts) {
+                if (HasGameWithThrowThoughts) {
                     //Tools.Warn(PawnLabel + " ProjectileStoppedMovingForFirstTime ", ThoughtDebug);
                     if (IsPlayerPlayingTargetingGame) {
                         //Tools.Warn(PawnLabel + " IsPlayerPlayingTargetingGame ", ThoughtDebug);
-                        float ThrowDistance = pawn.CalculateThrowDistance(targetBuildingCoordinates, MyPosition, ThoughtDebug);
+                        float ThrowDistance = MyPawn.CalculateThrowDistance(targetBuildingCoordinates, MyPosition, ThoughtDebug);
                         TG_parent.ComputeThrowQuality(ThrowDistance, ThoughtDebug);
                     }
                 }
@@ -179,7 +202,7 @@ namespace MoharGamez
             get
             {
                 float num = def.projectile.arcHeightFactor;
-                float num2 = (destination - origin).MagnitudeHorizontalSquared();
+                float num2 = (destination - throwerOrigin).MagnitudeHorizontalSquared();
                 if (num * num > num2 * 0.2f * 0.2f)
                 {
                     num = Mathf.Sqrt(num2) * 0.2f;

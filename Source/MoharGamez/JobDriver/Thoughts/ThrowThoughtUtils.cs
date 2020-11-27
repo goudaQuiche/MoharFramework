@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace MoharGamez
 {
-    public static class ThoughtUtils
+    public static class ThrowThoughtUtils
     {
         public static float CalculateThrowDistance(this Pawn pawn, Vector3 targetBuildingCoordinates, Vector3 destinationCell, bool myDebug = false)
         {
@@ -31,30 +31,37 @@ namespace MoharGamez
             if (!TG.HasGameSettings)
                 return;
 
-            foreach(ThoughtParameter TP in TG.gameSettings.thoughtList.thoughtOptionPerShot)
+            foreach (ThoughtParameter TP in TG.gameSettings.thoughtList.thoughtOptionPerShot)
             {
                 ThoughtDef TD = TP.thoughtPool.RandomElement();
                 Tools.Warn(myDebugStr + " browsing >" + TD.defName + " - " + TP.distanceThreshold, myDebug);
                 if (TP.distanceThreshold.Includes(throwDistance))
                 {
                     Tools.Warn(myDebugStr + ">Throw is in range : " + TP.distanceThreshold, myDebug);
-                    if (!Rand.Chance(TP.triggerChance))
+                    float TriggerChange = TP.triggerChance + TG.OtherPlayersNum * TP.rivalryChancePerOpponent;
+
+                    if (!Rand.Chance(TriggerChange))
                     {
                         Tools.Warn(myDebugStr + "> RNG gods do no want: " + TP.triggerChance, myDebug);
                         return;
                     }
 
                     Tools.Warn(myDebugStr + "> Trying to apply thought: ", myDebug);
+
                     TryApplySoloThought(
-                        TG.pawn, TP.thoughtPool.RandomElement(), 
+                        TG.pawn, TP.thoughtPool.RandomElement(),
                         ContentFinder<Texture2D>.Get(TP.iconPool.RandomElement()),
-                        TP.bubblePool.RandomElement()
+                        TP.bubblePool.RandomElement(),
+                        TG.DestroyingMotes,
+                        TG.ResistantMotes
                     );
+
+                    return;
                 }
             }
         }
 
-        public static bool TryApplySoloThought(Pawn pawn, ThoughtDef thoughtDef, Texture2D icon, ThingDef bubble)
+        public static bool TryApplySoloThought(Pawn pawn, ThoughtDef thoughtDef, Texture2D icon, ThingDef bubble, List<ThingDef> DestroyingBubbles = null, List<ThingDef> ResistantBubbles = null)
         {
             // victim shame
             Thought_Memory newthought = (Thought_Memory)ThoughtMaker.MakeThought(thoughtDef);
@@ -65,7 +72,7 @@ namespace MoharGamez
             }
 
             pawn.needs.mood.thoughts.memories.TryGainMemory(newthought);
-            pawn.MakeMoodThoughtBubble(newthought, icon, bubble);
+            pawn.MakeMoodThoughtBubble(newthought, icon, bubble, DestroyingBubbles, ResistantBubbles);
 
             return true;
         }

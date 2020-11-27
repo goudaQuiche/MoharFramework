@@ -20,12 +20,14 @@ namespace MoharGamez
         public List<ThingDef> bubblePool;
 
         public float triggerChance;
+        public float minTriggerChance;
         public float rivalryChancePerOpponent;
 
         public FloatRange distanceThreshold;
 
-        public bool onlyOneThoughtPerJob = false;
+        public int numberOfThoughtsPerJob = -1;
 
+        public bool IsUnlimitedThought => numberOfThoughtsPerJob == -1;
         //private Texture2D iconInt;
     }
 

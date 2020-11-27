@@ -8,6 +8,8 @@ namespace MoharGamez
 {
     public class ProjectileOption
     {
+        public string label;
+
         public MoteParameter mote = null;
         public MoteParameter shadowMote = null;
 

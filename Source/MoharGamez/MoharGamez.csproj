@@ -60,7 +60,8 @@
     <Compile Include="JobDriver\parameters\ProjectileOption.cs" />
     <Compile Include="JobDriver\parameters\Thoughts.cs" />
     <Compile Include="JobDriver\Thoughts\MoteBubble.cs" />
-    <Compile Include="JobDriver\Thoughts\ThoughtUtils.cs" />
+    <Compile Include="JobDriver\Thoughts\TogetherThoughtUtils.cs" />
+    <Compile Include="JobDriver\Thoughts\ThrowThoughtUtils.cs" />
     <Compile Include="JobDriver\Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShadowMote\ShadowMoteDef.cs" />

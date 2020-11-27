@@ -41,7 +41,7 @@ namespace MoharGamez
             return null;
         }
 
-        public static MoteBubble MakeMoodThoughtBubble(this Pawn pawn, Thought thought, Texture2D icon, ThingDef bubble)
+        public static MoteBubble MakeMoodThoughtBubble(this Pawn pawn, Thought thought, Texture2D icon, ThingDef bubble, List<ThingDef> DestroyingBubbles = null, List<ThingDef> ResistantBubbles = null)
         {
             if (Current.ProgramState != ProgramState.Playing)
             {
@@ -51,23 +51,17 @@ namespace MoharGamez
             {
                 return null;
             }
-
-            float num = thought.MoodOffset();
-            if (num == 0f)
-            {
-                return null;
-            }
             MoteBubble moteBubble = ExistingMoteBubbleOn(pawn);
+
             if (moteBubble != null)
             {
-                if (moteBubble.def == ThingDefOf.Mote_Speech)
-                {
+                if (!ResistantBubbles.NullOrEmpty() && ResistantBubbles.Contains(moteBubble.def))
                     return null;
-                }
-                if (moteBubble.def == ThingDefOf.Mote_ThoughtBad || moteBubble.def == ThingDefOf.Mote_ThoughtGood)
-                {
+
+                if (!DestroyingBubbles.NullOrEmpty() && DestroyingBubbles.Contains(bubble))
                     moteBubble.Destroy();
-                }
+                else
+                    return null;
             }
             MoteBubble obj = (MoteBubble)ThingMaker.MakeThing(bubble);
 
