@@ -208,9 +208,9 @@ namespace MoharJoy
         }
         */
 
-        void SetStuff()
+        void SetBuildingStuff()
         {
-            string DebugStr = PawnLabel + " " + MyName + " SetStuff";
+            string DebugStr = MyDebug ? PawnLabel + " " + MyName + " SetStuff" : "";
 
             if (JoyBuilding == null)
             {
@@ -247,7 +247,9 @@ namespace MoharJoy
             bool DidIt = SetParameters();
             Tools.Warn(DebugStr + " DidIt:" + DidIt + " ; attempts:" + AttemptNum, MyDebug);
 
-            SetStuff();
+            if(gameSettings.stuffDependsOnBuilding)
+                SetBuildingStuff();
+
             return DidIt;
         }
 

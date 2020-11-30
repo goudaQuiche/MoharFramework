@@ -30,11 +30,18 @@ namespace MoharJoy
 
         public GameThoughts thoughtList;
 
+        public List<MoodDependantReport> moodDependantReport;
+
         public BubbleInteraction bubbleInteraction;
 
         public bool debug = false;
         public bool debugThrowThought = false;
         public bool debugTogetherThought = false;
+
+        public bool stuffDependsOnBuilding = false;
+        public bool stuffDependsOnNaturalRocks = false;
+
+        public bool HasMoodDependantReport => !moodDependantReport.NullOrEmpty();
 
         public bool HasThought => thoughtList != null;
         public bool HasThrowThought => HasThought && !thoughtList.thoughtOptionPerShot.NullOrEmpty();
@@ -54,5 +61,11 @@ namespace MoharJoy
         public bool HasResistantMotes => !resistantMotes.NullOrEmpty();
 
         //public bool HasAtLeastOnItem => HasDestroyingMotes || HasResistantMotes;
+    }
+    public class MoodDependantReport
+    {
+        public string keyString;
+        public FloatRange mood;
+        public bool defaultOption = false;
     }
 }

@@ -16,13 +16,13 @@ namespace MoharJoy
 
         public JobDriver_PlayGenericTargetingGame TG_parent;
         public bool HasTargetingGameParent => TG_parent != null;
-        //public Pawn MyPawn => TG_parent?.pawn ?? null;
-        public string PawnLabel => MyPawn!=null ? MyPawn.LabelShort : "unknown";
-
         public JobDriver_ThrowRocks JDTR_parent;
         public bool HasThrowRockParent => JDTR_parent != null;
-        
-        public bool HasGameWithThrowThoughts => HasGameSettings && TG_parent.gameSettings.HasThrowThought;
+
+        //public Pawn MyPawn => TG_parent?.pawn ?? null;
+        public string PawnLabel => MyPawn != null ? MyPawn.LabelShort : "unknown";
+
+        public bool HasGameWithThrowThoughts => HasGameSettings && ActualGS.HasThrowThought;
 
         public bool IsPlayerPlayingTargetingGame =>
             !MyPawn.NegligeablePawn() && HasTargetingGameParent && TG_parent.HasGameSettings &&
@@ -35,7 +35,7 @@ namespace MoharJoy
         public MoteSubEffect MSE => Def?.moteSubEffect ?? null;
         public bool HasMSE => MSE != null;
 
-        public bool ThoughtDebug => HasGameSettings && TG_parent.gameSettings.debugThrowThought;
+        public bool ThoughtDebug => HasGameSettings && ActualGS.debugThrowThought;
         public bool MoteSubEffectDebug => HasMSE && MSE.debug;
 
         // Flying shadow
@@ -95,20 +95,20 @@ namespace MoharJoy
             
         }
 
-        public bool HasGameSettings
+        public GameSettings ActualGS
         {
             get
             {
-                if(HasTargetingGameParent)
-                    return TG_parent.HasGameSettings;
+                if (HasTargetingGameParent && TG_parent.HasGameSettings)
+                    return TG_parent.gameSettings;
+                else if (HasThrowRockParent && JDTR_parent.HasGameSettings)
+                    return JDTR_parent.gameSettings;
 
-                if (HasThrowRockParent)
-                    return JDTR_parent.HasGameSettings;
-
-                return false;
+                return null;
             }
         }
 
+        public bool HasGameSettings => ActualGS != null;
 
         void StartSustainer()
         {
@@ -148,21 +148,33 @@ namespace MoharJoy
 
             if (!ImpactOccured)
             {
-                if ((HasFlyingAndGroundShadow && !IsFlying) || IsGroundShadowOnly)
+                if ((HasFlyingShadow && !IsFlying) || IsGroundShadowOnly)
                 {
                     ImpactOccured = true;
 
                     StartSustainer();
-                    //Tools.Warn("")
+                    Tools.Warn("Impact!", MoteSubEffectDebug);
 
                     if (HasImpactMote)
                         this.ThrowImpactMote();
 
-                    if (MSE.makeWaterSplashOnImpact && exactPosition.ToIntVec3().GetTerrain(Map).IsWater)
-                        MoteMaker.MakeWaterSplash(exactPosition, Map, 2, Speed*2);
+                    if (exactPosition.ToIntVec3().GetTerrain(Map).IsWater)
+                    {
+                        if(MSE.HasWaterLandSound)
+                            MSE.waterLandSound.PlayOneShot(new TargetInfo(DrawPos.ToIntVec3(), Map));
 
-                    if (MSE.destroyParentOnImpact)
-                        this.Destroy();
+                        if (MSE.makeWaterSplashOnImpact)
+                            MoteMaker.MakeWaterSplash(exactPosition, Map, 2, Speed * 2);
+
+                        if (MSE.destroyParentOnImpact)
+                            this.Destroy();
+                    }
+                    else
+                    {
+                        if (MSE.HasGroundLandSound)
+                            MSE.groundLandSound.PlayOneShot(new TargetInfo(DrawPos.ToIntVec3(), Map));
+                    }
+                    
                 }
             }
 
@@ -238,7 +250,7 @@ namespace MoharJoy
             }
         }
 
-        float ArcRatio => HasFlyingAndGroundShadow ? ArcHeightFactor * GenMath.InverseParabola(DistanceCoveredFraction) : 0;
+        float ArcRatio => HasFlyingShadow ? ArcHeightFactor * GenMath.InverseParabola(DistanceCoveredFraction) : 0;
         Vector3 MyPosition => DrawPos + Vector3.forward * ArcRatio;
 
         public override void Draw()
@@ -248,19 +260,19 @@ namespace MoharJoy
 
             if (IsFlying)
             {
-                if (HasFlyingAndGroundShadow)
+                if (HasFlyingShadow)
                     DrawFlyingShadow(DrawPos, ArcRatio);
                 else if(IsGroundShadowOnly)
                     GroundShadowGraphic.Draw(position, Rot4.North, this);
             }
             else if (IsGrounded)
             {
-                if (HasGroundShadowGraphic)
+                if (HasGroundShadow)
                 { 
                     GroundShadowGraphic.Draw(position, Rot4.North, this);
                     //Log.Warning("ShadownMote Position:" + position + " - shadow layer:" + AltitudeLayer.Shadows.AltitudeFor());
                 }
-                else
+                else if(HasGroundShadowData)
                 {
                     Log.Warning("should be drawing ground shadow, but not found");
                 }

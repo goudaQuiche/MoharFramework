@@ -21,6 +21,10 @@ namespace MoharJoy
         //Random weighted parameter
         public ProjectileOption projectileOption = null;
         public MoteParameter PickedMoteParam = null;
+
+        public IEnumerable<ThingDef> NaturalRocksInCell = new List<ThingDef>();
+        public bool HasStuff => !NaturalRocksInCell.EnumerableNullOrEmpty();
+
         public bool HasPickedMoteParam => PickedMoteParam != null;
 
         // Common to all projectiles parameters
@@ -38,7 +42,6 @@ namespace MoharJoy
         public FloatRange Rotation => PickedMoteParam.rotation;
         
         //Lambda things
-
         public bool HasGameSettings => gameSettings != null;
         public bool HasProjectileOption => projectileOption != null;
         public bool HasPickedOption => HasProjectileOption && projectileOption.IsShadowMoteType;
@@ -76,7 +79,8 @@ namespace MoharJoy
                     }
                     return PickedMoteParam.moteDef;
                 }
-                    
+                else if (PickedMoteParam.HasStuffMotePool && HasStuff)
+                    return RetrieveStuffMoteDef;
 
                 return null;
             }
@@ -152,6 +156,49 @@ namespace MoharJoy
             return Didit;
         }
 
+        public ThingDef RetrieveStuffMoteDef
+        {
+            get
+            {
+                if (!HasStuff)
+                {
+                    Tools.Warn("RetrieveStuffMoteDef natural rocks stuff not found => null ", MyDebug);
+                    return null;
+                }
+
+                List<ThingDef> StuffMoteDef = new List<ThingDef>();
+                //= PickedMoteParam.stuffMotePool.Where(m => NaturalRocksInCell.  )
+                foreach (ThingDef curStuffMoteDef in PickedMoteParam.stuffMotePool)
+                {
+                    foreach (ThingDef curRock in NaturalRocksInCell)
+                    {
+                        if (curStuffMoteDef.graphicData.color == curRock.graphicData.color)
+                            StuffMoteDef.Add(curStuffMoteDef);
+                    }
+                }
+                if (!StuffMoteDef.NullOrEmpty())
+                {
+                    return StuffMoteDef.RandomElement();
+                }
+
+                Tools.Warn("RetrieveStuffMoteDef found nothing, default=" + PickedMoteParam.stuffMotePool[0], MyDebug);
+
+                return PickedMoteParam.stuffMotePool[0];
+            }
+        }
+
+        void SetNaturalRocksStuff()
+        {
+            string DebugStr = MyDebug ? PawnLabel + " " + MyName + " SetNaturalRocksStuff" : "";
+
+            foreach (ThingDef RockDef in Find.World.NaturalRockTypesIn(pawn.Map.Tile))
+            {
+                Tools.Warn(DebugStr + " => " + RockDef, MyDebug);
+            };
+
+            NaturalRocksInCell = Find.World.NaturalRockTypesIn(pawn.Map.Tile);
+        }
+
         bool ParameterInitialization()
         {
             string DebugStr = MyDebug ? PawnLabel + " " + MyName + " WatchTickAction" : "";
@@ -167,6 +214,9 @@ namespace MoharJoy
 
             bool DidIt = SetParameters();
             Tools.Warn(DebugStr + " DidIt:" + DidIt + " ; attempts:" + AttemptNum, MyDebug);
+
+            if (gameSettings.stuffDependsOnNaturalRocks)
+                SetNaturalRocksStuff();
 
             return DidIt;
         }
@@ -240,7 +290,24 @@ namespace MoharJoy
 
         public override string GetReport()
         {
-            return "Throwing rocks needs translate";
+            string defaultReport = "Throwing rocks";
+            if (!HasGameSettings || !gameSettings.HasMoodDependantReport || pawn.needs.mood == null)
+                return defaultReport;
+
+            foreach(MoodDependantReport MDR in gameSettings.moodDependantReport)
+            {
+                if (MDR.mood.Includes(pawn.needs.mood.CurLevel))
+                {
+                    return MDR.keyString.Translate( pawn.Possessive() );
+                }
+                    
+            }
+
+            MoodDependantReport DefaultMDR = gameSettings.moodDependantReport.Where(mdr => mdr.defaultOption).FirstOrDefault();
+            if(DefaultMDR != null)
+                return DefaultMDR.keyString.Translate();
+
+            return defaultReport;
         }
 
     }

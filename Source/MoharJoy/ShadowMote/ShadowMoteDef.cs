@@ -18,14 +18,22 @@ namespace MoharJoy
         public ThingDef flyingShadowRessource;
         public SoundDef throwSound;
         public SoundDef skiddingSustainSound;
+
+        public SoundDef groundLandSound;
+        public SoundDef waterLandSound;
+
         public ImpactMoteParameter impactMote;
 
         public bool makeWaterSplashOnImpact = false;
         public bool destroyParentOnImpact = false;
 
         public bool HasImpactMote => impactMote != null;
+
         public bool HasThrowSound => throwSound != null;
+        public bool HasGroundLandSound => groundLandSound != null;
+        public bool HasWaterLandSound => waterLandSound != null;
         public bool HasSkiddingSound => skiddingSustainSound != null;
+
         public bool HasflyingShadowRessource => flyingShadowRessource != null;
 
         public bool debug = false;
