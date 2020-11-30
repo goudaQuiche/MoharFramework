@@ -6,8 +6,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>MoharGamez</RootNamespace>
-    <AssemblyName>MoharGamez</AssemblyName>
+    <RootNamespace>MoharJoy</RootNamespace>
+    <AssemblyName>MoharJoy</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <TargetFrameworkProfile />
@@ -54,15 +54,20 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="JobDriver\JobDriver_PlayGenericTargetingGame.cs" />
-    <Compile Include="JobDriver\parameters\GameSettings.cs" />
-    <Compile Include="JobDriver\MoteThrower.cs" />
-    <Compile Include="JobDriver\parameters\ProjectileOption.cs" />
-    <Compile Include="JobDriver\parameters\Thoughts.cs" />
-    <Compile Include="JobDriver\Thoughts\MoteBubble.cs" />
-    <Compile Include="JobDriver\Thoughts\TogetherThoughtUtils.cs" />
-    <Compile Include="JobDriver\Thoughts\ThrowThoughtUtils.cs" />
-    <Compile Include="JobDriver\Utils.cs" />
+    <Compile Include="JoyOfNature\JobDriver\JobDriver_ThrowRocks.cs" />
+    <Compile Include="JoyOfNature\JobDriver\ThrowRocks_JobDriver.cs" />
+    <Compile Include="JoyOfNature\JoyGiver\JoyOfNatureUtils.cs" />
+    <Compile Include="JoyOfNature\JoyGiver\JoyOfNature_JoyGiver.cs" />
+    <Compile Include="JoyOfNature\JoyGiver\JoyOfNature_JoyGiverDef.cs" />
+    <Compile Include="PlayGenericTargetingGame\JobDriver_PlayGenericTargetingGame.cs" />
+    <Compile Include="PlayGenericTargetingGame\parameters\GameSettings.cs" />
+    <Compile Include="PlayGenericTargetingGame\MoteThrower.cs" />
+    <Compile Include="PlayGenericTargetingGame\parameters\ProjectileOption.cs" />
+    <Compile Include="PlayGenericTargetingGame\parameters\Thoughts.cs" />
+    <Compile Include="PlayGenericTargetingGame\Thoughts\MoteBubble.cs" />
+    <Compile Include="PlayGenericTargetingGame\Thoughts\TogetherThoughtUtils.cs" />
+    <Compile Include="PlayGenericTargetingGame\Thoughts\ThrowThoughtUtils.cs" />
+    <Compile Include="PlayGenericTargetingGame\Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShadowMote\ShadowMoteDef.cs" />
     <Compile Include="ShadowMote\ShadowMote.cs" />
@@ -78,6 +83,7 @@
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>

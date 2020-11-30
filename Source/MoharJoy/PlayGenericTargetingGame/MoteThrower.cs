@@ -4,38 +4,52 @@ using UnityEngine;
 using System.Collections.Generic;
 
 
-namespace MoharGamez
+namespace MoharJoy
 {
     public static class MoteThrower
     {
-        /*
-               public static void ThrowObjectAt(this JobDriver_PlayGenericTargetingGame PGTG, IntVec3 targetCell)
-               {
-                   Pawn thrower = PGTG.pawn;
-                   ThingDef moteDef = PGTG.MoteDef;
-                   SkillDef skillDef = PGTG.SkillDefScaling;
 
-                   if (thrower.Position.ShouldSpawnMotesAt(thrower.Map) && !thrower.Map.moteCounter.Saturated)
-                   {
-                       float randomSpeed = PGTG.Speed.RandomInRange;
-                       Vector3 vector = 
-                           targetCell.ToVector3Shifted() + 
-                           Vector3Utility.RandomHorizontalOffset((1f - (float)thrower.skills.GetSkill(skillDef).Level / 20f) * 1.8f);
+        public static Thing ShadowMoteSpawner_ThrowObjectAt(this JobDriver_ThrowRocks JDTR)
+        {
+            bool MyDebug = JDTR.gameSettings.debug;
+            string debugStr = MyDebug ? JDTR.PawnLabel + "ShadowMoteSpawner_ThrowObjectAt - " : "";
 
-                       vector.y = thrower.DrawPos.y;
-                       MoteThrown moteThrown = (MoteThrown)ThingMaker.MakeThing(moteDef);
+            Pawn thrower = JDTR.pawn;
+            IntVec3 targetCell = JDTR.TargetCell;
+            SkillDef skillDef = JDTR.SkillDefScaling;
+            
+            ThingDef moteDef = JDTR.MoteDef;
 
-                       moteThrown.Scale = 1f;
-                       moteThrown.rotationRate = PGTG.Rotation.RandomInRange;
-                       moteThrown.exactPosition = thrower.DrawPos;
-                       moteThrown.SetVelocity((vector - moteThrown.exactPosition).AngleFlat(), randomSpeed);
+            if (!thrower.AllowedMoteSpawn())
+                return null;
+            
+            float randomSpeed = JDTR.Speed.RandomInRange;
+            Vector3 destinationCell =
+                targetCell.ToVector3Shifted() +
+                Vector3Utility.RandomHorizontalOffset((1f - (float)thrower.skills.GetSkill(skillDef).Level / 20f) * 1.8f);
+            
+            destinationCell.y = thrower.DrawPos.y;
+            if (moteDef == null)
+            {
+                Tools.Warn(debugStr + "found no moteDef", MyDebug);
+                return null;
+            }
 
-                       moteThrown.airTimeLeft = Mathf.RoundToInt((moteThrown.exactPosition - vector).MagnitudeHorizontal() / randomSpeed);
+            ShadowMote moteThrown = (ShadowMote)ThingMaker.MakeThing(moteDef);
+            
+            //moteThrown.Initialization(thrower.DrawPos, destinationCell, PGTG.PetanqueSpotCell.ToVector3Shifted(), thrower);
+            moteThrown.Initialization(JDTR, destinationCell);
+            
+            moteThrown.Scale = 1f;
+            moteThrown.rotationRate = JDTR.Rotation.RandomInRange;
+            moteThrown.exactPosition = thrower.DrawPos;
+            moteThrown.SetVelocity((destinationCell - moteThrown.exactPosition).AngleFlat(), randomSpeed);
+            
+            moteThrown.airTimeLeft = Mathf.RoundToInt((moteThrown.exactPosition - destinationCell).MagnitudeHorizontal() / randomSpeed);
+            
+            return GenSpawn.Spawn(moteThrown, thrower.Position, thrower.Map);
+        }
 
-                       GenSpawn.Spawn(moteThrown, thrower.Position, thrower.Map);
-                   }
-               }
-               */
         public static Thing ShadowMoteSpawner_ThrowObjectAt(this JobDriver_PlayGenericTargetingGame PGTG)
         {
             Pawn thrower = PGTG.pawn;
@@ -96,7 +110,36 @@ namespace MoharGamez
             }
             return null;
         }
-        
+
+        public static Thing MoteSpawner_ThrowObjectAt(this JobDriver_ThrowRocks JDTR)
+        {
+            IntVec3 targetCell = JDTR.TargetCell;
+            Pawn thrower = JDTR.pawn;
+            ThingDef moteDef = JDTR.MoteDef;
+            SkillDef skillDef = JDTR.SkillDefScaling;
+
+            if (!thrower.Position.ShouldSpawnMotesAt(thrower.Map) || thrower.Map.moteCounter.Saturated)
+                return null;
+
+            float randomSpeed = JDTR.Speed.RandomInRange;
+            Vector3 destinationCell =
+                targetCell.ToVector3Shifted() +
+                Vector3Utility.RandomHorizontalOffset((1f - (float)thrower.skills.GetSkill(skillDef).Level / 20f) * 1.8f);
+
+            destinationCell.y = thrower.DrawPos.y;
+            MoteThrown moteThrown = (MoteThrown)ThingMaker.MakeThing(moteDef);
+
+            moteThrown.Scale = 1f;
+            moteThrown.rotationRate = JDTR.Rotation.RandomInRange;
+            moteThrown.exactPosition = thrower.DrawPos;
+            moteThrown.SetVelocity((destinationCell - moteThrown.exactPosition).AngleFlat(), randomSpeed);
+
+            moteThrown.airTimeLeft = Mathf.RoundToInt((moteThrown.exactPosition - destinationCell).MagnitudeHorizontal() / randomSpeed);
+
+            return GenSpawn.Spawn(moteThrown, thrower.Position, thrower.Map);
+
+        }
+
 
         private static bool NewBaseImpactMote(this MoteSubEffect MSE, out MoteThrown moteThrown)
         {

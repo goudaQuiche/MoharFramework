@@ -176,8 +176,7 @@ namespace MoharHediffs
             Pawn pawn = parent.pawn;
             if (!Tools.OkPawn(pawn))
             {
-                //Tools.DestroyParentHediff(parent, MyDebug);
-                Pawn.DestroyHediff(parent, MyDebug);
+                //Pawn.DestroyHediff(parent, MyDebug);
                 return;
             }
                 

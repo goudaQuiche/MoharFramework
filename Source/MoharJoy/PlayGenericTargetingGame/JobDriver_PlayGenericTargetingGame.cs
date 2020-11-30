@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace MoharGamez
+namespace MoharJoy
 {
     public class JobDriver_PlayGenericTargetingGame : JobDriver_WatchBuilding
     {
@@ -289,48 +289,10 @@ namespace MoharGamez
         protected override void WatchTickAction()
         {
             //Tools.Warn( MyName + " WatchTickAction - Entering WatchTickAction", myDebug);
-            if (!ParameterInitialization())
+            if (!HasGameSettings && ParameterInitialization())
                 return;
 
             TryThrowProjectile();
         }
-
-        /*
-        void ManageOldMotes()
-        {
-            List<int> MotesToForget = new List<int>();
-            //Tools.Warn("ManageOldMotes - Browsing " + MoteThrownList.Count + "motes", myDebug);
-            for (int i = 0; i < MoteThrownList.Count; i++)
-            {
-                MoteThrown curMote = MoteThrownList[i];
-                if (curMote == null || !curMote.Spawned)
-                {
-                    MotesToForget.Add(i);
-                    //Tools.Warn(MyName + "ManageOldMotes - Deadmote - Adding mote n°" + i + " to MotesToForget" , myDebug);
-                    continue;
-                }
-
-                if (curMote.airTimeLeft <= 0)
-                //if (curMote.Speed <= projectileOption.triggerImpactSpeedLimit)
-                {
-                    if (HasImpactMote)
-                        this.ThrowImpactMote(curMote);
-
-                    MotesToForget.Add(i);
-                    //Tools.Warn(MyName + "ManageOldMotes - Non moving mote - Adding mote n°" + i + " to MotesToForget", myDebug);
-                }
-            }
-            for (int i = MoteThrownList.Count - 1; i >= 0; i--)
-            {
-                if (MotesToForget.Contains(i))
-                {
-                    MoteThrownList.RemoveAt(i);
-                    //Tools.Warn(MyName + "ManageOldMotes - Deleted mote n°" + i, myDebug);
-                }
-                    
-            }
-        }
-        */
-
     }
 }

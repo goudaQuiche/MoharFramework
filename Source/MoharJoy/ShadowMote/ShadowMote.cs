@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using Verse.Sound;
 using Verse;
+using RimWorld;
 
-namespace MoharGamez
+namespace MoharJoy
 {
     public class ShadowMote : MoteThrown
     {
@@ -15,13 +16,12 @@ namespace MoharGamez
 
         public JobDriver_PlayGenericTargetingGame TG_parent;
         public bool HasTargetingGameParent => TG_parent != null;
-        public Pawn MyPawn => TG_parent?.pawn ?? null;
-        public string PawnLabel => HasTargetingGameParent ? TG_parent.PawnLabel : "unknown";
+        //public Pawn MyPawn => TG_parent?.pawn ?? null;
+        public string PawnLabel => MyPawn!=null ? MyPawn.LabelShort : "unknown";
 
-
-        public bool HasGameSettings => HasTargetingGameParent && TG_parent.HasGameSettings;
-        //public bool HasTargetingGameParentWithThoughts => HasGameSettings && TG_parent.gameSettings.HasThought;
-        //public bool HasGameWithThrowThoughts => HasTargetingGameParentWithThoughts && TG_parent.gameSettings.HasThrowThought;
+        public JobDriver_ThrowRocks JDTR_parent;
+        public bool HasThrowRockParent => JDTR_parent != null;
+        
         public bool HasGameWithThrowThoughts => HasGameSettings && TG_parent.gameSettings.HasThrowThought;
 
         public bool IsPlayerPlayingTargetingGame =>
@@ -69,7 +69,7 @@ namespace MoharGamez
 
         // Nature defining
         public bool IsGroundShadowOnly => !HasFlyingShadow && HasGroundShadow;
-        public bool IsFlyingAndGroundShadow => HasFlyingShadow && HasGroundShadow;
+        public bool HasFlyingAndGroundShadow => HasFlyingShadow && HasGroundShadow;
 
         private bool IsGrounded => airTimeLeft <= 0;
         private bool IsFlying => !IsGrounded;
@@ -80,9 +80,40 @@ namespace MoharGamez
         private bool LoggedCoordinates = false;
         private bool ProjectileStoppedMovingForFirstTime => !LoggedCoordinates && Speed == 0;
 
+
+        public Pawn MyPawn
+        {
+            get
+            {
+                if (HasTargetingGameParent)
+                    return TG_parent.pawn;
+                if (HasThrowRockParent)
+                    return JDTR_parent.pawn;
+
+                return null;
+            }
+            
+        }
+
+        public bool HasGameSettings
+        {
+            get
+            {
+                if(HasTargetingGameParent)
+                    return TG_parent.HasGameSettings;
+
+                if (HasThrowRockParent)
+                    return JDTR_parent.HasGameSettings;
+
+                return false;
+            }
+        }
+
+
         void StartSustainer()
         {
-            skiddingSustainer = SkiddingSustainSound.TrySpawnSustainer(new TargetInfo(Position, Map));
+            if(HasSkiddingSound)
+                skiddingSustainer = SkiddingSustainSound.TrySpawnSustainer(new TargetInfo(Position, Map));
         }
 
         private void StopSustainer()
@@ -98,18 +129,7 @@ namespace MoharGamez
         public override void ExposeData()
         {
             base.ExposeData();
-
             Scribe_Values.Look(ref throwerOrigin, "throwerOrigin");
-            Scribe_Values.Look(ref flatOrigin, "flatOrigin");
-            Scribe_Values.Look(ref destination, "destination");
-            Scribe_Values.Look(ref BaseDistance, "BaseDistance");
-            Scribe_Values.Look(ref targetBuildingCoordinates, "targetBuildingCoordinates");
-            Scribe_Deep.Look(ref TG_parent, "TG_parent");
-            //Scribe_Values.Look(ref TG_parent, "TG_parent");
-            Scribe_Values.Look(ref skiddingSustainer, "skiddingSustainer");
-
-            Scribe_Values.Look(ref LoggedCoordinates, "LoggedCoordinates");
-            Scribe_Values.Look(ref ImpactOccured, "ImpactOccured");
         }
         */
 
@@ -128,14 +148,21 @@ namespace MoharGamez
 
             if (!ImpactOccured)
             {
-                if ((IsFlyingAndGroundShadow && !IsFlying) || IsGroundShadowOnly)
+                if ((HasFlyingAndGroundShadow && !IsFlying) || IsGroundShadowOnly)
                 {
                     ImpactOccured = true;
+
                     StartSustainer();
                     //Tools.Warn("")
 
                     if (HasImpactMote)
                         this.ThrowImpactMote();
+
+                    if (MSE.makeWaterSplashOnImpact && exactPosition.ToIntVec3().GetTerrain(Map).IsWater)
+                        MoteMaker.MakeWaterSplash(exactPosition, Map, 2, Speed*2);
+
+                    if (MSE.destroyParentOnImpact)
+                        this.Destroy();
                 }
             }
 
@@ -211,7 +238,7 @@ namespace MoharGamez
             }
         }
 
-        float ArcRatio => IsFlyingAndGroundShadow ? ArcHeightFactor * GenMath.InverseParabola(DistanceCoveredFraction) : 0;
+        float ArcRatio => HasFlyingAndGroundShadow ? ArcHeightFactor * GenMath.InverseParabola(DistanceCoveredFraction) : 0;
         Vector3 MyPosition => DrawPos + Vector3.forward * ArcRatio;
 
         public override void Draw()
@@ -221,7 +248,7 @@ namespace MoharGamez
 
             if (IsFlying)
             {
-                if (IsFlyingAndGroundShadow)
+                if (HasFlyingAndGroundShadow)
                     DrawFlyingShadow(DrawPos, ArcRatio);
                 else if(IsGroundShadowOnly)
                     GroundShadowGraphic.Draw(position, Rot4.North, this);
@@ -232,6 +259,10 @@ namespace MoharGamez
                 { 
                     GroundShadowGraphic.Draw(position, Rot4.North, this);
                     //Log.Warning("ShadownMote Position:" + position + " - shadow layer:" + AltitudeLayer.Shadows.AltitudeFor());
+                }
+                else
+                {
+                    Log.Warning("should be drawing ground shadow, but not found");
                 }
 
             }

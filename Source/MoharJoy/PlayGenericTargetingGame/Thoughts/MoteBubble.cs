@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 
-namespace MoharGamez
+namespace MoharJoy
 {
     public static class BubbleMoteMaker
     {

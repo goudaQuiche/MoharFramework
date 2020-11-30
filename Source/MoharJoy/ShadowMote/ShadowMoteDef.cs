@@ -3,7 +3,7 @@ using System;
 using RimWorld;
 using System.Collections.Generic;
 
-namespace MoharGamez
+namespace MoharJoy
 {
     //[StaticConstructorOnStartup]
 
@@ -19,6 +19,9 @@ namespace MoharGamez
         public SoundDef throwSound;
         public SoundDef skiddingSustainSound;
         public ImpactMoteParameter impactMote;
+
+        public bool makeWaterSplashOnImpact = false;
+        public bool destroyParentOnImpact = false;
 
         public bool HasImpactMote => impactMote != null;
         public bool HasThrowSound => throwSound != null;

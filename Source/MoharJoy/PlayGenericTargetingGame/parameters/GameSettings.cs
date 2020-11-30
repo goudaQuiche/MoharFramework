@@ -3,7 +3,7 @@ using System;
 using RimWorld;
 using System.Collections.Generic;
 
-namespace MoharGamez
+namespace MoharJoy
 {
     //[StaticConstructorOnStartup]
 

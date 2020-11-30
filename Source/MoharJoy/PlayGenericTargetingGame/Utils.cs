@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 
-namespace MoharGamez
+namespace MoharJoy
 {
     public static class JobInitialize
     {
@@ -67,13 +67,42 @@ namespace MoharGamez
             return PGTG.HasProjectileOption;
         }
 
+        public static bool RetrieveProjectileParam(this JobDriver_ThrowRocks JDTR)
+        {
+            bool myDebug = JDTR.gameSettings.debug;
+
+            string DebugStr = JDTR.pawn.LabelShort + " - RetrieveProjectileParam";
+            Tools.Warn(DebugStr + " - Entering", myDebug);
+
+            int randomIndex = JDTR.gameSettings.GetWeightedRandomIndex();
+            JDTR.projectileOption = JDTR.gameSettings.projectileOptionList[randomIndex];
+
+            if (JDTR.projectileOption.IsShadowMoteType)
+            {
+                JDTR.PickedMoteParam = JDTR.projectileOption.shadowMote;
+                Tools.Warn(DebugStr + " - Found shadow mote", myDebug);
+            }
+            else
+            {
+                Tools.Warn(DebugStr + " - Found nothing", myDebug);
+            }
+
+            return JDTR.HasProjectileOption;
+        }
+
         public static void ResetPickedOption(this JobDriver_PlayGenericTargetingGame PGTG)
         {
             PGTG.projectileOption = null;
             PGTG.PickedMoteParam = null;
             PGTG.RetrieveProjectileParam();
         }
-        
-        
+
+        public static void ResetPickedOption(this JobDriver_ThrowRocks JDTR)
+        {
+            JDTR.projectileOption = null;
+            JDTR.PickedMoteParam = null;
+            JDTR.RetrieveProjectileParam();
+        }
+
     }
 }

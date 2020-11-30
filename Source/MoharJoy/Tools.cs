@@ -4,7 +4,7 @@ using System.Linq;
 using Verse;
 using UnityEngine;
 
-namespace MoharGamez
+namespace MoharJoy
 {
     public static class Tools
     {

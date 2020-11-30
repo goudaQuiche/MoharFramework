@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace MoharGamez
+namespace MoharJoy
 {
     public static class TogetherThoughtUtils
     {
@@ -66,7 +66,7 @@ namespace MoharGamez
                         TG.TogetherThoughtsNum++;
 
                         JobDriver_PlayGenericTargetingGame OtherPlayerTG = (JobDriver_PlayGenericTargetingGame)(player.jobs.curDriver);
-                        if(OtherPlayerTG!=null)
+                        if (OtherPlayerTG != null)
                             OtherPlayerTG.TogetherThoughtsNum++;
 
                         return true;
@@ -100,7 +100,7 @@ namespace MoharGamez
             }
 
             player1.needs.mood.thoughts.memories.TryGainMemory(thought_Memory, player2);
-            //player2.needs.mood.thoughts.memories.TryGainMemory(thought_Memory, player1);
+            player2.needs.mood.thoughts.memories.TryGainMemory(thought_Memory, player1);
 
             Pawn motePawn = Rand.Chance(.5f) ? player1 : player2;
             motePawn.MakeMoodThoughtBubble(thought_Memory, icon, bubble, DestroyingBubbles, ResistantBubbles);
