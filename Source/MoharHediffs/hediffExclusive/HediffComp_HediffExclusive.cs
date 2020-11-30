@@ -18,7 +18,7 @@ namespace MoharHediffs
     public class HeDiffComp_HediffExclusive : HediffComp
     {
         const int tickLimiterModulo = 60;
-        bool myDebug = false;
+        bool myDebug => Props.debug;
 
         public HeDiffCompProperties_HediffExclusive Props
         {
@@ -26,12 +26,6 @@ namespace MoharHediffs
             {
                 return (HeDiffCompProperties_HediffExclusive)this.props;
             }
-        }
-
-        public override void CompPostMake()
-        {
-            //base.CompPostMake();
-            myDebug = Props.debug;
         }
 
         public bool HasHediffToNullify

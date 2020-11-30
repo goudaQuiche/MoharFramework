@@ -1,13 +1,4 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Etienne
- * Date: 22/11/2017
- * Time: 16:43
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Verse;
 
 namespace MoharHediffs
@@ -17,9 +8,7 @@ namespace MoharHediffs
         //conditionnal body
         public BodyDef bodyDef;
         //what
-        public List<HediffDef> hediffToApply;
-        // where is it applied
-        public List<BodyPartDef> bodyPartDef;
+        public List<HediffAndBodyPart> hediffAndBodypart;
 
         public bool debug = false;
 
@@ -28,4 +17,14 @@ namespace MoharHediffs
 			this.compClass = typeof(HediffComp_MultipleHediff);
 		}
 	}
+
+    public class HediffAndBodyPart
+    {
+        public HediffDef hediff;
+        public BodyPartDef bodyPart;
+        public string bodyPartLabel;
+        public bool allowMissing = true;
+        public bool regenIfMissing = true;
+        public bool wholeBodyFallback = true;
+    }
 }

@@ -1,42 +1,35 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Etienne
- * Date: 22/11/2017
- * Time: 16:41
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
-
-using RimWorld;
-using System;
-using System.Linq;
+﻿using Verse;
 using System.Collections.Generic;
-using Verse;
+using System.Linq;
 
 namespace MoharHediffs
 {
     public class HediffComp_MultipleHediff : HediffComp
     {
-        const int tickLimiterModulo = 60;
         bool myDebug = false;
         bool blockAction = false;
 
-        public HediffCompProperties_MultipleHediff Props
-        {
-            get
-            {
-                return (HediffCompProperties_MultipleHediff)this.props;
-            }
-        }
+        bool HasBodyRequirement => Props.bodyDef != null;
+
+        public HediffCompProperties_MultipleHediff Props => (HediffCompProperties_MultipleHediff)this.props;
+        
         public void CheckProps()
         {
             string fctN = "CheckProps";
-            if(Props.hediffToApply.Count != Props.bodyPartDef.Count)
+            if(!HasHediffToApply)
             {
-                Tools.Warn(fctN + "- Props.hediffToApply.Count != Props.bodyPartDef.Count", myDebug);
-                Tools.DestroyParentHediff(parent, myDebug);
+                Tools.Warn(fctN + "- empty hediffAndBodypart, destroying", myDebug);
+                Pawn.DestroyHediff(parent);
                 blockAction = true;
             }
+
+            if (HasBodyRequirement)
+                if (Pawn.def.race.body != Props.bodyDef)
+                {
+                    Tools.Warn(Pawn.Label + " has not a bodyDef like required: " + Pawn.def.race.body.ToString() + "!=" + Props.bodyDef.ToString(), true);
+                    Pawn.DestroyHediff(parent);
+                    blockAction = true;
+                }
         }
 
         public override void CompPostMake()
@@ -50,59 +43,77 @@ namespace MoharHediffs
         {
             get
             {
-                return !Props.hediffToApply.NullOrEmpty();
+                return !Props.hediffAndBodypart.NullOrEmpty();
             }
         }
         public void ApplyHediff(Pawn pawn)
         {
-            if (Props.bodyDef != null)
-                if (pawn.def.race.body != Props.bodyDef)
-                {
-                    Tools.Warn(pawn.Label + " has not a bodyDef like required: " + pawn.def.race.body.ToString() + "!=" + Props.bodyDef.ToString(), true);
-                    return;
-                }
-
-            for (int i = 0; i < Props.hediffToApply.Count; i++)
+            for (int i = 0; i < Props.hediffAndBodypart.Count; i++)
             {
-                HediffDef curHD = Props.hediffToApply[i];
-                BodyPartDef curBPD = Props.bodyPartDef[i];
+                HediffDef curHD = Props.hediffAndBodypart[i].hediff;
+                BodyPartDef curBPD = Props.hediffAndBodypart[i].bodyPart;
+                string curBPLabel = Props.hediffAndBodypart[i].bodyPartLabel;
+                bool curAllowMissing = Props.hediffAndBodypart[i].allowMissing;
+                bool regenIfMissing = Props.hediffAndBodypart[i].regenIfMissing;
+                bool wholeBodyFallback = Props.hediffAndBodypart[i].wholeBodyFallback;
 
                 if (curHD == null)
                 {
                     Tools.Warn("cant find hediff; i=" + i, true);
-                    return;
+                    continue;
                 }
-                if (curBPD == null)
+                
+                BodyPartRecord myBPR = null;
+                if(curBPLabel != null)
                 {
-                    Tools.Warn("cant find body part def; i=" + i, true);
-                    return;
+                    myBPR = pawn.GetBPRecordWithoutHediff(curBPLabel, curHD, curAllowMissing, myDebug);
+                    if (myBPR == null)
+                    {
+                        Tools.Warn("Could not find a BPR to apply hediff, will pick whole body?" + wholeBodyFallback, myDebug);
+                        if(!wholeBodyFallback)
+                            continue;
+                    }
+                }
+                else if (curBPD != null)
+                {
+                    myBPR = pawn.GetBPRecordWithoutHediff(curBPD, curHD, curAllowMissing, myDebug);
+                    if (myBPR == null)
+                    {
+                        Tools.Warn("Could not find a BPR to apply hediff, will pick whole body?" + wholeBodyFallback, myDebug);
+                        if (!wholeBodyFallback)
+                            continue;
+                    }
                 }
 
-                //BodyPartRecord myBPR = pawn.GetBPRecord(curBPD, myDebug);
-                BodyPartRecord myBPR = pawn.GetBPRecordWithoutHediff(curBPD, curHD, myDebug);
-                if (myBPR == null)
+                if (curAllowMissing)
                 {
-                    Tools.Warn("Could not find a BPR to apply hediff, giving up", myDebug);
-                    return;
+                    if (Pawn.IsMissingBPR(myBPR, out Hediff hediffMissing))
+                    {
+                        if (regenIfMissing)
+                        {
+                            Tools.Warn("regenerating " + myBPR.customLabel, myDebug);
+                            Pawn.health.RemoveHediff(hediffMissing);
+                        }
+                            
+                    }
                 }
 
                 Hediff hediff2apply = HediffMaker.MakeHediff(curHD, pawn, myBPR);
                 if (hediff2apply == null)
                 {
                     Tools.Warn("cant create hediff " + curHD.defName + " to apply on " + curBPD.defName, true);
-                    return;
+                    continue;
                 }
-
+                
                 pawn.health.AddHediff(hediff2apply, myBPR, null);
             }
         }
 
         public override void CompPostTick(ref float severityAdjustment)
         {
-            Pawn pawn = parent.pawn;
-            if (!Tools.OkPawn(pawn))
+            if (!Tools.OkPawn(Pawn))
             {
-                Tools.DestroyParentHediff(parent, myDebug);
+                //Tools.DestroyParentHediff(parent, myDebug);
                 return;
             }
                 
@@ -113,12 +124,11 @@ namespace MoharHediffs
             }
 
             if (HasHediffToApply)
-            {
-                ApplyHediff(pawn);
-            }
+                ApplyHediff(Pawn);
 
             // this hediff self destruction
-            Tools.DestroyParentHediff(parent, myDebug);
+            Pawn.DestroyHediff(parent);
+            //Tools.DestroyParentHediff(parent, myDebug);
         }
 
         public override string CompTipStringExtra
