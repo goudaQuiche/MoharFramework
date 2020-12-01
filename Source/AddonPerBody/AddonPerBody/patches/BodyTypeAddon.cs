@@ -18,7 +18,7 @@ namespace AddonPerBody
             har.PatchAll(Assembly.GetExecutingAssembly());
 
             if (Prefs.DevMode)
-                Log.Warning("Applied AddonPerBody harmony patch");
+                Log.Message("MoharFramework - Applied AddonPerBody harmony patch");
 
         }
 
@@ -26,90 +26,52 @@ namespace AddonPerBody
 
     public class BodyTypeAddon
     {
+        static class Utils
+        {
 
-        //[HarmonyAfter(new string[] { "net.example.plugin2" })]
+            public static bool IsThereContent(string newPath)
+            {
+                return ContentFinder<Texture2D>.Get(newPath + "_south", false) != null;
+            }
+
+            public static string InsertBodyTypeDirectoryBeforeFileName(string originalPath, string bodyType)
+            {
+                int lastSlashPos = originalPath.LastIndexOf("/") + 1;
+                string path = originalPath.Substring(0, lastSlashPos);
+                string fileName = originalPath.Substring(lastSlashPos, originalPath.Length - lastSlashPos);
+
+                return path + bodyType + "/" + fileName;
+            }
+        }
+
         [HarmonyPatch(typeof(AlienPartGenerator.BodyAddon), "GetPath")]
         class HARPatch
         {
             public static void Postfix(Pawn pawn, ref Graphic __result)
             {
-                if (__result != null)
-                {
-                    if (pawn == null)
-                        return;
-                    string originalPath = __result.path;
-                    bool validTexture = false;
+                if (__result == null)
+                    return;
 
-                    //Body typed texture
-                    if (pawn.story.bodyType == BodyTypeDefOf.Hulk || pawn.story.bodyType == BodyTypeDefOf.Fat)
-                    {
-                        if (pawn.story.bodyType == BodyTypeDefOf.Hulk)
-                        {
-                            if ((ContentFinder<Texture2D>.Get(originalPath + "_Hulk" + "_south", false) != null))
-                            {
-                                Graphic newGraphic = GraphicDatabase.Get<Graphic_Multi>(originalPath + "_Hulk", __result.Shader, __result.drawSize, __result.color, __result.colorTwo);
-                                __result = newGraphic;
-                                validTexture = true;
-                            }
-                        }
-                        else if (pawn.story.bodyType == BodyTypeDefOf.Fat)
-                        {
-                            if ((ContentFinder<Texture2D>.Get(originalPath + "_Fat" + "_south", false) != null))
-                            {
-                                Graphic newGraphic = GraphicDatabase.Get<Graphic_Multi>(originalPath + "_Fat", __result.Shader, __result.drawSize, __result.color, __result.colorTwo);
-                                __result = newGraphic;
-                                validTexture = true;
-                            }
-                        }
-                        if (validTexture == false)
-                        {
-                            if ((ContentFinder<Texture2D>.Get(originalPath + "_Wide" + "_south", false) != null))
-                            {
-                                Graphic newGraphic = GraphicDatabase.Get<Graphic_Multi>(originalPath + "_Wide", __result.Shader, __result.drawSize, __result.color, __result.colorTwo);
-                                __result = newGraphic;
-                                validTexture = true;
-                            }
-                        }
-                    }
-                    else if (pawn.story.bodyType == BodyTypeDefOf.Thin)
-                    {
-                        if ((ContentFinder<Texture2D>.Get(originalPath + "_Thin" + "_south", false) != null))
-                        {
-                            Graphic newGraphic = GraphicDatabase.Get<Graphic_Multi>(originalPath + "_Thin", __result.Shader, __result.drawSize, __result.color, __result.colorTwo);
-                            __result = newGraphic;
-                            validTexture = true;
-                        }
-                    }
-                    else if (pawn.story.bodyType == BodyTypeDefOf.Male)
-                    {
-                        if ((ContentFinder<Texture2D>.Get(originalPath + "_Male" + "_south", false) != null))
-                        {
-                            Graphic newGraphic = GraphicDatabase.Get<Graphic_Multi>(originalPath + "_Male", __result.Shader, __result.drawSize, __result.color, __result.colorTwo);
-                            __result = newGraphic;
-                            validTexture = true;
-                        }
-                    }
-                    else if (pawn.story.bodyType == BodyTypeDefOf.Female)
-                    {
-                        if ((ContentFinder<Texture2D>.Get(originalPath + "_Female" + "_south", false) != null))
-                        {
-                            Graphic newGraphic = GraphicDatabase.Get<Graphic_Multi>(originalPath + "_Female", __result.Shader, __result.drawSize, __result.color, __result.colorTwo);
-                            __result = newGraphic;
-                            validTexture = true;
-                        }
-                    }
-                    else
-                    {
-                        string bodyname = pawn.story.bodyType.defName;
-                        if ((ContentFinder<Texture2D>.Get(originalPath + "_" + bodyname + "_south", false) != null))
-                        {
-                            Graphic newGraphic = GraphicDatabase.Get<Graphic_Multi>(originalPath + "_" + bodyname, __result.Shader, __result.drawSize, __result.color, __result.colorTwo);
-                            __result = newGraphic;
-                            validTexture = true;
-                        }
-                    }
+                if (pawn == null)
+                    return;
+
+                string originalPath = __result.path;
+
+                string bodyname = pawn.story.bodyType.defName;
+                //string newPath = Utils.InsertBodyTypeBeforeFileName(originalPath, bodyname);
+                string newPath = Utils.InsertBodyTypeDirectoryBeforeFileName(originalPath, bodyname);
+
+                //if (Prefs.DevMode && pawn.story.bodyType == BodyTypeDefOf.Hulk && originalPath.Contains("Arm"))
+                //    Log.Warning("bodytype: " + bodyname + "; oPath:" + originalPath + "; nPath:" + newPath);
+
+                if (Utils.IsThereContent(newPath))
+                {
+                    //if (Prefs.DevMode)Log.Warning("=>>>AlienPartGenerator.BodyAddon Foundcontent nPath:" + newPath);
+                    Graphic newGraphic = GraphicDatabase.Get<Graphic_Multi>(newPath, __result.Shader, __result.drawSize, __result.color, __result.colorTwo);
+                    __result = newGraphic;
                 }
             }
+
         }
 
     }

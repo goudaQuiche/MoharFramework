@@ -267,12 +267,14 @@ namespace MoharJoy
             yield return Toils_Goto.GotoCell(TargetIndex.A, PathEndMode.OnCell);
             Toil toil = new Toil
             {
-                /*
+                
                 initAction = delegate
                 {
-                    pawn.jobs.posture = PawnPosture.LayingOnGroundFaceUp;
+                    //pawn.jobs.posture = PawnPosture.LayingOnGroundFaceUp;
+                    pawn.rotationTracker.FaceCell(TargetB.Cell);
+                    //pawn.jobs.
                 },
-                */
+                
                 tickAction = delegate
                 {
                     float extraJoyGainFactor = thrownRockNum * .2f;
