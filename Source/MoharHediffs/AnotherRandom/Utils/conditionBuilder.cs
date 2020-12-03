@@ -66,7 +66,7 @@ namespace MoharHediffs
             if (specificHC != null)
             {
                 Tools.Warn(debugStr + "found specificHC, copying", debug);
-                CopyHediffCondition(defaultHC, specificHC, debug);
+                CopyHediffCondition(specificHC, answerHc, debug);
             }
 
 

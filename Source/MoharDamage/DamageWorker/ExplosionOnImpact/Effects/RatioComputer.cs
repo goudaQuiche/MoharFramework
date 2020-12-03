@@ -51,7 +51,7 @@ namespace MoharDamage
             float skillDiceThrow = SkillDiceThrow(Instigator, DWEOI.Nature.radiusLinkedSkill, DWEOI.Nature.radiusRatioMin);
 
             float curvedValue = DWEOI.Nature.radiusCurve.Evaluate(skillDiceThrow);
-            float finaleRadius = curvedValue * DWEOI.Nature.radius.RandomInRange;
+            float finaleRadius = DWEOI.Nature.radius.min + curvedValue * DWEOI.Nature.radius.Span;
 
             return finaleRadius;
         }

@@ -62,6 +62,13 @@
     <Compile Include="AnotherRandom\HediffComp_AnotherRandom.cs" />
     <Compile Include="AnotherRandom\Structure\HediffItem.cs" />
     <Compile Include="AnotherRandom\Structure\HediffCondition.cs" />
+    <Compile Include="HediffConditionnalRemover\HediffCompProperties_OnTheCarpet.cs" />
+    <Compile Include="HediffConditionnalRemover\HediffComp_OnTheCarpet.cs" />
+    <Compile Include="HediffConditionnalRemover\Structure\HediffKeepingCondition.cs" />
+    <Compile Include="HediffConditionnalRemover\Structure\HediffItem.cs" />
+    <Compile Include="HediffConditionnalRemover\Utils\KeepingConditionBuilder.cs" />
+    <Compile Include="HediffConditionnalRemover\Utils\HediffIntersect.cs" />
+    <Compile Include="HediffConditionnalRemover\Utils\KeepingConditionCompatibility.cs" />
     <Compile Include="randySpawnUponDeath\Structure\CommonSettings.cs" />
     <Compile Include="randySpawnUponDeath\HediffCompProperties_RandySpawnUponDeath.cs" />
     <Compile Include="randySpawnUponDeath\HediffComp_RandySpawnUponDeath.cs" />
@@ -89,6 +96,7 @@
     <Compile Include="randySpawnUponDeath\Utils\SpawnerUtils.cs" />
     <Compile Include="randySpawnUponDeath\Utils\ItemPickerUtils.cs" />
     <Compile Include="MyDefs.cs" />
+    <Compile Include="BodyPartsTools.cs" />
     <Compile Include="ZZ_ModActive\ModActiveCheck.cs" />
     <Compile Include="trail\HediffCompProperties_RainbowTrail.cs" />
     <Compile Include="trail\HediffCompProperties_TrailLeaver.cs" />
