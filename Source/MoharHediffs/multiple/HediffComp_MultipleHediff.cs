@@ -14,7 +14,8 @@ namespace MoharHediffs
         bool HasBodyRequirement => Props.bodyDef != null;
 
         public HediffCompProperties_MultipleHediff Props => (HediffCompProperties_MultipleHediff)this.props;
-        
+        public bool HasHediffToApply => !Props.hediffAndBodypart.NullOrEmpty();
+
         public void CheckProps()
         {
             string fctN = DebugStr + "CheckProps - ";
@@ -25,13 +26,29 @@ namespace MoharHediffs
                 blockAction = true;
             }
 
-            if (HasBodyRequirement)
-                if (Pawn.def.race.body != Props.bodyDef)
+            if (HasBodyRequirement && (Pawn.def.race.body != Props.bodyDef))
                 {
-                    Tools.Warn(fctN + " has not a bodyDef like required: " + Pawn.def.race.body.ToString() + "!=" + Props.bodyDef.ToString(), true);
+                    Tools.Warn(fctN + " has not a bodyDef like required: " + Pawn.def.race.body.ToString() + "!=" + Props.bodyDef.ToString(), MyDebug);
                     Pawn.DestroyHediff(parent);
                     blockAction = true;
                 }
+
+            if(Props.hediffAndBodypart.Any( habp => habp.bodyPart != null && habp.bodyPartLabel != null))
+            {
+                Tools.Warn(fctN + "at least one item has both a bodypart def and a bodypart label, label will be prioritized", MyDebug);
+            }
+
+            if (Props.hediffAndBodypart.Any(habp => habp.hediff == null))
+            {
+                Tools.Warn(fctN + "at least one item has no hediff defined. What will happen ?", MyDebug);
+            }
+        }
+
+        public void BlockAndDestroy(string ErrorLog = "", bool myDebug = false)
+        {
+            Tools.Warn(ErrorLog, myDebug && !ErrorLog.NullOrEmpty());
+            blockAction = true;
+            Tools.DestroyParentHediff(parent, myDebug);
         }
 
         public override void CompPostMake()
@@ -40,30 +57,29 @@ namespace MoharHediffs
 
             Tools.Warn(DebugStr + "CompPostMake", MyDebug);
 
+            if (ModCompatibilityCheck.MoharCheckAndDisplay() == false)
+                BlockAndDestroy();
+
             CheckProps();
         }
 
-        public bool HasHediffToApply
-        {
-            get
-            {
-                return !Props.hediffAndBodypart.NullOrEmpty();
-            }
-        }
+
+
         public void ApplyHediff(Pawn pawn)
         {
-            string fctN = DebugStr + "CheckProps - ";
+            string fctN = DebugStr + "ApplyHediff - ";
 
             for (int i = 0; i < Props.hediffAndBodypart.Count; i++)
             {
                 HediffDef curHD = Props.hediffAndBodypart[i].hediff;
+
                 BodyPartDef curBPD = Props.hediffAndBodypart[i].bodyPart;
                 string curBPLabel = Props.hediffAndBodypart[i].bodyPartLabel;
 
                 bool prioritizeMissing = Props.hediffAndBodypart[i].prioritizeMissing;
                 bool allowMissing = Props.hediffAndBodypart[i].allowMissing;
                 bool regenIfMissing = Props.hediffAndBodypart[i].regenIfMissing;
-                bool forbidAddedPart = Props.hediffAndBodypart[i].forbidAddedPart;
+                bool allowAddedPart = Props.hediffAndBodypart[i].allowAddedPart;
 
                 bool wholeBodyFallback = Props.hediffAndBodypart[i].wholeBodyFallback;
 
@@ -72,32 +88,23 @@ namespace MoharHediffs
                     Tools.Warn(fctN + "cant find hediff; i=" + i, true);
                     continue;
                 }
-                
+
                 BodyPartRecord myBPR = null;
-                if(curBPLabel != null)
+                if (curBPLabel != null || curBPD != null)
                 {
-                    Tools.Warn(fctN + "Trying to retrieve BPR with label", MyDebug);
-                    myBPR = pawn.GetBPRecordWithoutHediff(curBPLabel, curHD, allowMissing, prioritizeMissing, forbidAddedPart, MyDebug);
-                    if (myBPR == null)
-                    {
-                        Tools.Warn(fctN + "Could not find a BPR to apply hediff, will pick whole body?" + wholeBodyFallback, MyDebug);
-                        if(!wholeBodyFallback)
-                            continue;
-                    }
-                }
-                else if (curBPD != null)
-                {
-                    Tools.Warn(fctN + "Trying to retrieve BPR with def", MyDebug);
-                    myBPR = pawn.GetBPRecordWithoutHediff(curBPD, curHD, allowMissing, prioritizeMissing, forbidAddedPart, MyDebug);
-                    if (myBPR == null)
-                    {
-                        Tools.Warn(fctN + "Could not find a BPR to apply hediff, will pick whole body?" + wholeBodyFallback, MyDebug);
-                        if (!wholeBodyFallback)
-                            continue;
-                    }
+                    Tools.Warn(fctN + "Trying to retrieve BPR with [BP label]:" + curBPLabel + " [BP def]:" + curBPD?.defName, MyDebug);
+                    myBPR = pawn.GetBPRecordWithoutHediff(curBPLabel, curBPD, curHD, allowMissing, prioritizeMissing, allowAddedPart, MyDebug);
+
                 }
 
-                if (allowMissing && regenIfMissing)
+                if (myBPR == null)
+                {
+                    Tools.Warn(fctN + "Could not find a BPR to apply hediff, will pick whole body?" + wholeBodyFallback, MyDebug);
+                    if (!wholeBodyFallback)
+                        continue;
+                }
+
+                if (allowMissing && regenIfMissing && myBPR!=null)
                 {
                     if (Pawn.IsMissingBPR(myBPR, out Hediff hediffMissing))
                     {
@@ -112,10 +119,10 @@ namespace MoharHediffs
                     Tools.Warn(fctN + "cant create hediff " + curHD.defName + " to apply on " + curBPD.defName, true);
                     continue;
                 }
-                
-                pawn.health.AddHediff(hediff2apply, myBPR, null);
 
-                Tools.Warn(fctN + "Applied "+ curHD.defName, MyDebug);
+                pawn.health.AddHediff(hediff2apply, myBPR);
+
+                Tools.Warn(fctN + "Applied " + curHD.defName, MyDebug);
             }
         }
 

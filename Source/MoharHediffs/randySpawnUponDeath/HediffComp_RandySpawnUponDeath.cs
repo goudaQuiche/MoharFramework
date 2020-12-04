@@ -131,13 +131,6 @@ namespace MoharHediffs
             }
         }
 
-        public override void CompExposeData()
-        {
-            //Scribe_References.Look(ref randomlyChosenItemfaction, "randomlyChosenItemfaction");
-            //Scribe_Values.Look(ref randomlyChosenQuantity, "randomlyChosenQuantity");
-            //Scribe_Values.Look(ref randomlyChosenIndex, "randomlyChosenIndex");
-        }
-
         public override void CompPostMake()
         {
             Tools.Warn(">>> " + Pawn?.Label + " - " + parent.def.defName + " - CompPostMake start", MyDebug);

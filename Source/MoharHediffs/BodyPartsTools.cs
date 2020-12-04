@@ -38,53 +38,119 @@ namespace MoharHediffs
 
         public static bool IsMissingBPR(this Pawn pawn, BodyPartRecord BPR, out Hediff missingHediff)
         {
+            if (BPR == null)
+            {
+                missingHediff = null;
+                return false;
+            }
+                
             missingHediff = pawn.health.hediffSet.hediffs.Where(h => h.def == HediffDefOf.MissingBodyPart && h.Part == BPR).FirstOrFallback();
             //missingHediff = pawn.health.hediffSet.hediffs.Where(h => h.Part == BPR && pawn.health.hediffSet.PartIsMissing(BPR)).FirstOrFallback();
 
             return missingHediff != null;
         }
 
-        public static bool HasMissingChildren(this Pawn pawn, BodyPartRecord BPR)
+        public static bool HasMissingChildren(this Pawn pawn, BodyPartRecord bpr)
         {
             List<Hediff_MissingPart> mpca = pawn.health.hediffSet.GetMissingPartsCommonAncestors();
 
-            return mpca.Any(HMP => HMP.Part == BPR);
+            return mpca.Any(HMP => HMP.Part == bpr);
         }
 
-        public static BodyPartRecord GetBPRecordWithoutHediff(this Pawn pawn, string bodyPartLabel, HediffDef hd, bool AllowMissing = false, bool PrioritizeMissing = false, bool ForbidAddedPart=false, bool myDebug = false)
+        public static bool IsMissingOrHasMissingChildren(this Pawn pawn, BodyPartRecord bpr)
         {
+            return pawn.health.hediffSet.PartIsMissing(bpr) || pawn.HasMissingChildren(bpr);
+        }
+
+        public static IEnumerable<BodyPartRecord> GetAllBPR(this Pawn pawn, string bodyPartLabel, BodyPartDef bodyPartDef)
+        {
+            bool HasLabel = !bodyPartLabel.NullOrEmpty();
+            bool HasDef = bodyPartDef != null;
+
+            return pawn.RaceProps.body.AllParts.Where(
+                bpr =>
+                (HasLabel ? bpr.customLabel == bodyPartLabel : true) &&
+                (HasDef ? bpr.def == bodyPartDef : true)
+            );
+        }
+
+        public static IEnumerable<BodyPartRecord> GetAllNotMissingBPR(this Pawn pawn, string bodyPartLabel, BodyPartDef bodyPartDef)
+        {
+            bool HasLabel = !bodyPartLabel.NullOrEmpty();
+            bool HasDef = bodyPartDef != null;
+
+            return pawn.health.hediffSet.GetNotMissingParts().Where(
+                    bpr =>
+                    (HasLabel ? bpr.customLabel == bodyPartLabel : true) &&
+                    (HasDef ? bpr.def == bodyPartDef : true)
+                );
+        }
+
+        public static BodyPartRecord GetBPRecordWithoutHediff(this Pawn pawn, string bodyPartLabel, BodyPartDef bodyPartDef, HediffDef hd, bool AllowMissing = false, bool PrioritizeMissing = false, bool AllowAddedPart = true, bool myDebug = false)
+        {
+            bool HasHediffDef = hd != null;
+            bool HasLabel = !bodyPartLabel.NullOrEmpty();
+            bool HasDef = bodyPartDef != null;
+
+            string debugStr = pawn.Label + " GetBPRecordWithoutHediff - ";
+            Tools.Warn(debugStr +
+                $"HasDef?{HasDef} bodyPartDef:{bodyPartDef?.defName} " +
+                $"HasLabel?{HasLabel} bodyPartLabel:{bodyPartLabel} " +
+                $"HasHediffDef?{HasHediffDef} Hediff:{hd?.defName} " +
+                $"AllowMissing:{AllowMissing} PrioritizeMissing:{PrioritizeMissing} AllowAddedPart:{AllowAddedPart}"
+                , myDebug
+            );
+
             List<BodyPartRecord> bprToExclude = new List<BodyPartRecord>();
-            foreach (Hediff hediff in pawn.health.hediffSet.hediffs.Where(h => h.def == hd))
+            if (HasHediffDef)
             {
-                if (!bprToExclude.Contains(hediff.Part))
-                    bprToExclude.Add(hediff.Part);
+                foreach (Hediff hediff in pawn.health.hediffSet.hediffs.Where(
+                    h =>
+                    h.def == hd 
+                    /*&&
+                    HasLabel ? h.Part.customLabel == bodyPartLabel : true &&
+                    HasDef ? h.Part.def == bodyPartDef : true*/
+                    )
+                )
+                {
+                    if (!bprToExclude.Contains(hediff.Part))
+                        bprToExclude.Add(hediff.Part);
+                }
+                Tools.Warn(debugStr + "found " + bprToExclude?.Count + " bpr to exclude bc they had " + hd.defName, myDebug);
             }
 
             BodyPartRecord bodyPart = null;
             IEnumerable<BodyPartRecord> BPRList = null;
             if (AllowMissing)
             {
-                if (PrioritizeMissing)
+                BPRList = pawn.GetAllBPR(bodyPartLabel, bodyPartDef);
+                Tools.Warn(debugStr + "Allow missing - found " + (BPRList.EnumerableNullOrEmpty() ? "0" : BPRList.Count().ToString()) + " bpr", myDebug);
+
+                if (PrioritizeMissing && !BPRList.EnumerableNullOrEmpty() && BPRList.Any(bpr => pawn.IsMissingOrHasMissingChildren(bpr)))
                 {
-                    BPRList = pawn.RaceProps.body.AllParts.Where(
-                        bpr => bpr.customLabel == bodyPartLabel && 
-                        (pawn.health.hediffSet.PartIsMissing(bpr) || pawn.HasMissingChildren(bpr)) &&
-                        (ForbidAddedPart? !pawn.health.hediffSet.AncestorHasDirectlyAddedParts(bpr) : true)
-                    );
+                    BPRList = BPRList.Where(bpr => pawn.IsMissingOrHasMissingChildren(bpr));
+                    Tools.Warn(debugStr + "Prioritize Missing - found " + (BPRList.EnumerableNullOrEmpty() ? "0" : BPRList.Count().ToString()) + " bpr", myDebug);
                 }
-                if (BPRList.EnumerableNullOrEmpty())
-                    BPRList = pawn.RaceProps.body.AllParts.Where(
-                        bpr => bpr.customLabel == bodyPartLabel &&
-                        (ForbidAddedPart ? !pawn.health.hediffSet.AncestorHasDirectlyAddedParts(bpr) : true)
-                    );
-           }
-            else
-            {
-                BPRList = pawn.health.hediffSet.GetNotMissingParts().Where(bpr => 
-                    bpr.customLabel == bodyPartLabel &&
-                    (ForbidAddedPart ? !pawn.health.hediffSet.AncestorHasDirectlyAddedParts(bpr) : true)
-                );
             }
+            else {
+                BPRList = pawn.GetAllNotMissingBPR(bodyPartLabel, bodyPartDef);
+                Tools.Warn(debugStr + "Not missing - found " + (BPRList.EnumerableNullOrEmpty() ? "0" : BPRList.Count().ToString()) + " bpr", myDebug);
+            }
+
+            if (BPRList.EnumerableNullOrEmpty())
+                return null;
+
+            // if there are bpr that are not added part, we remove them
+            if (!AllowAddedPart) {
+                Tools.Warn(debugStr + "Trying to exlude addedpart",myDebug);
+                if (BPRList.Any(bpr => pawn.health.hediffSet.HasDirectlyAddedPartFor(bpr)))
+                {
+                    BPRList = BPRList.Where(bpr => !pawn.health.hediffSet.HasDirectlyAddedPartFor(bpr));
+                    Tools.Warn(debugStr + "Added parts(bionics) forbidden- found " + (BPRList.EnumerableNullOrEmpty() ? "0" : BPRList.Count().ToString()) + " bpr", myDebug);
+                } else
+                    Tools.Warn(debugStr + "found no addedpart to exclude", myDebug);
+            }
+
 
             if (bprToExclude.NullOrEmpty())
             {
@@ -92,76 +158,13 @@ namespace MoharHediffs
             }
             else
             {
-                BPRList.Where(bp => !bprToExclude.Contains(bp)).TryRandomElement(out bodyPart);
+                if (BPRList.Any(bp => !bprToExclude.Contains(bp)))
+                    BPRList.Where(bp => !bprToExclude.Contains(bp)).TryRandomElement(out bodyPart);
+                else bodyPart = null;
             }
 
             Tools.Warn(
                 pawn.Label + "GetBPRecord - did " + (bodyPart == null ? "not" : "") +
-                " find with label " + bodyPartLabel + " without hediff def " + hd.defName, myDebug);
-
-            return bodyPart;
-        }
-
-
-        public static BodyPartRecord GetBPRecordWithoutHediff(this Pawn pawn, BodyPartDef bodyPartDef, HediffDef hd, bool AllowMissing = false, bool PrioritizeMissing = false, bool ForbidAddedPart = false, bool myDebug = false)
-        {
-            string debugStr = pawn.Label + " GetBPRecordWithoutHediff - ";
-            Tools.Warn(debugStr + 
-                $"bodyPartDef:{bodyPartDef?.defName} Hediff:{hd?.defName} AllowMissing:{AllowMissing} PrioritizeMissing:{PrioritizeMissing} ForbidAddedPart:{ForbidAddedPart}"
-                , myDebug
-            );
-
-            if (!DefDatabase<BodyPartDef>.AllDefs.Any((BodyPartDef b) => b == bodyPartDef))
-            {
-                Tools.Warn(pawn.Label + " - GetBPRecord - did not find any " + bodyPartDef?.defName, myDebug);
-                return null;
-            }
-
-            List<BodyPartRecord> bprToExclude = new List<BodyPartRecord>();
-            foreach (Hediff hediff in pawn.health.hediffSet.hediffs.Where(
-                h => 
-                h.def == hd)
-            )
-            {
-                if (!bprToExclude.Contains(hediff.Part))
-                    bprToExclude.Add(hediff.Part);
-            }
-
-            BodyPartRecord bodyPart = null;
-            IEnumerable<BodyPartRecord> BPRList = null;
-            if (AllowMissing)
-            {
-                if (PrioritizeMissing && BPRList.Any(bpr =>pawn.health.hediffSet.PartIsMissing(bpr) || pawn.HasMissingChildren(bpr)))
-                {
-                    BPRList = pawn.RaceProps.body.GetPartsWithDef(bodyPartDef).Where(
-                        bpr =>
-                        pawn.health.hediffSet.PartIsMissing(bpr) || pawn.HasMissingChildren(bpr)
-                    );
-                }
-                if (BPRList.EnumerableNullOrEmpty())
-                    BPRList = pawn.RaceProps.body.GetPartsWithDef(bodyPartDef);
-            }
-            else {
-                BPRList = pawn.health.hediffSet.GetNotMissingParts().Where(
-                    bpr => 
-                    bpr.def == bodyPartDef
-                );
-            }
-
-            if (ForbidAddedPart && BPRList.Any(bpr => pawn.health.hediffSet.AncestorHasDirectlyAddedParts(bpr)));
-                BPRList = BPRList.Where( bpr => (ForbidAddedPart ? !pawn.health.hediffSet.AncestorHasDirectlyAddedParts(bpr) : true));
-
-            if (bprToExclude.NullOrEmpty())
-            {
-                BPRList.TryRandomElement(out bodyPart);
-            }
-            else
-            {
-                BPRList.Where(bp => !bprToExclude.Contains(bp)).TryRandomElement(out bodyPart);
-            }
-
-            Tools.Warn(
-                pawn.Label + "GetBPRecord - did " + (bodyPart == null ? "not" : "") + 
                 " find with def " + bodyPartDef?.defName + " without hediff def " + hd.defName, myDebug);
 
             return bodyPart;
