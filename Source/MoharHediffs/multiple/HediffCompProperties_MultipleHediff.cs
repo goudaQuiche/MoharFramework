@@ -27,6 +27,7 @@ namespace MoharHediffs
         public bool prioritizeMissing = false;
         public bool allowMissing = true;
         public bool regenIfMissing = true;
+        public bool forbidAddedPart = false;
         public bool wholeBodyFallback = true;
     }
 }

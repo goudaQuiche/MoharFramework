@@ -63,6 +63,7 @@ namespace MoharHediffs
                 bool prioritizeMissing = Props.hediffAndBodypart[i].prioritizeMissing;
                 bool allowMissing = Props.hediffAndBodypart[i].allowMissing;
                 bool regenIfMissing = Props.hediffAndBodypart[i].regenIfMissing;
+                bool forbidAddedPart = Props.hediffAndBodypart[i].forbidAddedPart;
 
                 bool wholeBodyFallback = Props.hediffAndBodypart[i].wholeBodyFallback;
 
@@ -76,7 +77,7 @@ namespace MoharHediffs
                 if(curBPLabel != null)
                 {
                     Tools.Warn(fctN + "Trying to retrieve BPR with label", MyDebug);
-                    myBPR = pawn.GetBPRecordWithoutHediff(curBPLabel, curHD, allowMissing, prioritizeMissing, MyDebug);
+                    myBPR = pawn.GetBPRecordWithoutHediff(curBPLabel, curHD, allowMissing, prioritizeMissing, forbidAddedPart, MyDebug);
                     if (myBPR == null)
                     {
                         Tools.Warn(fctN + "Could not find a BPR to apply hediff, will pick whole body?" + wholeBodyFallback, MyDebug);
@@ -87,7 +88,7 @@ namespace MoharHediffs
                 else if (curBPD != null)
                 {
                     Tools.Warn(fctN + "Trying to retrieve BPR with def", MyDebug);
-                    myBPR = pawn.GetBPRecordWithoutHediff(curBPD, curHD, allowMissing, prioritizeMissing, MyDebug);
+                    myBPR = pawn.GetBPRecordWithoutHediff(curBPD, curHD, allowMissing, prioritizeMissing, forbidAddedPart, MyDebug);
                     if (myBPR == null)
                     {
                         Tools.Warn(fctN + "Could not find a BPR to apply hediff, will pick whole body?" + wholeBodyFallback, MyDebug);
