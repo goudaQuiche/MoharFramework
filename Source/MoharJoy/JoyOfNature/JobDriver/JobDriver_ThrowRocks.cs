@@ -258,6 +258,12 @@ namespace MoharJoy
 
         public void TickAction()
         {
+            float extraJoyGainFactor = 1 - pawn.Map.weatherManager.RainRate;
+            JoyUtility.JoyTickCheckEnd(pawn, JoyTickFullJoyAction.EndJob, extraJoyGainFactor);
+
+            pawn.rotationTracker.FaceCell(TargetA.Cell);
+            pawn.GainComfortFromCellIfPossible();
+
             //Tools.Warn( MyName + " WatchTickAction - Entering WatchTickAction", myDebug);
             TryThrowProjectile();
         }

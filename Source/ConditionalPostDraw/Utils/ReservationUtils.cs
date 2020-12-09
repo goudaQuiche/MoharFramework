@@ -26,40 +26,36 @@ namespace ConPoDra
 
         public static bool UpdateReservationAndWorker(this CompConditionalPostDraw comp)
         {
-            bool DoHaveReservation = comp.UpdateReservation() && comp.UpdateWorker();
+            bool DoHaveReservation = comp.UpdateReservation();
+            comp.UpdateWorker();
             Tools.Warn(comp.parent.LabelShort + " >> reservation: " + DoHaveReservation + " worker: " + comp.Worker?.LabelShort, comp.MyDebug);
             return DoHaveReservation;
         }
 
         public static bool ReservationIsItemCompatible(this CompConditionalPostDraw comp)
         {
-            if (!comp.IsReserved)
-                return false;
-
-            if (comp.FirstReservation == null)
+            if (!comp.CurCondition.HasWorkCondition || !comp.IsReserved || comp.FirstReservation == null)
                 return false;
 
             ReservationManager.Reservation resItem = comp.FirstReservation;
 
-            bool compatible = true;
-
-            if (comp.CurCondition.HasIncludedJob)
-                if (!(compatible &= comp.CurCondition.includeJob.Contains(resItem.Job.def)))
+            if (comp.CurCondition.ifWork.HasIncludedJob)
+                if (!comp.CurCondition.ifWork.includeJob.Contains(resItem.Job.def))
                     return false;
 
-            if (comp.CurCondition.HasExcludedJob)
-                if (!(compatible &= !comp.CurCondition.excludeJob.Contains(resItem.Job.def)))
+            if (comp.CurCondition.ifWork.HasExcludedJob)
+                if (!comp.CurCondition.ifWork.excludeJob.Contains(resItem.Job.def))
                     return false;
 
-            if (comp.CurCondition.HasIncludedRecipe && resItem.Job.RecipeDef != null)
-                if (!(compatible &= comp.CurCondition.includeRecipe.Contains(resItem.Job.RecipeDef)))
+            if (comp.CurCondition.ifWork.HasIncludedRecipe && resItem.Job.RecipeDef != null)
+                if (comp.CurCondition.ifWork.includeRecipe.Contains(resItem.Job.RecipeDef))
                     return false;
 
-            if (comp.CurCondition.HasExcludedRecipe && resItem.Job.RecipeDef != null)
-                if (!(compatible &= !comp.CurCondition.excludeRecipe.Contains(resItem.Job.RecipeDef)))
+            if (comp.CurCondition.ifWork.HasExcludedRecipe && resItem.Job.RecipeDef != null)
+                if (!comp.CurCondition.ifWork.excludeRecipe.Contains(resItem.Job.RecipeDef))
                     return false;
 
-            return compatible;
+            return true;
         }
 
 

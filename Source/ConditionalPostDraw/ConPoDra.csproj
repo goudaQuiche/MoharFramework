@@ -58,9 +58,13 @@
     <Compile Include="Comp\CompProperties_ConditionalPostDraw.cs" />
     <Compile Include="Comp\CompConditionalPostDraw.cs" />
     <Compile Include="GfxEffects.cs" />
+    <Compile Include="ModActive\ModActiveCheck.cs" />
+    <Compile Include="ModActive\ModActiveDefs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Utils\ReservationUtils.cs" />
+    <Compile Include="Utils\SoundUtils.cs" />
+    <Compile Include="Utils\DisplayedUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="0Harmony">

@@ -48,6 +48,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -58,9 +59,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MoharBodyAddon\HideConditions.cs" />
+    <Compile Include="MoharBodyAddon\CanDrawAddon\JobParameters.cs" />
     <Compile Include="MoharBodyAddon\MoharBodyAddon.cs" />
-    <Compile Include="MoharBodyAddon\ShouldDraw\ShouldDrawUtils.cs" />
+    <Compile Include="MoharBodyAddon\GetPath\OverrideSubMethods.cs" />
+    <Compile Include="MoharBodyAddon\GetPath\BodyTypeDependant.cs" />
+    <Compile Include="MoharBodyAddon\CanDrawAddon\HARConditions.cs" />
+    <Compile Include="MoharBodyAddon\CanDrawAddon\MoHarConditions.cs" />
     <Compile Include="MoharBodyAddon\BodyPartTools.cs" />
     <Compile Include="MoharBodyAddon\Tools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

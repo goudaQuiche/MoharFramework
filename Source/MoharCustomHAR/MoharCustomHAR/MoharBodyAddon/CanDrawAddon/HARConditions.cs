@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MoharCustomHAR
 {
-    public static class ShouldDrawUtils
+    public static class BaseHARConditions
     {
         public static bool ApparelCondition(this MoharBodyAddon bodyAddon, Pawn pawn)
         {
@@ -92,19 +92,6 @@ namespace MoharCustomHAR
             return false;
         }
 
-        public static bool BodyPartChildrenCondition(this MoharBodyAddon bodyAddon, Pawn pawn)
-        {
-            if (bodyAddon.drawIfDirectMissingChild)
-                return true;
-
-            return !pawn.RaceProps.body.AllParts.Any(
-                bpr =>
-                    bpr.IsSearchedBodyPart(bodyAddon.bodyPart) &&
-                    pawn.HasDirectMissingChildrenAndIsNotBionic(bpr)
-                );
-        }
-
-        //
         public static bool GenderCondition(this MoharBodyAddon bodyAddon, Pawn pawn)
         {
             return pawn.gender == Gender.Female ? bodyAddon.drawForFemale : bodyAddon.drawForMale;
@@ -120,6 +107,5 @@ namespace MoharCustomHAR
 
             return false;
         }
-         
     }
 }

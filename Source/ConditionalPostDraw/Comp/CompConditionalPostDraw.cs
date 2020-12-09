@@ -28,6 +28,7 @@ namespace ConPoDra
         public bool HasWatchCells => HasWatchArea && !WatchCells.EnumerableNullOrEmpty();
 
         List<Tracer> MaterialIndexList = new List<Tracer>();
+        public Tracer CurMaterialTracer => PostDrawIndex >= MaterialIndexList.Count ? null : MaterialIndexList[PostDrawIndex];
         int CurMaterialIndex => MaterialIndexList[PostDrawIndex].Index;
 
         int PostDrawIndex = 0;
@@ -60,15 +61,20 @@ namespace ConPoDra
         public Conditions CurCondition => CurPostDrawTask?.condition ?? null;
 
         //Condition
-        public bool RequiresWorker => CurCondition?.ifWorker ?? false;
-        public bool RequiresNoWorker => CurCondition?.ifNoWorker ?? false;
 
-        public bool RequiresFuelCheck => CurCondition?.ifFueled ?? false && HasFuelComp ;
-        public bool RequiresPowerCheck => CurCondition?.ifPowered ?? false && HasPowerComp;
-        //Condition reserved
+        // supplied condition
+        public bool RequiresFuelCheck => CurCondition.HasSupplyCondition ? CurCondition.ifSupply.ifFueled && HasFuelComp : false;
+        public bool RequiresPowerCheck => CurCondition.HasSupplyCondition ? CurCondition.ifSupply.ifPowered && HasPowerComp : false;
+        public bool RequiresSupplyCheck => CurCondition.HasSupplyCondition && (RequiresFuelCheck || RequiresPowerCheck);
+
+        // worker condition
+        public bool RequiresWorker => CurCondition.HasWorkCondition ? CurCondition.ifWork.ifWorker : false;
+        public bool RequiresNoWorker => CurCondition.HasWorkCondition ? CurCondition.ifWork.ifNoWorker : false;
+        public bool RequiresWorkCheck => RequiresWorker || RequiresNoWorker;
+
         public bool IsTimeToUpdateReservation => AnyTaskRequiresReservationCheck && (Find.TickManager.TicksGame % Props.workerReservationUpdateFrequency == 0);
 
-        public bool AnyTaskRequiresReservationCheck => Props.postDraw.Any(p => p.condition.ifWorker || p.condition.ifNoWorker);
+        public bool AnyTaskRequiresReservationCheck => Props.postDraw.Any(p => p.condition.HasWorkCondition &&  p.condition.ifWork.ifWorker || p.condition.ifWork.ifNoWorker);
         public bool RequiresReservationUpdate = false;
 
         public bool IsReserved => !reservations.EnumerableNullOrEmpty();
@@ -76,40 +82,55 @@ namespace ConPoDra
         public bool HasWorker => Worker != null;
         public bool HasNonMovingWorker => IsReserved && HasWorker && !Worker.pather.MovingNow;
 
-        public bool RequiresInteractionCellCheck => CurCondition?.ifWorkerOnInteractionCell ?? false && HasInteractionCells;
-        public bool RequiresWorkerTouching => CurCondition?.ifWorkerTouch?? false;
-        public bool RequiresWorkerWatching => CurCondition?.ifWorkerOnWatchArea ?? false && HasWatchCells;
+        public bool RequiresInteractionCellCheck => RequiresWorker && HasInteractionCells && CurCondition.ifWork.ifWorkerOnInteractionCell;
+        public bool RequiresWorkerTouching => RequiresWorker && CurCondition.ifWork.ifWorkerTouch;
+        public bool RequiresWorkerWatching => RequiresWorker && HasWatchCells && CurCondition.ifWork.ifWorkerOnWatchArea;
 
-        public bool RequiresSelection => CurCondition?.ifSelected ?? false && parent.def.selectable;
-        public bool RequiresNothing => CurCondition?.noCondition ?? false;
-        
         public bool HasWorkerOnInteractionCell => HasNonMovingWorker && Worker.Position == building.InteractionCell;
         public bool HasWorkerTouchingBuilding => HasNonMovingWorker && building.OccupiedRect().AdjacentCells.Contains(Worker.Position);
         public bool HasWorkerInWatchArea => HasNonMovingWorker && HasWatchCells && WatchCells.Contains(Worker.Position);
 
         public bool IsTimeToUpdate => Find.TickManager.TicksGame % Props.workerReservationUpdateFrequency == 0;
 
-        bool IsSelected => Find.Selector.IsSelected(parent);
+        // orphan conditions
+        public bool RequiresSelection => parent.def.selectable && (CurCondition?.ifSelected ?? false);
+        public bool RequiresNothing => CurCondition?.noCondition ?? false;
 
-        bool TriggersSoundActivityOnStop => CurPostDrawTask.HasSoundMaterialPool && (CurPostDrawTask.soundMaterialPool.HasStopSound || CurPostDrawTask.soundMaterialPool.HasSustainSound);
-        bool TriggersSoundActivityOnStart => (CurPostDrawTask.HasSoundMaterialPool && (CurPostDrawTask.soundMaterialPool.HasStartSound || CurPostDrawTask.soundMaterialPool.HasSustainSound));
+        public bool IsSelected => Find.Selector.IsSelected(parent);
 
-        public Vector3 CurScale => CurPostDrawTask?.scale ?? Vector3.one;
+        // thing condition
+        public bool RequiresThingCheck => CurCondition?.HasThingCondition ?? false;
+        public bool IsThingDefOk => CurCondition.ifThing.HasDefs ? CurCondition.ifThing.IsDefOk(parent.def) : true;
+        public bool IsModuloOk => CurCondition.ifThing.HasModulo ? CurCondition.ifThing.IsModuloOk(parent.thingIDNumber) : true;
 
-        public bool CurTickDrivenScale => CurPostDrawTask?.tickDrivenScale ?? false;
-        public FloatRange CurXScaleRange => CurPostDrawTask?.xScaleRange?? new FloatRange(0,0);
-        public FloatRange CurYScaleRange => CurPostDrawTask?.yScaleRange?? new FloatRange(0, 0);
+        // sound effect
+        public bool TriggersSoundActivityOnStop => CurPostDrawTask.HasSoundMaterialPool && (CurPostDrawTask.soundMaterialPool.HasStopSound || CurPostDrawTask.soundMaterialPool.HasSustainSound);
+        public bool TriggersSoundActivityOnStart => CurPostDrawTask.HasSoundMaterialPool && (CurPostDrawTask.soundMaterialPool.HasStartSound || CurPostDrawTask.soundMaterialPool.HasSustainSound);
 
-        public bool CurTickDrivenRotation => CurPostDrawTask?.tickDrivenRotation ?? false;
-        public float CurRotationSpeed => CurPostDrawTask?.rotationSpeed ?? 1;
+        // transformation
+        public bool HasTransformation => CurPostDrawTask?.HasTransformation ?? false;
 
-        public Vector3 CurOffset => CurPostDrawTask?.offset ?? Vector3.zero;
-        public bool CurVanillaPulse => CurPostDrawTask?.vanillaPulse ?? false;
+        public Vector3 CurScale => HasTransformation ? CurPostDrawTask.transformation.scale : Vector2.one;
+
+        public bool CurTickDrivenScale => HasTransformation ? CurPostDrawTask.transformation.tickDrivenScale : false;
+        public FloatRange CurXScaleRange => HasTransformation ? CurPostDrawTask.transformation.xScaleRange : new FloatRange(0,0);
+        public FloatRange CurYScaleRange => HasTransformation ? CurPostDrawTask.transformation.yScaleRange : new FloatRange(0, 0);
+
+        public bool CurTickDrivenRotation => HasTransformation ? CurPostDrawTask.transformation.tickDrivenRotation : false;
+        public float CurRotationSpeed => HasTransformation ? CurPostDrawTask.transformation.rotationSpeed : 0;
+
+        public Vector3 CurOffset => HasTransformation ? CurPostDrawTask.transformation.offset : Vector3.zero;
+        public bool CurVanillaPulse => HasTransformation ? CurPostDrawTask.transformation.vanillaPulse : false;
+
         public bool CurAllowBrowse => CurPostDrawTask?.allowMaterialBrowse ?? false;
         public string CurLabel => CurPostDrawTask?.label ?? "empty";
 
         public bool MyDebug => Props.debug;
+        public bool ItsDebugTime => MyDebug && parent.IsHashIntervalTick(Props.debugPeriod);
 
+        public ThingDef CurrentThingDef => HasRegularMaterial ? CurrentRegularThingDef : (HasStuffMaterial ? CurrentStuffThingDef : null);
+
+        /*
         public ThingDef CurrentThingDef
         {
             get
@@ -124,6 +145,7 @@ namespace ConPoDra
                 return null;
             }
         }
+        */
 
         public override void PostDraw()
         {
@@ -221,6 +243,9 @@ namespace ConPoDra
         {
             string debugStr = MyDebug ? parent.LabelShort + " PostSpawnSetup -" : "";
 
+            if (!ModCompatibilityCheck.MoharCheckAndDisplay())
+                return;
+
             compFuel = parent.TryGetComp<CompRefuelable>();
             compPower = parent.TryGetComp<CompPowerTrader>();
             if (parent is Building b)
@@ -236,8 +261,8 @@ namespace ConPoDra
             if (respawningAfterLoad)
             {
                 for (PostDrawIndex = 0; PostDrawIndex < Props.postDraw.Count; PostDrawIndex++)
-                    if(MaterialIndexList[PostDrawIndex].Displayed == true && CurPostDrawTask.HasSoundMaterialPool && CurPostDrawTask.soundMaterialPool.HasSustainSound)
-                        MaterialIndexList[PostDrawIndex].sustainer = CurPostDrawTask.soundMaterialPool.soundSustain.TrySpawnSustainer(new TargetInfo(parent.Position, parent.Map));
+                    if(CurMaterialTracer.Displayed == true && CurPostDrawTask.HasSoundMaterialPool && CurPostDrawTask.soundMaterialPool.HasSustainSound)
+                        CurMaterialTracer.sustainer = CurPostDrawTask.soundMaterialPool.soundSustain.TrySpawnSustainer(new TargetInfo(parent.Position, parent.Map));
 
                 return;
             }
@@ -286,50 +311,16 @@ namespace ConPoDra
                     continue;
                 }
 
-                if ((RequiresFuelCheck && !HasFuel) || (RequiresPowerCheck && !HasPower) ||
-                    (RequiresWorker && !HasWorker) || (RequiresNoWorker && HasWorker) ||
-
-                    (RequiresWorkerWatching && !HasWorkerInWatchArea) ||
-                    (RequiresWorkerTouching && !HasWorkerTouchingBuilding) ||
-                    (RequiresInteractionCellCheck && !HasWorkerOnInteractionCell) ||
-
-                    (RequiresSelection && !IsSelected))
+                if (!this.ShouldBeDisplayed())
                 {
-                    if (TriggersSoundActivityOnStop && MaterialIndexList[PostDrawIndex].Displayed)
-                    {
-                        if (CurPostDrawTask.soundMaterialPool.HasStopSound)
-                            CurPostDrawTask.soundMaterialPool.soundOnStop.PlayOneShot(new TargetInfo(parent.Position, parent.Map));
-
-                        if (CurPostDrawTask.soundMaterialPool.HasSustainSound)
-                        {
-                            if (MaterialIndexList[PostDrawIndex].sustainer != null)
-                            {
-                                MaterialIndexList[PostDrawIndex].sustainer.End();
-                                MaterialIndexList[PostDrawIndex].sustainer = null;
-                            }
-                        }
-
-                    }
-
-                    MaterialIndexList[PostDrawIndex].Displayed = false;
+                    this.StopSound();
+                    CurMaterialTracer.Displayed = false;
 
                     continue;
                 }
 
-                if (TriggersSoundActivityOnStart && !MaterialIndexList[PostDrawIndex].Displayed)
-                {
-                    if (CurPostDrawTask.soundMaterialPool.HasStartSound)
-                        CurPostDrawTask.soundMaterialPool.soundOnStart.PlayOneShot(new TargetInfo(parent.Position, parent.Map));
-
-                    if (CurPostDrawTask.soundMaterialPool.HasSustainSound)
-                    {
-                        MaterialIndexList[PostDrawIndex].sustainer = CurPostDrawTask.soundMaterialPool.soundSustain.TrySpawnSustainer(new TargetInfo(parent.Position, parent.Map));
-                    }
-
-                }
-
-                MaterialIndexList[PostDrawIndex].Displayed = true;
-
+                this.StartSound();
+                CurMaterialTracer.Displayed = true;
             }
         }
 

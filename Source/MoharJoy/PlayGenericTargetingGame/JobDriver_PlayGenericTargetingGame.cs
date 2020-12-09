@@ -288,8 +288,10 @@ namespace MoharJoy
             this.IsSomeonePlayingWithMe(out OtherPlayersNum, MyTogetherThoughtDebug);
         }
 
+
         protected override void WatchTickAction()
         {
+            base.WatchTickAction();
             //Tools.Warn( MyName + " WatchTickAction - Entering WatchTickAction", myDebug);
             if (!HasGameSettings && ParameterInitialization())
                 return;

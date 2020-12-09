@@ -20,7 +20,7 @@ namespace ConPoDra
 
         public static bool IsFueled(this CompRefuelable comp)
         {
-            return (comp != null && comp.Fuel>0);
+            return comp != null && comp.Fuel > 0;
         }
 
         public static string DescriptionAttr<T>(this T source)
