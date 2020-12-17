@@ -10,10 +10,18 @@ namespace DisplayITab
 	{
         public List<ThingDef> Pages;
 
+        public Vector2 imgSize = new Vector2(512,512);
+        public DisplayWay displayWay = DisplayWay.RawTexture;
+
         public CompProperties_ITab()
 		{
 			compClass = typeof(Comp_ITab);
 		}
 	}
 
+    public enum DisplayWay
+    {
+        RawTexture = 0,
+        ProcessedTexture = 1
+    }
 }

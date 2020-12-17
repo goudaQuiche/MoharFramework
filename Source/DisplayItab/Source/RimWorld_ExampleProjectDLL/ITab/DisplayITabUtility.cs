@@ -13,8 +13,7 @@ namespace DisplayITab
         public static float WindowWidth = 600;
         public static float WindowHeight = 600;
 
-        public static float ImgWidth = 512;
-        public static float ImgHeight = 512;
+        public static Vector2 DefaultImgSize = new Vector2(512,512);
 
         public static float ButtonWidth = 60;
         public static float ButtonHeight = 32;
@@ -27,20 +26,41 @@ namespace DisplayITab
         public static void DrawCard(Rect rect, Thing thing)
         {
             Comp_ITab comp = thing.TryGetComp<Comp_ITab>();
+            Vector2 ChosenImgSize = (comp == null) ? DefaultImgSize : comp.Props.imgSize;
 
-            Rect ImgRect = new Rect((WindowWidth - ImgWidth) / 2, (WindowHeight - ImgHeight) / 2, ImgWidth, ImgHeight);
+            Rect ChosenImgRect = new Rect((WindowWidth - ChosenImgSize.x) / 2, (WindowHeight - ChosenImgSize.y) / 2, ChosenImgSize.x, ChosenImgSize.y);
 
             if (comp == null)
             {
-                Widgets.ThingIcon(ImgRect, thing);
+                //Widgets.ThingIcon(ChosenImgRect, thing);
+                Widgets.DrawTextureFitted(ChosenImgRect, thing.Graphic.MatSingle.mainTexture, 1);
+                return;
+            }else if (comp.HasNoPage)
+            {
+                if (comp.IsProcessedTex)
+                {
+                    Widgets.ThingIcon(ChosenImgRect, thing);
+                }
+                else if (comp.IsRawTex)
+                {
+                    Widgets.DrawTextureFitted(ChosenImgRect, thing.Graphic.MatSingle.mainTexture, 1);
+                }
                 return;
             }
-                
 
-            if(comp.IsOnTitle)
-                Widgets.ThingIcon(ImgRect, thing);
+            if (comp.IsOnTitle)
+            {
+                if (comp.IsProcessedTex)
+                {
+                    Widgets.ThingIcon(ChosenImgRect, thing);
+                }
+                else if (comp.IsRawTex)
+                {
+                    Widgets.DrawTextureFitted(ChosenImgRect, thing.Graphic.MatSingle.mainTexture, 1);
+                }
+            }
             else
-                Widgets.ThingIcon(ImgRect, comp.Props.Pages[comp.index]);
+                Widgets.ThingIcon(ChosenImgRect, comp.Props.Pages[comp.index]);
 
             if (Widgets.ButtonText(new Rect(Margin, WindowSize.y - ButtonHeight - Margin, ButtonWidth, ButtonHeight), "Previous"))
                 comp.PreviousIndex();
