@@ -11,7 +11,7 @@ namespace DisplayITab
         public List<ThingDef> Pages;
 
         public Vector2 imgSize = new Vector2(512,512);
-        public DisplayWay displayWay = DisplayWay.RawTexture;
+        public DisplayWay displayWay = DisplayWay.UnscaledTexture;
 
         public CompProperties_ITab()
 		{
@@ -21,7 +21,7 @@ namespace DisplayITab
 
     public enum DisplayWay
     {
-        RawTexture = 0,
+        UnscaledTexture = 0,
         ProcessedTexture = 1
     }
 }

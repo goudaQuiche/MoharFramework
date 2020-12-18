@@ -33,7 +33,9 @@ namespace DisplayITab
             if (comp == null)
             {
                 //Widgets.ThingIcon(ChosenImgRect, thing);
-                Widgets.DrawTextureFitted(ChosenImgRect, thing.Graphic.MatSingle.mainTexture, 1);
+                //Widgets.DrawTextureFitted(ChosenImgRect, thing.Graphic.MatSingle.mainTexture, 1);
+                Widgets.DrawTextureFitted(ChosenImgRect, thing.GetRealMaterial(), 1);
+                //Widgets.ThingIcon(ChosenImgRect, thing.def, null, 1 / thing.def.graphic.drawSize.x);
                 return;
             }else if (comp.HasNoPage)
             {
@@ -41,9 +43,12 @@ namespace DisplayITab
                 {
                     Widgets.ThingIcon(ChosenImgRect, thing);
                 }
-                else if (comp.IsRawTex)
+                else if (comp.IsUnscaledTexture)
                 {
-                    Widgets.DrawTextureFitted(ChosenImgRect, thing.Graphic.MatSingle.mainTexture, 1);
+                    Widgets.DrawTextureFitted(ChosenImgRect, thing.GetRealMaterial(), 1);
+                    //Widgets.ThingIcon(ChosenImgRect, thing.def, null, 1/thing.def.graphic.drawSize.x);
+                    //Widgets.DrawTextureFitted(ChosenImgRect, thing.Graphic.MatSingle.mainTexture, 1);
+                    
                 }
                 return;
             }
@@ -54,9 +59,11 @@ namespace DisplayITab
                 {
                     Widgets.ThingIcon(ChosenImgRect, thing);
                 }
-                else if (comp.IsRawTex)
+                else if (comp.IsUnscaledTexture)
                 {
-                    Widgets.DrawTextureFitted(ChosenImgRect, thing.Graphic.MatSingle.mainTexture, 1);
+                    //Widgets.DrawTextureFitted(ChosenImgRect, thing.Graphic.MatSingle.mainTexture, 1);
+                    //Widgets.ThingIcon(ChosenImgRect, thing.def, null, 1 / thing.def.graphic.drawSize.x);
+                    Widgets.DrawTextureFitted(ChosenImgRect, thing.GetRealMaterial(), 1);
                 }
             }
             else

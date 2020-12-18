@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="Comp\Comp_ITab.cs" />
     <Compile Include="Comp\CompProperties_ITab.cs" />
+    <Compile Include="ITab\DisplayTools.cs" />
     <Compile Include="ITab\ITab_Display.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ITab\DisplayITabUtility.cs" />

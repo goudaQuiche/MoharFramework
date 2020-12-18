@@ -19,7 +19,7 @@ namespace DisplayITab
         public bool IsOnTitle => index == titleIndex;
 
         public bool IsProcessedTex => Props.displayWay == DisplayWay.ProcessedTexture;
-        public bool IsRawTex => Props.displayWay == DisplayWay.RawTexture;
+        public bool IsUnscaledTexture => Props.displayWay == DisplayWay.UnscaledTexture;
         public bool HasNoPage => Props.Pages.NullOrEmpty();
 
         public void ResetIndex()
