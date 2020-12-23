@@ -20,6 +20,9 @@ namespace MoharCustomHAR
         public bool drawIfDirectMissingChild = true;
         public bool drawIfDead = true;
 
+        public bool drawIfDrafted = true;
+        public bool drawIfUndrafted = true;
+
         public bool useBodyDependantBodyAddonGraphics = true;
         public JobParameters jobParams;
 
@@ -41,14 +44,17 @@ namespace MoharCustomHAR
 
                 this.BodyPartChildrenCondition(pawn) &&
                 this.DeadCondition(pawn) &&
-                this.JobCondition(pawn)
+                this.JobCondition(pawn) &&
+                this.DraftedCondition(pawn)
                ;
 
             //does not work
+            /*
             if(WasDisplayedLastFrame != result)
                 PortraitsCache.SetDirty(pawn);
 
             WasDisplayedLastFrame = result;
+            */
 
             return result;
         }

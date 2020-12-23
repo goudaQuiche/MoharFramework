@@ -24,6 +24,17 @@ namespace MoharCustomHAR
             return bodyAddon.drawIfDead ? true : !pawn.Dead;
         }
 
+        public static bool DraftedCondition(this MoharBodyAddon bodyAddon, Pawn pawn)
+        {
+            if (bodyAddon.drawIfDrafted && !pawn.Drafted)
+                return false;
+
+            if (bodyAddon.drawIfUndrafted && pawn.Drafted)
+                return false;
+
+            return true;
+        }
+
         public static bool JobCondition(this MoharBodyAddon bodyAddon, Pawn pawn)
         {
             if (!bodyAddon.HasJobParams)
