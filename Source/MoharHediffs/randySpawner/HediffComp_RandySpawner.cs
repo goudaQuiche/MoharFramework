@@ -68,7 +68,7 @@ namespace MoharHediffs
 
         public override void CompPostTick(ref float severityAdjustment)
         {
-            if (Pawn.Negligeable())
+            if (Pawn.Negligible())
                 return;
 
             if (blockSpawn)
@@ -203,7 +203,7 @@ namespace MoharHediffs
 
         public bool TryDoSpawn()
         {
-            if (Pawn.Negligeable())
+            if (Pawn.Negligible())
             {
                 Tools.Warn("TryDoSpawn - pawn null", MyDebug);
                 return false;

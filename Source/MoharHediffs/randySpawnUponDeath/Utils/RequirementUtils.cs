@@ -55,7 +55,7 @@ namespace MoharHediffs
 
             closestThing = null;
 
-            if (corpse.Negligeable() || !comp.HasThingRequirement)
+            if (corpse.Negligible() || !comp.HasThingRequirement)
             {
                 Tools.Warn(debugStr + " negligeable corpse or no requirement", comp.MyDebug);
                 return false;

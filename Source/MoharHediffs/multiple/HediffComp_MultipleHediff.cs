@@ -11,7 +11,13 @@ namespace MoharHediffs
 
         bool blockAction = false;
 
-        bool HasBodyRequirement => Props.bodyDef != null;
+        bool HasSingleBodyRequirement => Props.bodyDef != null;
+        bool HasWhiteList => !Props.bodyDefWhiteList.NullOrEmpty();
+        bool HasBlackList => !Props.bodyDefBlackList.NullOrEmpty();
+
+        bool WhiteListCompliant => HasWhiteList ? Props.bodyDefWhiteList.Contains(Pawn.def.race.body) : true;
+        bool BlackListCompliant => HasBlackList ? !Props.bodyDefBlackList.Contains(Pawn.def.race.body) : true;
+        bool HasAccessList => HasWhiteList || HasBlackList;
 
         public HediffCompProperties_MultipleHediff Props => (HediffCompProperties_MultipleHediff)this.props;
         public bool HasHediffToApply => !Props.hediffAndBodypart.NullOrEmpty();
@@ -19,21 +25,45 @@ namespace MoharHediffs
         public void CheckProps()
         {
             string fctN = DebugStr + "CheckProps - ";
-            if(!HasHediffToApply)
+            if (!HasHediffToApply)
             {
                 Tools.Warn(fctN + "- empty hediffAndBodypart, destroying", MyDebug);
                 Pawn.DestroyHediff(parent);
                 blockAction = true;
             }
 
-            if (HasBodyRequirement && (Pawn.def.race.body != Props.bodyDef))
+            if (HasSingleBodyRequirement && (Pawn.def.race.body != Props.bodyDef))
+            {
+                Tools.Warn(fctN + " has not a bodyDef like required: " + Pawn.def.race.body.ToString() + "!=" + Props.bodyDef.ToString(), MyDebug);
+                Pawn.DestroyHediff(parent);
+                blockAction = true;
+            }
+
+            if (HasAccessList)
+            {
+                bool BlackIsOk = BlackListCompliant;
+                bool WhiteIsOk = WhiteListCompliant;
+                if (!BlackIsOk || !WhiteIsOk)
                 {
-                    Tools.Warn(fctN + " has not a bodyDef like required: " + Pawn.def.race.body.ToString() + "!=" + Props.bodyDef.ToString(), MyDebug);
+                    if (MyDebug)
+                    {
+                        Log.Warning(
+                            fctN +
+                            (HasWhiteList ? $"Props.BodyDefWhiteList contains {Props.bodyDefWhiteList.Count} elements" : "No whitelist") + ", compliant: " + WhiteIsOk +
+                            "; " + (HasBlackList ? $"Props.BodyDefBlackList contains {Props.bodyDefBlackList.Count} elements" : "No blacklist") + ", compliant:" + BlackIsOk
+                        );
+                    }
                     Pawn.DestroyHediff(parent);
                     blockAction = true;
                 }
+                else
+                {
+                    if (MyDebug)
+                        Log.Warning(fctN + " AccessList compliant ok");
+                }
+            }
 
-            if(Props.hediffAndBodypart.Any( habp => habp.bodyPart != null && habp.bodyPartLabel != null))
+            if (Props.hediffAndBodypart.Any(habp => habp.bodyPart != null && habp.bodyPartLabel != null))
             {
                 Tools.Warn(fctN + "at least one item has both a bodypart def and a bodypart label, label will be prioritized", MyDebug);
             }
@@ -62,8 +92,6 @@ namespace MoharHediffs
 
             CheckProps();
         }
-
-
 
         public void ApplyHediff(Pawn pawn)
         {
@@ -128,7 +156,7 @@ namespace MoharHediffs
 
         public override void CompPostTick(ref float severityAdjustment)
         {
-            if (Pawn.Negligeable())
+            if (Pawn.Negligible())
             {
                 //Tools.DestroyParentHediff(parent, myDebug);
                 return;

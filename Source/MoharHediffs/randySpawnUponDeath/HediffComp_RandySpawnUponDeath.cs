@@ -149,7 +149,7 @@ namespace MoharHediffs
 
             bool failure = false;
 
-            if (Pawn.Corpse.Negligeable())
+            if (Pawn.Corpse.Negligible())
             {
                 Tools.Warn(debugStr + " Corpse is no more, cant find its position - giving up", MyDebug);
                 failure = true;

@@ -29,7 +29,7 @@ namespace MoharHediffs
         public static bool StripCorpse(this HediffComp_RandySpawnUponDeath comp, Corpse corpse)
         {
             bool DidIt = false;
-            if (comp.Props.HasParentRedress && comp.Props.redressParent.strip && !corpse.Negligeable())
+            if (comp.Props.HasParentRedress && comp.Props.redressParent.strip && !corpse.Negligible())
             {
                 DidIt = true;
                 if (corpse.AnythingToStrip())
@@ -44,7 +44,7 @@ namespace MoharHediffs
         public static bool DestroyCorpse(this HediffComp_RandySpawnUponDeath comp, Corpse corpse)
         {
             bool DidIt = false;
-            if (comp.Props.HasParentRedress && comp.Props.redressParent.destroyCorpse && !corpse.Negligeable())
+            if (comp.Props.HasParentRedress && comp.Props.redressParent.destroyCorpse && !corpse.Negligible())
             {
                 DidIt = true;
                 corpse.DeSpawn();

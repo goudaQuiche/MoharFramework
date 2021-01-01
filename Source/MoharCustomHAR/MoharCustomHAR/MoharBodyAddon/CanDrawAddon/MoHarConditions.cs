@@ -26,6 +26,9 @@ namespace MoharCustomHAR
 
         public static bool DraftedCondition(this MoharBodyAddon bodyAddon, Pawn pawn)
         {
+            if (bodyAddon.drawIfDrafted && bodyAddon.drawIfUndrafted)
+                return true;
+
             if (bodyAddon.drawIfDrafted && !pawn.Drafted)
                 return false;
 

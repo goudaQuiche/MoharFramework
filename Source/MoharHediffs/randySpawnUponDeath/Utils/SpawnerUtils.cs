@@ -214,7 +214,7 @@ namespace MoharHediffs
 
         public static bool TryDoSpawn(this HediffComp_RandySpawnUponDeath comp, Thing thing, int randomQuantity)
         {
-            if (thing.Negligeable())
+            if (thing.Negligible())
             {
                 Tools.Warn("TryDoSpawn - negligeable", comp.MyDebug);
                 return false;
@@ -238,7 +238,7 @@ namespace MoharHediffs
         {
             ThingDef thingDef = comp.ChosenItem.thingToSpawn;
 
-            if (refThing.Negligeable())
+            if (refThing.Negligible())
             {
                 result = IntVec3.Invalid;
                 Tools.Warn("TryFindSpawnCell Null - pawn null", comp.MyDebug);

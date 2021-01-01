@@ -75,7 +75,7 @@ namespace MoharHediffs
         {
             base.CompPostTick(ref severityAdjustment);
 
-            if (Pawn.Negligeable())
+            if (Pawn.Negligible())
                 return;
 
             if (blockAction)

@@ -169,7 +169,7 @@ namespace MoharHediffs
             Pawn p = comp.Pawn;
             ThingDef thingDef = comp.CurIP.thingToSpawn;
 
-            if (p.Negligeable())
+            if (p.Negligible())
             {
                 result = IntVec3.Invalid;
                 Tools.Warn("TryFindSpawnCell Null - pawn null", comp.MyDebug);

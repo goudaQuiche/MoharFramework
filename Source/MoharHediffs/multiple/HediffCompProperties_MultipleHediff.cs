@@ -7,6 +7,9 @@ namespace MoharHediffs
 	{
         //conditionnal body
         public BodyDef bodyDef;
+        public List<BodyDef> bodyDefWhiteList;
+        public List<BodyDef> bodyDefBlackList;
+
         //what
         public List<HediffAndBodyPart> hediffAndBodypart;
 

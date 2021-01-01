@@ -94,12 +94,12 @@ namespace MoharHediffs
             return answer;
         }
 
-        public static bool Negligeable(this Pawn p)
+        public static bool Negligible(this Pawn p)
         {
             return (p == null || !p.Spawned || p.Map == null || p.Position == null);
         }
 
-        public static bool Negligeable(this Thing thing)
+        public static bool Negligible(this Thing thing)
         {
             return (thing == null || !thing.Spawned || thing.Map == null || thing.Position == null);
         }

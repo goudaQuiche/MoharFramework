@@ -18,37 +18,22 @@ namespace MoharHediffs
     public class HeDiffComp_HediffExclusive : HediffComp
     {
         const int tickLimiterModulo = 60;
-        bool myDebug => Props.debug;
+        bool MyDebug => Props.debug;
 
-        public HeDiffCompProperties_HediffExclusive Props
-        {
-            get
-            {
-                return (HeDiffCompProperties_HediffExclusive)this.props;
-            }
-        }
+        public HeDiffCompProperties_HediffExclusive Props => (HeDiffCompProperties_HediffExclusive)this.props;
 
-        public bool HasHediffToNullify
-        {
-            get
-            {
-                return (!Props.hediffToNullify.NullOrEmpty());
-            }
-        }
-        public bool HasHediffPatternToNullify
-        {
-            get
-            {
-                return (!Props.hediffPatternToNullify.NullOrEmpty());
-            }
-        }
-        public bool HasHediffToApply
-        {
-            get
-            {
-                return Props.hediffToApply != null;
-            }
-        }
+        public bool HasHediffToNullify => (!Props.hediffToNullify.NullOrEmpty());
+        public bool HasHediffPatternToNullify =>!Props.hediffPatternToNullify.NullOrEmpty();
+        public bool HasHediffToApply => Props.hediffToApply != null;
+
+        bool HasWhiteList => !Props.bodyDefWhiteList.NullOrEmpty();
+        bool HasBlackList => !Props.bodyDefBlackList.NullOrEmpty();
+
+        bool WhiteListCompliant => HasWhiteList ? Props.bodyDefWhiteList.Contains(Pawn.def.race.body) : true;
+        bool BlackListCompliant => HasBlackList ? !Props.bodyDefBlackList.Contains(Pawn.def.race.body) : true;
+        bool HasAccessList => HasWhiteList || HasBlackList;
+
+        string DebugStr => MyDebug ? $"{Pawn.LabelShort} HediffExclusive {parent.def.defName} - " : "";
 
         private bool PatternMatch(string MyHediffDefname)
         {
@@ -60,68 +45,65 @@ namespace MoharHediffs
             return false;
         }
 
-        public void NullifyHediff(Pawn pawn)
+        public void NullifyHediff()
         {
             int i = 0;
-            if (HasHediffToNullify)
-                foreach (Hediff curHediff in pawn.health.hediffSet.hediffs)
+
+            foreach (Hediff curHediff in Pawn.health.hediffSet.hediffs)
+            {
+                Tools.Warn(Pawn.Label + " hediff #" + i + ": " + curHediff.def.defName, MyDebug);
+
+                int j = 0;
+                foreach (HediffDef curHediffToNullify in Props.hediffToNullify)
                 {
-                    Tools.Warn(pawn.Label + " hediff #" + i + ": " + curHediff.def.defName, myDebug);
+                    Tools.Warn(" Props.hediffToNullify #" + j + ": " + curHediffToNullify, MyDebug);
 
-                    int j = 0;
-                    foreach (HediffDef curHediffToNullify in Props.hediffToNullify)
+                    if (curHediff.def == curHediffToNullify && Props.hediffToApply != curHediffToNullify)
                     {
-                        Tools.Warn(" Props.hediffToNullify #" + j + ": " + curHediffToNullify, myDebug);
-
-                        if (curHediff.def == curHediffToNullify && Props.hediffToApply != curHediffToNullify)
-                        {
-                            //pawn.health.RemoveHediff(curHediff);
-                            curHediff.Severity = 0;
-                            Tools.Warn(curHediff.def.defName + " removed", myDebug);
-                        }
-                        j++;
+                        //pawn.health.RemoveHediff(curHediff);
+                        curHediff.Severity = 0;
+                        Tools.Warn(curHediff.def.defName + " removed", MyDebug);
                     }
-                    i++;
+                    j++;
                 }
+                i++;
+            }
         }
 
-        public void PatternNullifyHediff(Pawn pawn)
+        public void PatternNullifyHediff()
         {
             int i = 0;
-            if (HasHediffPatternToNullify)
-                foreach (Hediff curHediff in pawn.health.hediffSet.hediffs)
+
+            foreach (Hediff curHediff in Pawn.health.hediffSet.hediffs)
+            {
+                if(MyDebug)
+                    Log.Warning(Pawn.LabelShort + " hediff #" + i + ": " + curHediff.def.defName);
+
+                int j = 0;
+                foreach (string curHediffToNullify in Props.hediffPatternToNullify)
                 {
-                    Tools.Warn(pawn.NameShortColored + " hediff #" + i + ": " + curHediff.def.defName, myDebug);
+                    if (MyDebug)
+                        Log.Warning(" Props.hediffPatternToNullify #" + j + ": " + curHediffToNullify);
 
-                    int j = 0;
-                    foreach (string curHediffToNullify in Props.hediffPatternToNullify)
+                    if (PatternMatch(curHediff.def.defName))
                     {
-                        Tools.Warn(" Props.hediffPatternToNullify #" + j + ": " + curHediffToNullify, myDebug);
-
-                        if (PatternMatch(curHediff.def.defName))
-                        {
-                            curHediff.Severity = 0;
-                            Tools.Warn(curHediff.def.defName + " severity = 0", myDebug);
-                        }
-                        j++;
+                        curHediff.Severity = 0;
+                        Tools.Warn(curHediff.def.defName + " severity = 0", MyDebug);
                     }
-                    i++;
+                    j++;
                 }
+                i++;
+            }
         }
 
-        public void ApplyHediff(Pawn pawn)
+        public void ApplyHediff()
         {
-            if (Props.bodyDef != null)
-                if (pawn.def.race.body != Props.bodyDef)
-                {
-                    Tools.Warn(pawn.Label + " has not a bodyDef like required: " + pawn.def.race.body.ToString() + "!=" + Props.bodyDef.ToString(), true);
-                    return;
-                }
-
             HediffDef hediff2use = Props.hediffToApply;
             if (hediff2use == null)
             {
-                Tools.Warn("cant find hediff called: " + Props.hediffToApply, true);
+                if (MyDebug)
+                    Log.Warning("cant find hediff called: " + Props.hediffToApply);
+
                 return;
             }
 
@@ -130,40 +112,90 @@ namespace MoharHediffs
             BodyPartRecord myBP = null;
             if (myBPDef != null)
             {
-                myBP = pawn.RaceProps.body.GetPartsWithDef(myBPDef).RandomElementWithFallback();
+                myBP = Pawn.RaceProps.body.GetPartsWithDef(myBPDef).RandomElementWithFallback();
                 if (myBP == null)
                 {
-                    Tools.Warn("cant find body part record called: " + Props.bodyPartDef.defName, true);
+                    if (MyDebug)
+                        Log.Warning("cant find body part record called: " + Props.bodyPartDef.defName);
                     return;
                 }
             }
 
-            Hediff hediff2apply = HediffMaker.MakeHediff(hediff2use, pawn, myBP);
+            Hediff hediff2apply = HediffMaker.MakeHediff(hediff2use, Pawn, myBP);
             if (hediff2apply == null)
             {
-                Tools.Warn("cant create hediff "+ hediff2use.defName + " to apply on " + Props.bodyPartDef.defName, true);
+                if (MyDebug)
+                    Log.Warning("cant create hediff " + hediff2use.defName + " to apply on " + Props.bodyPartDef.defName);
                 return;
             }
 
-            pawn.health.AddHediff(hediff2apply, myBP, null);
+            Pawn.health.AddHediff(hediff2apply, myBP, null);
+        }
+
+        public bool CheckProps()
+        {
+            string fctN = DebugStr + "ApplyHediff - ";
+
+            if (Props.bodyDef != null)
+                if (Pawn.def.race.body != Props.bodyDef)
+                {
+                    if (MyDebug)
+                        Log.Warning(Pawn.Label + " has not a bodyDef like required: " + Pawn.def.race.body.ToString() + "!=" + Props.bodyDef.ToString());
+                    return false;
+                }
+
+            if (HasAccessList)
+            {
+                bool BlackIsOk = BlackListCompliant;
+                bool WhiteIsOk = WhiteListCompliant;
+                if (!BlackIsOk || !WhiteIsOk)
+                {
+                    if (MyDebug)
+                    {
+                        Log.Warning(
+                            fctN +
+                            (HasWhiteList ? $"Props.BodyDefWhiteList contains {Props.bodyDefWhiteList.Count} elements" : "No whitelist") + ", compliant: " + WhiteIsOk +
+                            "; " + (HasBlackList ? $"Props.BodyDefBlackList contains {Props.bodyDefBlackList.Count} elements" : "No blacklist") + ", compliant:" + BlackIsOk
+                        );
+                    }
+                    return false;
+                }
+                else
+                {
+                    if (MyDebug)
+                        Log.Warning(fctN + " AccessList compliant ok");
+                }
+            }
+            return true;
         }
 
         public override void CompPostTick(ref float severityAdjustment)
         {
-            Pawn pawn = parent.pawn;
-            if (!Tools.OkPawn(pawn))
+            if (Pawn.Negligible())
                 return;
 
-            NullifyHediff(pawn);
-            PatternNullifyHediff(pawn);
-
-            if (HasHediffToApply)
+            if (CheckProps())
             {
-                ApplyHediff(pawn);
+                if (HasHediffToNullify)
+                    NullifyHediff();
+                if (HasHediffPatternToNullify)
+                    PatternNullifyHediff();
+
+                if (HasHediffToApply)
+                {
+                    ApplyHediff();
+                }
             }
 
             // suicide
-            Tools.DestroyParentHediff(parent, myDebug);
+            Tools.DestroyParentHediff(parent, MyDebug);
+        }
+
+        public override void CompPostMake()
+        {
+            base.CompPostMake();
+            Tools.Warn(DebugStr + "CompPostMake", MyDebug);
+            ModCompatibilityCheck.MoharCheckAndDisplay();
         }
 
         public override string CompTipStringExtra

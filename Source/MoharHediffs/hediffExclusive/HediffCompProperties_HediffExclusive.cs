@@ -1,13 +1,4 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Etienne
- * Date: 22/11/2017
- * Time: 16:43
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Verse;
 
 namespace MoharHediffs
@@ -21,6 +12,10 @@ namespace MoharHediffs
         public HediffDef hediffToApply = null;
 
         public BodyDef bodyDef;
+
+        public List<BodyDef> bodyDefWhiteList;
+        public List<BodyDef> bodyDefBlackList;
+
         public BodyPartDef bodyPartDef;
 
         public bool debug = false;
