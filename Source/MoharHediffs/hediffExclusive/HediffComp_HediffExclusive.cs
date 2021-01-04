@@ -98,6 +98,9 @@ namespace MoharHediffs
 
         public void ApplyHediff()
         {
+            if (!StaticCheck.IsOk)
+                return;
+
             HediffDef hediff2use = Props.hediffToApply;
             if (hediff2use == null)
             {
@@ -189,13 +192,6 @@ namespace MoharHediffs
 
             // suicide
             Tools.DestroyParentHediff(parent, MyDebug);
-        }
-
-        public override void CompPostMake()
-        {
-            base.CompPostMake();
-            Tools.Warn(DebugStr + "CompPostMake", MyDebug);
-            ModCompatibilityCheck.MoharCheckAndDisplay();
         }
 
         public override string CompTipStringExtra

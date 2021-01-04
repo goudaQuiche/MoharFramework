@@ -32,7 +32,7 @@ namespace MoharHediffs
         {
             base.CompPostMake();
 
-            if (ModCompatibilityCheck.MoharCheckAndDisplay() == false)
+            if (!StaticCheck.IsOk)
                 BlockAndDestroy();
 
             string debugStr = MyDebug ? $"{Pawn.LabelShort} {parent.def.defName} CompPostMake - " : "";

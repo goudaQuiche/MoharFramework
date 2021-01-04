@@ -243,7 +243,7 @@ namespace ConPoDra
         {
             string debugStr = MyDebug ? parent.LabelShort + " PostSpawnSetup -" : "";
 
-            if (!ModCompatibilityCheck.MoharCheckAndDisplay())
+            if (!StaticCheck.IsOk)
                 return;
 
             compFuel = parent.TryGetComp<CompRefuelable>();

@@ -57,7 +57,7 @@ namespace MoHarRegeneration
         {
             Tools.Warn("HediffComp_Regeneration - CompPostMake", MyDebug);
 
-            if (!ModCompatibilityCheck.MoharCheckAndDisplay())
+            if (!StaticCheck.IsOk)
                 return;
 
             InitCheckCounter();

@@ -87,7 +87,7 @@ namespace MoharHediffs
 
             Tools.Warn(DebugStr + "CompPostMake", MyDebug);
 
-            if (ModCompatibilityCheck.MoharCheckAndDisplay() == false)
+            if (!StaticCheck.IsOk)
                 BlockAndDestroy();
 
             CheckProps();

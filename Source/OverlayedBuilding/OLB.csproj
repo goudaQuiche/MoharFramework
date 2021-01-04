@@ -62,8 +62,6 @@
     <Compile Include="comp\Utils\ReservationUtils.cs" />
     <Compile Include="GfxEffects.cs" />
     <Compile Include="00structure\sub structure\DisplayOriginEnum.cs" />
-    <Compile Include="ModActive\ModActiveCheck.cs" />
-    <Compile Include="ModActive\ModActiveData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="00structure\Conditions\GraceTicks.cs" />
     <Compile Include="00structure\Conditions\Coexisting.cs" />
@@ -73,6 +71,7 @@
     <Compile Include="00structure\sub structure\Offset.cs" />
     <Compile Include="00structure\work structure\MoteTracer.cs" />
     <Compile Include="00structure\work structure\MoteTracerUtils.cs" />
+    <Compile Include="StaticCheck.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
@@ -83,6 +82,11 @@
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CheckModActive, Version=0.15.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\..\Users\Etienne\Mes projets\Rimworld modding\CheckModActive\Assembly\CheckModActive.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

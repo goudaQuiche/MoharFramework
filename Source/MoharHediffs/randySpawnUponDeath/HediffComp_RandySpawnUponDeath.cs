@@ -135,7 +135,7 @@ namespace MoharHediffs
         {
             Tools.Warn(">>> " + Pawn?.Label + " - " + parent.def.defName + " - CompPostMake start", MyDebug);
 
-            if(ModCompatibilityCheck.MoharCheckAndDisplay() == false)
+            if (!StaticCheck.IsOk)
                 BlockAndDestroy();
 
            // CalculateValues();

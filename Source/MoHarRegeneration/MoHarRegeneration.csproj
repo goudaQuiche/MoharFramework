@@ -55,9 +55,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\GfxEffects.cs" />
-    <Compile Include="Common\modActive\ModActiveCheck.cs" />
-    <Compile Include="Common\modActive\ModActiveDefs.cs" />
     <Compile Include="Common\PawnTools.cs" />
+    <Compile Include="Common\StaticCheck.cs" />
     <Compile Include="Regeneration\MyDefs.cs" />
     <Compile Include="Regeneration\BodyPartTechHediff.cs" />
     <Compile Include="Regeneration\HealingDispatcher.cs" />
@@ -86,6 +85,11 @@
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CheckModActive, Version=0.15.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\..\Users\Etienne\Mes projets\Rimworld modding\CheckModActive\Assembly\CheckModActive.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

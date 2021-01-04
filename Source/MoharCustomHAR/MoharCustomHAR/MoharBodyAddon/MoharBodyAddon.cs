@@ -14,7 +14,7 @@ namespace MoharCustomHAR
     using BABSG = AlienPartGenerator.BodyAddonBackstoryGraphic;
     using AlienComp = AlienPartGenerator.AlienComp;
     using ExposableValueTuple = AlienPartGenerator.ExposableValueTuple<Color, Color>;
-
+    
     public class MoharBodyAddon : AlienPartGenerator.BodyAddon
     {
         public bool drawIfDirectMissingChild = true;
@@ -32,6 +32,8 @@ namespace MoharCustomHAR
 
         public override bool CanDrawAddon(Pawn pawn)
         {
+            if (!StaticCheck.IsOk)return false;
+
             bool result =
                 this.ApparelCondition(pawn) && 
                 this.PostureCondition(pawn) &&
@@ -62,6 +64,8 @@ namespace MoharCustomHAR
         public override Graphic GetPath(Pawn pawn, ref int sharedIndex, int? savedIndex = new int?())
         {
             string returnPath = string.Empty;
+
+            //if (!StaticCheck.IsOk) return null;
 
             if (!this.HandlePrioritization(pawn, out returnPath, out int variantCounting))
             {
