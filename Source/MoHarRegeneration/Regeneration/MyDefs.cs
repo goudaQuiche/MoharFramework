@@ -114,7 +114,7 @@ namespace MoHarRegeneration
             // 03 regular injury
             else if (comp.Effect_RegeneratePhysicalInjuries && curHT.IsInjuryRegeneration())
             {
-                return comp.Props.RegularDiseaseTendingParams;
+                return comp.Props.PhysicalInjuryRegenParams;
             }
             // 04 regular disease
             else if (comp.Effect_HealDiseases && curHT.IsDiseaseHealing())

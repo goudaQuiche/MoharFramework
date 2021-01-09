@@ -112,8 +112,8 @@ namespace MoHarRegeneration
         public static bool TryRegenInjury(this HediffComp_Regeneration comp, out bool DoneWithIt, out bool Impossible)
         {
             if (comp.currentHediff == null || !comp.currentHT.IsInjuryRegeneration() || comp.currentHediff.Part == null ||
-                !comp.Pawn.health.hediffSet.HasHediff(comp.currentHediff.def, comp.currentHediff.Part) ||
-                comp.currentHediff.Severity == 0)
+            !comp.Pawn.health.hediffSet.HasHediff(comp.currentHediff.def, comp.currentHediff.Part) ||
+            comp.currentHediff.Severity == 0)
             {
                 Impossible = true;
                 DoneWithIt = false;
