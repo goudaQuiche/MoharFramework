@@ -84,7 +84,7 @@ namespace MoHarRegeneration
 
                     if (comp.GetPhysicalHediff(out hediffToTreat))
                     {
-                        InitTicks = comp.Props.RegularDiseaseTendingParams.PeriodBase.RandomInRange;
+                        InitTicks = comp.Props.PhysicalInjuryRegenParams.PeriodBase.RandomInRange;
                         return curHealingTask;
                     }
                         
