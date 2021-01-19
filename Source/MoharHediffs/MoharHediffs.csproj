@@ -69,6 +69,7 @@
     <Compile Include="HediffConditionnalRemover\Utils\KeepingConditionBuilder.cs" />
     <Compile Include="HediffConditionnalRemover\Utils\HediffIntersect.cs" />
     <Compile Include="HediffConditionnalRemover\Utils\KeepingConditionCompatibility.cs" />
+    <Compile Include="NoMsgRandHediffGiver\NoMsgRandHediffGiver.cs" />
     <Compile Include="randySpawnUponDeath\Structure\CommonSettings.cs" />
     <Compile Include="randySpawnUponDeath\HediffCompProperties_RandySpawnUponDeath.cs" />
     <Compile Include="randySpawnUponDeath\HediffComp_RandySpawnUponDeath.cs" />

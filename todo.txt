@@ -1,0 +1,20 @@
+Hediff that triggers either :
+
+artifacts
+CompProperties_Targetable
+PsychicAnimalPulser
+PsychicSoothePulser
+
+serums
+CompProperties_UseEffect
+MechSerumHealer
+MechSerumResurrector
+TechprofSubpersonaCore
+
+neurotrainer
+c# defined
+https://github.com/Chillu1/RimWorldDecompiled/blob/a917643cda263dc432279afa8b9aa7ed8936eaf2/RimWorld/NeurotrainerDefGenerator.cs
+
+explosion
+
+thoughts management for randy spawner ?
