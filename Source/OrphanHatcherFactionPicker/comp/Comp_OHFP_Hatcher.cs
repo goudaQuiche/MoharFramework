@@ -7,15 +7,15 @@ using System.Collections.Generic;
 
 namespace OHFP
 {
+    //Todo
+    // hatcheeFaction and hatcherPawn could be set when spawning :/
     public class Comp_OHFP_Hatcher : ThingComp
     {
         private float gestateProgress;
         public Pawn hatcheeParent;
         public Pawn otherParent;
         public Faction hatcheeFaction;
-        public PawnKindDef hatcherPawn;
-
-        bool playerAdopted, enemyAdopted, neutralAdopted;
+        public PawnKindDef hatcheePawnKind;
 
         public bool HasForcedFaction => Props.forcedFaction != null;
 
@@ -38,6 +38,10 @@ namespace OHFP
         public override void PostExposeData()
         {
             base.PostExposeData();
+
+            if (!StaticCheck.IsOk)
+                return;
+
             Scribe_Values.Look(ref gestateProgress, "gestateProgress", 0f);
             Scribe_References.Look(ref hatcheeParent, "hatcheeParent");
             Scribe_References.Look(ref otherParent, "otherParent");
@@ -46,7 +50,8 @@ namespace OHFP
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
-            playerAdopted = enemyAdopted = neutralAdopted = false;
+            if (!StaticCheck.IsOk)
+                return;
 
             if (HasForcedFaction)
             {
@@ -56,15 +61,6 @@ namespace OHFP
             }
             else if (SetFactionAndParent())
                 Tools.Warn("SetFactionAndParent ok", myDebug);
-
-            if (SetPawnKind())
-                Tools.Warn("SetPawnKind ok", myDebug);
-            if (enemyAdopted)
-                Tools.Warn("Enemy adopted", myDebug);
-            else if (neutralAdopted)
-                Tools.Warn("Neutral adopted", myDebug);
-            else if (playerAdopted)
-                Tools.Warn("Player adopted", myDebug);
         }
 
         private bool SetPawnKind()
@@ -72,15 +68,15 @@ namespace OHFP
             if (Props.hatcherPawnList.NullOrEmpty())
                 return false;
 
-            hatcherPawn = Props.hatcherPawnList.RandomElement();
-            return (hatcherPawn != null);
+            hatcheePawnKind = Props.hatcherPawnList.RandomElement();
+            return (hatcheePawnKind != null);
         }
 
         private bool SetFactionAndParent()
         {
             float totalChance = Props.colonyAdoptedChance + Props.neutralAdoptedChance + Props.enemyAdoptedChance;
 
-            float DiceRoll = Rand.RangeInclusive(0, 1);
+            float DiceRoll = Rand.Range(0, totalChance);
             // got enemy
             if ((DiceRoll -= Props.enemyAdoptedChance) < 0)
             {
@@ -88,7 +84,6 @@ namespace OHFP
 
                 if (hatcheeFaction != null)
                     hatcheeParent = Find.WorldPawns.AllPawnsAlive.Where(p => p.Faction != null && p.Faction == hatcheeFaction).RandomElementWithFallback();
-                enemyAdopted = true;
             }
             // got neutral
             else if ((DiceRoll -= Props.neutralAdoptedChance) < 0)
@@ -97,14 +92,12 @@ namespace OHFP
 
                 if (hatcheeFaction != null)
                     hatcheeParent = Find.WorldPawns.AllPawnsAlive.Where(p => p.Faction != null && p.Faction == hatcheeFaction).RandomElementWithFallback();
-                neutralAdopted = true;
             }
             // got player faction
             else
             {
                 hatcheeFaction = Faction.OfPlayer;
                 hatcheeParent = parent.Map.mapPawns.AnyFreeColonistSpawned ? parent.Map.mapPawns.FreeColonists.RandomElementWithFallback() : null;
-                playerAdopted = true;
             }
 
             return (hatcheeFaction != null && hatcheeParent != null);
@@ -126,17 +119,16 @@ namespace OHFP
 
         public void Hatch()
         {
-            Tools.Warn("hatcherPawn == null", hatcherPawn == null && myDebug);
+            //Tools.Warn("hatcherPawn == null", hatcheePawnKind == null && myDebug);
             Tools.Warn("hatcheeFaction == null", hatcheeFaction == null && myDebug);
             Tools.Warn("hatcheeParent == null", hatcheeParent == null && myDebug);
 
-            //PawnGenerationContext pGenContext = playerAdopted ? PawnGenerationContext.NonPlayer : PawnGenerationContext.PlayerStarter;
             PawnGenerationContext pGenContext = PawnGenerationContext.NonPlayer;
-            bool newBorn = Rand.Chance(Props.newBornChance);
 
-            bool noRelation = (hatcherPawn.race.defName == "Mohar_Scyther") ?true:false;
-            if (noRelation)
-                hatcheeFaction = Faction.OfAncients;
+            /*
+            bool TryingToSpawnMechanoid = hatcheePawnKind.RaceProps.IsMechanoid;
+            if (TryingToSpawnMechanoid) hatcheeFaction = Faction.OfAncients;
+            */
 
             try
             {
@@ -155,59 +147,53 @@ namespace OHFP
                     string fixedLastName = null, string fixedBirthName = null, RoyalTitleDef fixedTitle = null);
                 */
 
-                PawnGenerationRequest request;
-                if(noRelation)
-                request = new PawnGenerationRequest(
-                    kind: hatcherPawn, faction: hatcheeFaction, context: pGenContext, 
-                    tile: -1, forceGenerateNewPawn: false, newborn: newBorn, allowDead: false,
-                    allowDowned: false, canGeneratePawnRelations: false, mustBeCapableOfViolence: true, colonistRelationChanceFactor: 0,
-                    forceAddFreeWarmLayerIfNeeded: false, allowGay: false
-                    );
-                else 
+                for (int i = 0; i < parent.stackCount; i++)
+                {
+                    bool newBorn = Rand.Chance(Props.newBornChance);
+                    if (SetPawnKind())
+                        Tools.Warn("SetPawnKind: " + hatcheePawnKind.label, myDebug);
+                    else continue;
+
+                    PawnGenerationRequest request;
+                    /*
+                    if (TryingToSpawnMechanoid)
+                    {
+                        request = new PawnGenerationRequest(
+                            kind: hatcheePawnKind, faction: hatcheeFaction, context: pGenContext,
+                            tile: -1, forceGenerateNewPawn: false, newborn: newBorn, allowDead: false,
+                            allowDowned: false, canGeneratePawnRelations: false, mustBeCapableOfViolence: true, colonistRelationChanceFactor: 0,
+                            forceAddFreeWarmLayerIfNeeded: false, allowGay: false
+                            );
+                         would require to set faction
+                    }
+                    else
+                    {
+                        */
                     request = new PawnGenerationRequest(
-                    kind: hatcherPawn, faction: hatcheeFaction, context: pGenContext, tile: -1,
+                    kind: hatcheePawnKind, faction: hatcheeFaction, context: pGenContext, tile: -1,
                     forceGenerateNewPawn: false, newborn: newBorn
                     );
 
-                for (int i = 0; i < parent.stackCount; i++)
-                {
                     Pawn pawn = PawnGenerator.GeneratePawn(request);
-                    if (PawnUtility.TrySpawnHatchedOrBornPawn(pawn, parent))
+                    if (parent.MyTrySpawnHatchedOrBornPawn(pawn))
                     {
-                        if (pawn != null)
+                        if (pawn == null)
+                            continue;
+
+                        if (hatcheeParent != null)
                         {
-                            if (hatcheeParent != null)
-                            {
-                                if (pawn.playerSettings != null && hatcheeParent.playerSettings != null && hatcheeParent.Faction == hatcheeFaction)
-                                {
-                                    pawn.playerSettings.AreaRestriction = hatcheeParent.playerSettings.AreaRestriction;
-                                }
-                                if (pawn.RaceProps.IsFlesh)
-                                {
-                                    pawn.relations.AddDirectRelation(PawnRelationDefOf.Parent, hatcheeParent);
-                                }
-                            }
-                            if (otherParent != null && (hatcheeParent == null || hatcheeParent.gender != otherParent.gender) && pawn.RaceProps.IsFlesh)
-                            {
-                                pawn.relations.AddDirectRelation(PawnRelationDefOf.Parent, otherParent);
-                            }
+                            pawn.InheritParentSettings(hatcheeParent, hatcheeFaction);
+                            pawn.AddParentRelations(hatcheeParent);
                         }
+                        pawn.AddOtherParentRelations(hatcheeParent, otherParent);
+
                         if (parent.Spawned)
                         {
                             FilthMaker.TryMakeFilth(parent.Position, parent.Map, ThingDefOf.Filth_AmnioticFluid);
                         }
 
                         if (Rand.Chance(Props.manhunterChance))
-                            MakeManhunter(pawn);
-
-                        if (noRelation)
-                        {
-                            pawn.SetFaction(Faction.OfPlayer);
-                            
-                        }
-                            
-
-
+                            pawn.MakeManhunter(myDebug);
                     }
                     else
                     {
@@ -219,31 +205,6 @@ namespace OHFP
             {
                 parent.Destroy();
             }
-        }
-
-
-        //Faction own, Faction forced, int duration
-        public bool MakeManhunter(Pawn p)
-        {
-            if (p.NegligeablePawn())
-                return false;
-
-            MentalStateDef manhunterState = null;
-            manhunterState = MentalStateDefOf.Manhunter;
-            Tools.Warn(p.LabelShort + " trying to go " + manhunterState.defName, myDebug);
-            //mindTarget.mindState.mentalStateHandler.TryStartMentalState(chosenState, null, true, false, null);
-            string reason = "because ";
-
-            if(p.mindState == null || p.mindState.mentalStateHandler == null)
-            {
-                Tools.Warn(p.LabelShort + " null mindstate", myDebug);
-                return false;
-            }
-
-            Tools.Warn(p.LabelShort + " got applied "+ manhunterState.defName, myDebug);
-            p.mindState.mentalStateHandler.TryStartMentalState(manhunterState, reason, true, false, null);
-
-            return true;
         }
 
         public override void PreAbsorbStack(Thing otherStack, int count)
@@ -284,8 +245,6 @@ namespace OHFP
 
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
-
-
             if (Prefs.DevMode)
             {
                 yield return new Command_Action
@@ -300,8 +259,7 @@ namespace OHFP
                     }
                 };
             }
-            
-        }
+         }
 
         public override string CompInspectStringExtra()
         {

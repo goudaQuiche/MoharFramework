@@ -8,7 +8,7 @@ namespace OHFP
     public static class Tools
     {
 
-        public static bool NegligeablePawn(this Pawn pawn)
+        public static bool NegligiblePawn(this Pawn pawn)
         {
             return pawn == null || !pawn.Spawned || pawn.Map == null || pawn.Position == null;
         }
