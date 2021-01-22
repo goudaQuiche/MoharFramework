@@ -1,6 +1,0 @@
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\Guillotine\1.1\Source\RimWorld_ExampleProjectDLL\obj\Debug\HeadsMightRoll.csprojAssemblyReference.cache
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\Guillotine\1.1\Source\RimWorld_ExampleProjectDLL\obj\Debug\HeadsMightRoll.csproj.CoreCompileInputs.cache
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\Guillotine\1.1\Assemblies\HeadsMightRoll.dll
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\Guillotine\1.1\Assemblies\HeadsMightRoll.pdb
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\Guillotine\1.1\Source\RimWorld_ExampleProjectDLL\obj\Debug\HeadsMightRoll.dll
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\Guillotine\1.1\Source\RimWorld_ExampleProjectDLL\obj\Debug\HeadsMightRoll.pdb

@@ -5,64 +5,34 @@ using System.Collections.Generic;
 
 namespace MoharAiJob
 {
-    /*
-    public class CorpseRecipeJob : IExposable, ILoadReferenceable
-    {
-        public int id;
-        public string label;
-        public CorpseRecipeSettingsDef def;
-
-        public string GetUniqueLoadID()
-        {
-            return "CorpseRecipeJob_" + label + id;
-        }
-
-        public virtual void ExposeData()
-        {
-            Scribe_Values.Look(ref id, "id", -1);
-        }
-    }
-    */
-
     public class CorpseJobDef : Def
     {
-        public List<PawnKindDef> worker;
+        public List<PawnKindDef> workerPawnKind;
         public List<CorpseRecipeSettings> corpseRecipeList;
+        public JobDef jobDef;
         public bool debug = false;
 
         public override string ToString() => defName;
         public CorpseJobDef Named(string searchedDN) => DefDatabase<CorpseJobDef>.GetNamed(searchedDN);
-        public bool IsEmpty => corpseRecipeList.NullOrEmpty();
-
         public override int GetHashCode() => defName.GetHashCode();
-        /*
-        static CorpseJobDef()
-        {
 
-        }
-
-        public override void ResolveReferences()
-        {
-            base.ResolveReferences();
-        }
-        */
-
+        public bool IsEmpty => corpseRecipeList.NullOrEmpty();
     }
     
     public class CorpseRecipeSettings
     {
-        public Type driverClass;
-        public JobDef jobDef;
-
         public WorkerRequirement workerRequirement;
         public CorpseSpecification target;
         public CorpseProduct product;
 
         public bool HasWorkerRequirement => workerRequirement != null;
 
+        /*
 		public bool HasMinHpRequirement => workerRequirement.HasMinHpRequirement;
 		public bool HasFactionRequirement => workerRequirement.HasFactionRequirement;
         public bool HasHediffRequirement => workerRequirement.HasHediffRequirement;
+        public bool HasLifeStageRequirement => workerRequirement.HasLifeStageRequirement;
+        */
 
         public bool HasTargetSpec => target != null;
         public bool HasTargetCategory => HasTargetSpec && target.HasCorpseCategoryDef;
@@ -71,19 +41,22 @@ namespace MoharAiJob
 
     public class WorkerRequirement
     {
-        public float minHealth = 0;
-        public List<FactionRequirement> needsFaction;
-        public List<HediffRequirement> needsHediff;
+        public float minHealthPerc = 0;
+        public List<FactionRequirement> factionRequirement;
+        public List<HediffRequirement> hediffRequirement;
+        public List<LifeStageDef> lifeStageRequirement;
 
-        public bool HasHediffRequirement => !needsHediff.NullOrEmpty();
-        public bool HasFactionRequirement => !needsFaction.NullOrEmpty();
-        public bool HasMinHpRequirement => minHealth > 0;
+        public bool HasHediffRequirement => !hediffRequirement.NullOrEmpty();
+        public bool HasFactionRequirement => !factionRequirement.NullOrEmpty();
+        public bool HasLifeStageRequirement => !lifeStageRequirement.NullOrEmpty();
+
+        public bool HasMinHpRequirement => minHealthPerc > 0;
     }
 
     public class HediffRequirement
     {
         public HediffDef hediff;
-        public float Severity;
+        public float severity;
     }
 	
 	public class FactionRequirement
@@ -97,11 +70,33 @@ namespace MoharAiJob
         public List<ThingDefCountClass> thing;
         public List<PawnGenOption> pawnKind = new List<PawnGenOption>();
 
-        public FactionDef forcedFaction = null;
-        public float manhunterChance = .25f;
+        public List<WeightedFaction> forcedFaction = null;
+
+        public float manhunterChance = 0;
+        public float newBornChance = 0;
+        public IntRange pawnNum = new IntRange(1, 1);
+        public int combatPowerLimit = -1;
+        public float combatPowerPerMass = -1;
+        public bool inheritSettingsFromParent = true;
+        public bool setRelationsWithParent = true;
+        public float newBornCombatPowerRatio = .3f;
 
         public bool HasThingProduct => !thing.NullOrEmpty();
         public bool HasPawnKindProduct => !pawnKind.NullOrEmpty();
+
+        public bool HasWeightedFaction => !forcedFaction.NullOrEmpty();
+
+        public bool HasRelevantManhunterChance => manhunterChance != 0;
+        public bool HasRelevantNewBornChance => newBornChance != 0;
+        public bool HasRelevantCombatPowerLimit => combatPowerLimit > 0;
+        public bool HasRelevantCombatPowerPerMass => combatPowerPerMass > 0;
+    }
+
+    public class WeightedFaction
+    {
+        public FactionDef factionDef;
+        public float weight;
+        public bool inheritFromParent = false;
     }
 
     public class CorpseSpecification
@@ -109,10 +104,13 @@ namespace MoharAiJob
         public List<ThingCategoryDef> categoryDef;
         public List<RotStage> rotStages;
 
-        public float minHealthPerc = .25f;
+        public FloatRange healthPerc = new FloatRange(0, 1);
+        public FloatRange massPerc = new FloatRange(0, 9999);
         public float maxDistance = 10;
 
         public bool HasCorpseCategoryDef => !categoryDef.NullOrEmpty();
         public bool HasCorpseRotStages => !rotStages.NullOrEmpty();
+        public bool HasRelevantHealthPerc => healthPerc.min != 0 || healthPerc.max != 1;
+        public bool HasRelevantMassPerc => massPerc.min != 0 || massPerc.max != 9999;
     }
 }

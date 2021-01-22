@@ -25,7 +25,7 @@ namespace OHPLS
         bool HasBPDef => Props.bodyPartDef != null;
         bool HasBPSpecification => HasBPDef || HasBPLabel;
 
-        bool myDebug => Props.debug;
+        bool MyDebug => Props.debug;
 
         public override void CompPostMake()
         {
@@ -60,7 +60,7 @@ namespace OHPLS
 
                         if (bodyPartRecords.EnumerableNullOrEmpty())
                         {
-                            Tools.Warn("Cant find BPR with def: " + Props.bodyPartDef.defName + ", skipping", myDebug);
+                            Tools.Warn("Cant find BPR with def: " + Props.bodyPartDef.defName + ", skipping", MyDebug);
                             continue;
                         }
                         myBPR = bodyPartRecords.FirstOrFallback();
@@ -70,14 +70,14 @@ namespace OHPLS
 
                     if(HasBPSpecification && myBPR == null)
                     {
-                        Tools.Warn("Cant find BPR with def: " + Props.bodyPartDef.defName + ", skipping", myDebug);
+                        Tools.Warn("Cant find BPR with def: " + Props.bodyPartDef.defName + ", skipping", MyDebug);
                         continue;
                     }
 
                     lifeStageHediff = HediffMaker.MakeHediff(association.hediff, myPawn, myBPR);
                     if (lifeStageHediff == null)
                     {
-                        Tools.Warn("hediff maker null", Props.debug);
+                        Tools.Warn("hediff maker null", MyDebug);
                     }
                     myPawn.health.AddHediff(lifeStageHediff, myBPR, null);
                 }
@@ -94,7 +94,7 @@ namespace OHPLS
 
             if (!myPawn.Spawned)
             {
-                Tools.Warn("pawn unspawned", Props.debug);
+                Tools.Warn("pawn unspawned", MyDebug);
                 return;
             }
 
@@ -104,7 +104,7 @@ namespace OHPLS
 
         public void Init()
         {
-            Tools.Warn("Entering Init", Props.debug);
+            Tools.Warn("Entering Init", MyDebug);
             myPawn = parent.pawn;
             myMap = myPawn.Map;
 
@@ -118,7 +118,7 @@ namespace OHPLS
             }
             if(myPawn == null || myMap == null)
             {
-                Tools.Warn("Null pawn or map", Props.debug);
+                Tools.Warn("Null pawn or map", MyDebug);
                 parent.Severity = 0;
                 shouldSkip = true;
                 return;
@@ -134,7 +134,7 @@ namespace OHPLS
             // Props array checking
             if (Props.associations.NullOrEmpty())
             {
-                Tools.Warn("no Props.associations found, destroying hediff", Props.debug);
+                Tools.Warn("no Props.associations found, destroying hediff", MyDebug);
                 parent.Severity = 0;
                 shouldSkip = true;
                 return;

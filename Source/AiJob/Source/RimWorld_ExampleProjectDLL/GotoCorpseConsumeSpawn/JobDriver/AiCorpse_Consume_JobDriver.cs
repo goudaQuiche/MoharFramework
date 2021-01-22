@@ -41,7 +41,7 @@ namespace MoharAiJob
         {
             if (corpseProduct == null)
             {
-                Log.Warning("AiCorpse_Consume_JobDriver cant work without corpseProduct ");
+                if(PreRetrieveDebug || MyDebug) Log.Warning("AiCorpse_Consume_JobDriver cant work without corpseProduct, Loading it");
                 CorpseJobDef DefToUse = pawn.RetrieveCJD(out MyDebug, PreRetrieveDebug);
                 CorpseRecipeSettings CRS = pawn.RetrieveCRS(DefToUse, MyDebug);
                 corpseProduct = CRS.product;
@@ -67,12 +67,12 @@ namespace MoharAiJob
             {
                 if (pawn.IsHashIntervalTick(LowerCorpseHealthPeriod))
                 {
-                    Corpse.HitPoints = (int)(Corpse.HitPoints * .75f);
+                    Corpse.HitPoints = (int)(Corpse.HitPoints * .985f);
                 }
             };
             yield return toil;
 
-            yield return corpseProduct.SpawnProductDespawnCorpse(Corpse.Position, Corpse, pawn.Map);
+            yield return corpseProduct.SpawnProductDespawnCorpse(pawn, Corpse.Position, Corpse, pawn.Map, MyDebug);
         }
 
         [DefOf]

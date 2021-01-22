@@ -1,6 +1,0 @@
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\MoHAR_Framework\Source\AiJob\Source\RimWorld_ExampleProjectDLL\obj\Debug\MoharAiJob.csprojAssemblyReference.cache
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\MoHAR_Framework\Source\AiJob\Source\RimWorld_ExampleProjectDLL\obj\Debug\MoharAiJob.csproj.CoreCompileInputs.cache
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\MoHAR_Framework\Assemblies\MoharAiJob.dll
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\MoHAR_Framework\Assemblies\MoharAiJob.pdb
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\MoHAR_Framework\Source\AiJob\Source\RimWorld_ExampleProjectDLL\obj\Debug\MoharAiJob.dll
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\MoHAR_Framework\Source\AiJob\Source\RimWorld_ExampleProjectDLL\obj\Debug\MoharAiJob.pdb

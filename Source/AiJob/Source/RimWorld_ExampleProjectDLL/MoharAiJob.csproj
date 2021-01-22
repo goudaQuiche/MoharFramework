@@ -35,13 +35,13 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CorpseJob_FindGoConsume\JobDef\CorpseJobDef.cs" />
-    <Compile Include="CorpseJob_FindGoConsume\JobGiver\AiCorpse_JobGiver.cs" />
-    <Compile Include="CorpseJob_FindGoConsume\JobDriver\Finalize_CorpseConsumption.cs" />
-    <Compile Include="CorpseJob_FindGoConsume\JobDriver\AiCorpse_Consume_JobDriver.cs" />
-    <Compile Include="CorpseJob_FindGoConsume\JobGiver\Conditions\FindCorpse.cs" />
-    <Compile Include="CorpseJob_FindGoConsume\JobGiver\Conditions\WorkerCheck.cs" />
-    <Compile Include="CorpseJob_FindGoConsume\JobGiver\RetrieveDef.cs" />
+    <Compile Include="GotoCorpseConsumeSpawn\JobDef\CorpseJobDef.cs" />
+    <Compile Include="GotoCorpseConsumeSpawn\JobGiver\AiCorpse_JobGiver.cs" />
+    <Compile Include="GotoCorpseConsumeSpawn\JobDriver\Finalize_CorpseConsumption.cs" />
+    <Compile Include="GotoCorpseConsumeSpawn\JobDriver\AiCorpse_Consume_JobDriver.cs" />
+    <Compile Include="GotoCorpseConsumeSpawn\JobGiver\Conditions\FindCorpse.cs" />
+    <Compile Include="GotoCorpseConsumeSpawn\JobGiver\Conditions\WorkerCheck.cs" />
+    <Compile Include="GotoCorpseConsumeSpawn\JobGiver\RetrieveDef.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

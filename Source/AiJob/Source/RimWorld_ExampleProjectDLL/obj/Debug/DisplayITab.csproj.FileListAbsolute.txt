@@ -1,6 +1,0 @@
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\MoHAR_Framework\Source\DisplayItab\Source\RimWorld_ExampleProjectDLL\obj\Debug\DisplayITab.csprojAssemblyReference.cache
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\MoHAR_Framework\Source\DisplayItab\Source\RimWorld_ExampleProjectDLL\obj\Debug\DisplayITab.csproj.CoreCompileInputs.cache
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\MoHAR_Framework\Assemblies\DisplayITab.dll
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\MoHAR_Framework\Assemblies\DisplayITab.pdb
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\MoHAR_Framework\Source\DisplayItab\Source\RimWorld_ExampleProjectDLL\obj\Debug\DisplayITab.dll
-C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\MoHAR_Framework\Source\DisplayItab\Source\RimWorld_ExampleProjectDLL\obj\Debug\DisplayITab.pdb

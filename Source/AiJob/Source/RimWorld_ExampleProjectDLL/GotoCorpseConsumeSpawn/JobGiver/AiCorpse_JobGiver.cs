@@ -26,7 +26,7 @@ namespace MoharAiJob
             CorpseJobDef DefToUse = pawn.RetrieveCJD(out MyDebug, PreRetrieveDebug);
             CorpseRecipeSettings CRS = pawn.RetrieveCRS(DefToUse, MyDebug);
 
-            Corpse FoundCorpse = pawn.GetClosestCompatibleCorpse(CRS.target.categoryDef, CRS.target.maxDistance, MyDebug);
+            Corpse FoundCorpse = pawn.GetClosestCompatibleCorpse(CRS.target, MyDebug);
 
             if (FoundCorpse.NegligibleThing())
             {
@@ -34,18 +34,10 @@ namespace MoharAiJob
                 return null;
             }
 
-            if (MyDebug) Log.Warning(myDebugStr + " accepting job for corpse " + FoundCorpse?.Label + " " + FoundCorpse?.Position + " => go go");
+            if (MyDebug) Log.Warning(myDebugStr + " accepting "+ DefToUse.jobDef.defName + " for corpse " + FoundCorpse?.Label + " " + FoundCorpse?.Position + " => go go");
+            Job job = JobMaker.MakeJob(DefToUse.jobDef, FoundCorpse);
 
-            Job job = JobMaker.MakeJob(AICorpseJobDefOf.MoharAiJob_ConsumeCorpse, FoundCorpse);
             return job;
         }
     }
-
-
-    [DefOf]
-    public static class AICorpseJobDefOf
-    {
-        public static JobDef MoharAiJob_ConsumeCorpse;
-    }
-    
 }

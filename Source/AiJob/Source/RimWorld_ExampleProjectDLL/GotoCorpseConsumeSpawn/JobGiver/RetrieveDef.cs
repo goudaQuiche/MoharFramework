@@ -9,7 +9,7 @@ namespace MoharAiJob
         public static CorpseJobDef RetrieveCJD(this Pawn p, out bool outDebug, bool MyDebug = false)
         {
             string myDebugStr = MyDebug ? p.LabelShort + " AiCorpse_JobGiver TryGiveJob " : "";
-            CorpseJobDef DefToUse = DefDatabase<CorpseJobDef>.AllDefs.Where(cjd => cjd.worker.Contains(p.kindDef)).FirstOrFallback(null);
+            CorpseJobDef DefToUse = DefDatabase<CorpseJobDef>.AllDefs.Where(cjd => cjd.workerPawnKind.Contains(p.kindDef)).FirstOrFallback(null);
             outDebug = false;
             if (DefToUse == null || DefToUse.IsEmpty)
             {
