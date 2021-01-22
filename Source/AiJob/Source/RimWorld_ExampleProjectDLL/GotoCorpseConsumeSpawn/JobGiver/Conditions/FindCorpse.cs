@@ -36,7 +36,7 @@ namespace MoharAiJob
                 return false;
             }
 
-            if(CS.HasRelevantMassPerc && !CS.massPerc.Includes(t.GetStatValue(StatDefOf.Mass))){
+            if(CS.HasRelevantMassPerc && !CS.mass.Includes(t.GetStatValue(StatDefOf.Mass))){
                 if (myDebug) Log.Warning("ValidateCorpse - corpse is not within allowed mass range");
                 return false;
             }

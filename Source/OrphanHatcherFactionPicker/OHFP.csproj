@@ -58,6 +58,7 @@
     <Compile Include="GfxEffects.cs" />
     <Compile Include="comp\CompProperties_OHFP_Hatcher.cs" />
     <Compile Include="comp\Comp_OHFP_Hatcher.cs" />
+    <Compile Include="HarmonyPatch\CompEggLayer.cs" />
     <Compile Include="MyGfx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StaticCheck.cs" />

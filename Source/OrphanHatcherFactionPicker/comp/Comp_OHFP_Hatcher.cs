@@ -17,9 +17,10 @@ namespace OHFP
         public Faction hatcheeFaction;
         public PawnKindDef hatcheePawnKind;
 
-        public bool HasForcedFaction => Props.forcedFaction != null;
+        public bool HasForcedFaction => Props.HasForcedFaction;
+        public bool IsRandomlyAdopted => Props.IsRandomlyAdopted;
 
-        public bool myDebug => Props.debug;
+        public bool MyDebug => Props.debug;
         public CompProperties_OHFP_Hatcher Props => (CompProperties_OHFP_Hatcher)props;
         private CompTemperatureRuinable FreezerComp => parent.GetComp<CompTemperatureRuinable>();
 
@@ -55,12 +56,22 @@ namespace OHFP
 
             if (HasForcedFaction)
             {
-                hatcheeFaction = Find.FactionManager.AllFactions.Where(F => F.def == Props.forcedFaction).FirstOrFallback();
-                hatcheeParent = null;
-                Tools.Warn("Faction forced ok", myDebug);
+                SetForcedFaction();
+                Tools.Warn("Faction forced ok", MyDebug);
             }
-            else if (SetFactionAndParent())
-                Tools.Warn("SetFactionAndParent ok", myDebug);
+            else if (IsRandomlyAdopted)
+            {
+                SetRandomFaction();
+                Tools.Warn("SetFactionAndParent ok", MyDebug);
+            }
+            else if (hatcheeParent != null)
+                hatcheeFaction = hatcheeParent.Faction;
+
+            if (Props.findRandomMotherIfNull && hatcheeParent == null)
+                hatcheeParent = GetMother(hatcheeFaction);
+            if (Props.findRandomFatherIfNull && otherParent == null)
+                otherParent = GetFather(hatcheeFaction, hatcheeParent);
+
         }
 
         private bool SetPawnKind()
@@ -69,38 +80,53 @@ namespace OHFP
                 return false;
 
             hatcheePawnKind = Props.hatcherPawnList.RandomElement();
-            return (hatcheePawnKind != null);
+            return hatcheePawnKind != null;
         }
 
-        private bool SetFactionAndParent()
+        private void SetForcedFaction()
         {
-            float totalChance = Props.colonyAdoptedChance + Props.neutralAdoptedChance + Props.enemyAdoptedChance;
+            hatcheeFaction = Find.FactionManager.AllFactions.Where(F => F.def == Props.forcedFaction).FirstOrFallback();
+        }
 
-            float DiceRoll = Rand.Range(0, totalChance);
-            // got enemy
-            if ((DiceRoll -= Props.enemyAdoptedChance) < 0)
+        private Pawn GetMother(Faction faction)
+        {
+            return Find.WorldPawns.AllPawnsAlive
+                .Where(p => p.Faction != null && p.Faction == faction)
+                // since pawnkind is chosen upon hatch, parents may not be from child race
+                .Where(p => p.kindDef == Props.hatcherPawnList.RandomElement())
+                .Where(p => p.ageTracker.CurLifeStage.reproductive)
+                .Where(p => p.gender == Gender.Female)
+                .RandomElementWithFallback();
+        }
+        private Pawn GetFather(Faction faction, Pawn Mother)
+        {
+            return
+            Find.WorldPawns.AllPawnsAlive
+            .Where(p => p.Faction != null && p.Faction == hatcheeFaction)
+            // we choose same kindDef as hatcheeParent
+            .Where(p => (hatcheeParent != null) ? (p.kindDef == hatcheeParent.kindDef && p != hatcheeParent) : true)
+            .Where(p => p.ageTracker.CurLifeStage.reproductive)
+            .Where(p => p.gender == Gender.Male)
+            .RandomElementWithFallback();
+        }
+
+        private void SetRandomFaction()
+        {
+            RandomAdoption RA = Props.randomAdoption.RandomElementByWeightWithFallback(ra => ra.weight);
+
+            switch (RA.factionType)
             {
-                hatcheeFaction = Find.FactionManager.AllFactions.Where(f => !f.IsPlayer && !f.AllyOrNeutralTo(Faction.OfPlayer)).RandomElementWithFallback();
-
-                if (hatcheeFaction != null)
-                    hatcheeParent = Find.WorldPawns.AllPawnsAlive.Where(p => p.Faction != null && p.Faction == hatcheeFaction).RandomElementWithFallback();
+                case AdoptionType.enemy:
+                    hatcheeFaction = Find.FactionManager.AllFactions.Where(f => !f.IsPlayer && !f.AllyOrNeutralTo(Faction.OfPlayer)).RandomElementWithFallback();
+                    break;
+                case AdoptionType.neutral:
+                    hatcheeFaction = Find.FactionManager.AllFactions.Where(f => !f.IsPlayer && f.AllyOrNeutralTo(Faction.OfPlayer)).RandomElementWithFallback();
+                    break;
+                default:
+                case AdoptionType.player:
+                    hatcheeFaction = Faction.OfPlayer;
+                    break;
             }
-            // got neutral
-            else if ((DiceRoll -= Props.neutralAdoptedChance) < 0)
-            {
-                hatcheeFaction = Find.FactionManager.AllFactions.Where(f => !f.IsPlayer && f.AllyOrNeutralTo(Faction.OfPlayer)).RandomElementWithFallback();
-
-                if (hatcheeFaction != null)
-                    hatcheeParent = Find.WorldPawns.AllPawnsAlive.Where(p => p.Faction != null && p.Faction == hatcheeFaction).RandomElementWithFallback();
-            }
-            // got player faction
-            else
-            {
-                hatcheeFaction = Faction.OfPlayer;
-                hatcheeParent = parent.Map.mapPawns.AnyFreeColonistSpawned ? parent.Map.mapPawns.FreeColonists.RandomElementWithFallback() : null;
-            }
-
-            return (hatcheeFaction != null && hatcheeParent != null);
         }
         
 
@@ -119,9 +145,10 @@ namespace OHFP
 
         public void Hatch()
         {
-            //Tools.Warn("hatcherPawn == null", hatcheePawnKind == null && myDebug);
-            Tools.Warn("hatcheeFaction == null", hatcheeFaction == null && myDebug);
-            Tools.Warn("hatcheeParent == null", hatcheeParent == null && myDebug);
+            
+            Tools.Warn("hatcheeFaction == null", hatcheeFaction == null && MyDebug);
+            Tools.Warn("hatcheeParent == null", hatcheeParent == null && MyDebug);
+            Tools.Warn("otherParent == null", otherParent == null && MyDebug);
 
             PawnGenerationContext pGenContext = PawnGenerationContext.NonPlayer;
 
@@ -151,7 +178,7 @@ namespace OHFP
                 {
                     bool newBorn = Rand.Chance(Props.newBornChance);
                     if (SetPawnKind())
-                        Tools.Warn("SetPawnKind: " + hatcheePawnKind.label, myDebug);
+                        Tools.Warn("SetPawnKind: " + hatcheePawnKind.label, MyDebug);
                     else continue;
 
                     PawnGenerationRequest request;
@@ -193,7 +220,7 @@ namespace OHFP
                         }
 
                         if (Rand.Chance(Props.manhunterChance))
-                            pawn.MakeManhunter(myDebug);
+                            pawn.MakeManhunter(MyDebug);
                     }
                     else
                     {
@@ -270,7 +297,9 @@ namespace OHFP
                 if (hatcheeFaction != null)
                     bla += "Faction:" + hatcheeFaction;
                 if (hatcheeParent != null)
-                    bla += "; Parent:" + hatcheeParent;
+                    bla += "; Mother:" + hatcheeParent;
+                if (otherParent != null)
+                    bla += "; Father:" + otherParent;
             }
 
             if (!TemperatureDamaged)

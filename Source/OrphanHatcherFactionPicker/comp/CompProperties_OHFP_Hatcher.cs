@@ -11,20 +11,35 @@ namespace OHFP
         public List<PawnKindDef> hatcherPawnList;
         //public PawnKindDef hatcherPawn;
 
-        public float colonyAdoptedChance = .5f;
-        public float neutralAdoptedChance = .3f;
-        public float enemyAdoptedChance = .2f;
+        public List<RandomAdoption> randomAdoption;
 
         public FactionDef forcedFaction = null;
 
-        public float manhunterChance = .25f;
+        public bool findRandomMotherIfNull = false;
+        public bool findRandomFatherIfNull = false;
+
+        public float manhunterChance = 0f;
         public float newBornChance = 0f;
         public bool debug = false;
+
+        public bool HasForcedFaction => forcedFaction != null;
+        public bool IsRandomlyAdopted => !randomAdoption.NullOrEmpty();
 
         public CompProperties_OHFP_Hatcher()
         {
             compClass = typeof(Comp_OHFP_Hatcher);
         }
+    }
 
+    public class RandomAdoption
+    {
+        public AdoptionType factionType;
+        public float weight;
+    }
+    public enum AdoptionType
+    {
+        player,
+        neutral,
+        enemy
     }
 }

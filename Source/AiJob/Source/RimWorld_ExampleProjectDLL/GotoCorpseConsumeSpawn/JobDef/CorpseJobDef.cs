@@ -105,12 +105,12 @@ namespace MoharAiJob
         public List<RotStage> rotStages;
 
         public FloatRange healthPerc = new FloatRange(0, 1);
-        public FloatRange massPerc = new FloatRange(0, 9999);
+        public FloatRange mass = new FloatRange(0, 9999);
         public float maxDistance = 10;
 
         public bool HasCorpseCategoryDef => !categoryDef.NullOrEmpty();
         public bool HasCorpseRotStages => !rotStages.NullOrEmpty();
         public bool HasRelevantHealthPerc => healthPerc.min != 0 || healthPerc.max != 1;
-        public bool HasRelevantMassPerc => massPerc.min != 0 || massPerc.max != 9999;
+        public bool HasRelevantMassPerc => mass.min != 0 || mass.max != 9999;
     }
 }
