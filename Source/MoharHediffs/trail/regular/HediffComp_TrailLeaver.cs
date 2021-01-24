@@ -48,7 +48,7 @@ namespace MoharHediffs
                 return;
             }
 
-            if (MyDebug) Log.Warning(Pawn.ThingID + " trying to spawn mote - bodytype:" + Pawn.story?.bodyType?.defName);
+            //if (MyDebug) Log.Warning(Pawn.ThingID + " trying to spawn mote - bodytype:" + Pawn.story?.bodyType?.defName);
             TryPlaceMote();
         }
         public void Init()
@@ -79,10 +79,21 @@ namespace MoharHediffs
             float rot = normalized.AngleFlat();
 
             Vector3 vector = drawPos + GetOffset;
-            if (MyDebug) Log.Warning(Pawn.ThingID + " dp:" + drawPos + " offset:" + GetOffset + " => vector:"+vector);
+            //if (MyDebug) Log.Warning(Pawn.ThingID + " dp:" + drawPos + " offset:" + GetOffset + " => vector:"+vector);
             if (Pawn.Position.InBounds(MyMap))
             {
-                vector.TryMoteSpawn(MyMap, rot, Props.scale.RandomInRange, Props.motePool.RandomElementWithFallback(), MyDebug);
+                if (vector.TryMoteSpawn(MyMap, rot, Props.scale.RandomInRange, Props.motePool.RandomElementWithFallback(), MyDebug) is Mote mote)
+                {
+                    if (Props.useColorRange)
+                    {
+                        if (lastColor == Color.black)
+                            lastColor = Props.colorRange.colorA;
+
+                        lastColor = Props.colorRange.RandomPickColor(lastColor, MyDebug);
+
+                        mote.instanceColor = lastColor;
+                    }
+                }
             }
             lastMotePos = drawPos;
         }
