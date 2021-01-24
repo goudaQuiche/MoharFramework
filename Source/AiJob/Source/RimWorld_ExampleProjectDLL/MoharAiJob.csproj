@@ -35,13 +35,18 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="GotoCorpseConsumeSpawn\JobDef\CorpseJobDef.cs" />
+    <Compile Include="GotoCorpseConsumeSpawn\CorpseJobDef.cs" />
     <Compile Include="GotoCorpseConsumeSpawn\JobGiver\AiCorpse_JobGiver.cs" />
     <Compile Include="GotoCorpseConsumeSpawn\JobDriver\Finalize_CorpseConsumption.cs" />
     <Compile Include="GotoCorpseConsumeSpawn\JobDriver\AiCorpse_Consume_JobDriver.cs" />
     <Compile Include="GotoCorpseConsumeSpawn\JobGiver\Conditions\FindCorpse.cs" />
     <Compile Include="GotoCorpseConsumeSpawn\JobGiver\Conditions\WorkerCheck.cs" />
     <Compile Include="GotoCorpseConsumeSpawn\JobGiver\RetrieveDef.cs" />
+    <Compile Include="GraveDigger\JobDriver\Ai_GraveDig_JobDriver.cs" />
+    <Compile Include="GraveDigger\JobGiver\Ai_GraveDigger_JobGiver.cs" />
+    <Compile Include="GraveDigger\JobGiver\Conditions\FindGrave.cs" />
+    <Compile Include="GraveDigger\JobGiver\RetrieveGraveDiggerDef.cs" />
+    <Compile Include="GraveDigger\GraveDiggerDef.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -59,16 +64,10 @@
       <HintPath>..\..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>..\..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ConsumeNestCorpse\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

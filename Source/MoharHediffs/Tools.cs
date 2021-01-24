@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Verse;
 using AlienRace;
-
+using UnityEngine;
 
 namespace MoharHediffs
 {
@@ -128,6 +128,14 @@ namespace MoharHediffs
             alienComp = pawn?.TryGetComp<AlienPartGenerator.AlienComp>();
 
             return alienComp;
+        }
+
+        public static bool ForbiddenMote(this Vector3 loc, Map map)
+        {
+            if (!loc.ShouldSpawnMotesAt(map) || map.moteCounter.SaturatedLowPriority)
+                return true;
+
+            return false;
         }
     }
 }

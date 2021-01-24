@@ -24,15 +24,9 @@ namespace MoharAiJob
         public WorkerRequirement workerRequirement;
         public CorpseSpecification target;
         public CorpseProduct product;
+        public WorkFlow workFlow;
 
         public bool HasWorkerRequirement => workerRequirement != null;
-
-        /*
-		public bool HasMinHpRequirement => workerRequirement.HasMinHpRequirement;
-		public bool HasFactionRequirement => workerRequirement.HasFactionRequirement;
-        public bool HasHediffRequirement => workerRequirement.HasHediffRequirement;
-        public bool HasLifeStageRequirement => workerRequirement.HasLifeStageRequirement;
-        */
 
         public bool HasTargetSpec => target != null;
         public bool HasTargetCategory => HasTargetSpec && target.HasCorpseCategoryDef;
@@ -107,10 +101,38 @@ namespace MoharAiJob
         public FloatRange healthPerc = new FloatRange(0, 1);
         public FloatRange mass = new FloatRange(0, 9999);
         public float maxDistance = 10;
+        public bool requiresExclusiveReservation = true;
 
         public bool HasCorpseCategoryDef => !categoryDef.NullOrEmpty();
         public bool HasCorpseRotStages => !rotStages.NullOrEmpty();
         public bool HasRelevantHealthPerc => healthPerc.min != 0 || healthPerc.max != 1;
         public bool HasRelevantMassPerc => mass.min != 0 || mass.max != 9999;
+    }
+
+    public class WorkFlow
+    {
+        public int workAmount = 300;
+        public int workAmountPerHealthScale = -1;
+        public int nibblingPeriod = 120;
+        public int nibblingPeriodPerHealthScale = -1;
+
+        public float nibblingAmount = -1;
+
+        public SoundDef sustainSound = null;
+        public EffecterDef effecterDef = null;
+
+        public bool bloodFilth = true;
+        public ThingDef filthDef = null;
+        public FloatRange filthPerHealthScale = new FloatRange(0,0);
+        public float filthRadius = 1.5f;
+
+        public bool HasWorkAmountPerHS => workAmountPerHealthScale > 0;
+        public bool HasNibblingAmount => nibblingAmount > 0;
+        public bool HasNibblingPeriodPerHS => nibblingPeriodPerHealthScale > 0 && HasNibblingAmount;
+
+        public bool HasCustomSustainSound => sustainSound != null;
+        public bool HasCustomEffecterDef => effecterDef != null;
+
+        public bool SpawnsFilth => (filthPerHealthScale.min != 0 || filthPerHealthScale.min != 0) && (bloodFilth == true || filthDef != null);
     }
 }

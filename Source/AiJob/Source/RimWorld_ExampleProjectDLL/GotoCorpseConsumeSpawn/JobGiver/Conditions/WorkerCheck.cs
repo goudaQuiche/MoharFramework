@@ -1,6 +1,7 @@
 ﻿using Verse;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MoharAiJob
@@ -9,17 +10,18 @@ namespace MoharAiJob
     {
         // By default return null
         // Browses all corpse recipes until find an ok one
-        public static CorpseRecipeSettings WorkerFulfillsRequirements(this Pawn p, CorpseJobDef CJD)
+        public static IEnumerable<CorpseRecipeSettings> WorkerFulfillsRequirements(this Pawn p, CorpseJobDef CJD)
         {
             if (p.NegligiblePawn() || CJD.IsEmpty)
-                return null;
-
-            if (!CJD.corpseRecipeList.Any(CRL => CRL.HasWorkerRequirement))
-                return CJD.corpseRecipeList.FirstOrFallback(null);
+                yield break;
 
             foreach(CorpseRecipeSettings CRS in CJD.corpseRecipeList)
             {
-                if (CRS.HasWorkerRequirement)
+                if (!CRS.HasWorkerRequirement)
+                {
+                    yield return CRS;
+                }
+                else
                 {
                     WorkerRequirement WR = CRS.workerRequirement;
 
@@ -35,7 +37,40 @@ namespace MoharAiJob
                     if (WR.HasLifeStageRequirement && !p.FulfillsLifeStageRequirement(WR))
                         continue;
 
-                    return CRS;
+                    yield return CRS;
+                }
+            }
+
+            yield break;
+        }
+
+        public static GraveDig_JobParameters WorkerFulfillsRequirements(this Pawn p, GraveDiggerDef GDD)
+        {
+            if (p.NegligiblePawn() || GDD.IsEmpty)
+                return null;
+
+            if (!GDD.jobParameters.Any(jp => jp.HasWorkerRequirement))
+                return GDD.jobParameters.FirstOrFallback(null);
+
+            foreach (GraveDig_JobParameters GDJP in GDD.jobParameters)
+            {
+                if (GDJP.HasWorkerRequirement)
+                {
+                    WorkerRequirement WR = GDJP.workerRequirement;
+
+                    if (WR.HasMinHpRequirement && !p.FulfillsHPRrequirement(WR))
+                        continue;
+
+                    if (WR.HasHediffRequirement && !p.FulfillsHediffRequirement(WR))
+                        continue;
+
+                    if (WR.HasFactionRequirement && !p.FulfillsFactionRequirement(WR))
+                        continue;
+
+                    if (WR.HasLifeStageRequirement && !p.FulfillsLifeStageRequirement(WR))
+                        continue;
+
+                    return GDJP;
                 }
             }
 

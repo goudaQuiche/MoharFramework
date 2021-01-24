@@ -99,8 +99,8 @@
     <Compile Include="MyDefs.cs" />
     <Compile Include="BodyPartsTools.cs" />
     <Compile Include="StaticCheck.cs" />
-    <Compile Include="trail\HediffCompProperties_RainbowTrail.cs" />
-    <Compile Include="trail\HediffCompProperties_TrailLeaver.cs" />
+    <Compile Include="trail\rainbow\HediffCompProperties_RainbowTrail.cs" />
+    <Compile Include="trail\regular\HediffCompProperties_TrailLeaver.cs" />
     <Compile Include="footprinter\HediffCompProperties_FootPrinter.cs" />
     <Compile Include="multiple\HediffCompProperties_MultipleHediff.cs" />
     <Compile Include="hediffExclusive\HediffCompProperties_HediffExclusive.cs" />
@@ -110,8 +110,9 @@
     <Compile Include="steamer\HediffCompProperties_Steamer.cs" />
     <Compile Include="random\HediffComp_HediffRandom.cs" />
     <Compile Include="postremove_hediffadd\HediffComp_PostRemoveTrigger_HediffAdd.cs" />
-    <Compile Include="trail\HediffComp_RainbowTrail.cs" />
-    <Compile Include="trail\HediffComp_TrailLeaver.cs" />
+    <Compile Include="trail\rainbow\HediffComp_RainbowTrail.cs" />
+    <Compile Include="trail\regular\TrailUtils.cs" />
+    <Compile Include="trail\regular\HediffComp_TrailLeaver.cs" />
     <Compile Include="footprinter\HediffComp_FootPrinter.cs" />
     <Compile Include="multiple\HediffComp_MultipleHediff.cs" />
     <Compile Include="hediffExclusive\HediffComp_HediffExclusive.cs" />

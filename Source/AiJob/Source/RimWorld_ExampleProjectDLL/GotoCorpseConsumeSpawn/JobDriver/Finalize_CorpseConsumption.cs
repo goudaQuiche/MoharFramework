@@ -9,6 +9,38 @@ namespace MoharAiJob
 {
     public static class Finalize_CorpseConsumption
     {
+        public static void TrySpawnFilth(Thing refT, float filthRadius, ThingDef filthDef)
+        {
+            if (refT.Map != null && CellFinder.TryFindRandomReachableCellNear(refT.Position, refT.Map, filthRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors), (IntVec3 x) => x.Standable(refT.Map), (Region x) => true, out IntVec3 result))
+            {
+                FilthMaker.TryMakeFilth(result, refT.Map, filthDef);
+            }
+        }
+
+        public static Toil SpawnFilth(this WorkFlow WF, Corpse corpse, Map map, bool MyDebug = false)
+        {
+            return new Toil
+            {
+                initAction = delegate
+                {
+                    int filthNum = (int)(corpse.InnerPawn.RaceProps.baseHealthScale * WF.filthPerHealthScale.RandomInRange);
+                    ThingDef filthDef = null;
+                    if (WF.bloodFilth)
+                        filthDef = corpse.InnerPawn.RaceProps.BloodDef;
+                    else if (WF.filthDef != null)
+                        filthDef = WF.filthDef;
+                    if (filthDef == null)
+                        return;
+
+                    for(int i = 0; i<filthNum; i++)
+                    {
+                        TrySpawnFilth(corpse, WF.filthRadius, filthDef);
+                    }
+                },
+                atomicWithPrevious = true
+            };
+        }
+
         public static Toil SpawnProductDespawnCorpse(this CorpseProduct CP, Pawn ParentPawn, IntVec3 SpawnPos, Corpse corpse, Map map, bool MyDebug = false)
         {
             return new Toil {

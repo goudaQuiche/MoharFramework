@@ -6,73 +6,42 @@ namespace MoharHediffs
 {
     public class HediffComp_Steamer : HediffComp
     {
-        Pawn myPawn = null;
-
         private int ticksUntilSpray = 500;
         private int sprayTicksLeft;
 
-        private bool myDebug = false;
-
-        public HediffCompProperties_Steamer Props
-        {
-            get
-            {
-                return (HediffCompProperties_Steamer)this.props;
-            }
-        }
-
-        public override void CompPostMake()
-        {
-            myDebug = Props.debug;
-        }
+        private bool MyDebug => Props.debug;
+        private Map MyMap => Pawn.Map;
+        public HediffCompProperties_Steamer Props =>(HediffCompProperties_Steamer)props;
 
         public override void CompPostTick(ref float severityAdjustment)
         {
-            myPawn = parent.pawn;
-
-            if (myPawn == null)
+            if (Pawn.Negligible())
             {
-                Tools.Warn("pawn null", myDebug);
-                return;
-            }
-            if (myPawn.Map == null)
-            {
-                //Tools.Warn(myPawn.Label + " - pawn.Map null", myDebug);
+                if (MyDebug) Log.Warning("null pawn");
                 return;
             }
 
             // Puff
-            if (this.sprayTicksLeft <= 0)
+            if (sprayTicksLeft <= 0)
             {
    
                 // Smoke if random ok
-                if (Rand.Value < this.Props.puffingChance)
+                if (Rand.Chance(Props.puffingChance))
                 {
                     //Log.Warning("Puffing");
-                    MoteMaker.ThrowAirPuffUp(myPawn.TrueCenter(), myPawn.Map);
-                }
-
-                // Temperature
-                if (Find.TickManager.TicksGame % 20 == 0)
-                {
-                    GenTemperature.PushHeat(myPawn.Position, myPawn.Map, 40f);
+                    MoteMaker.ThrowAirPuffUp(Pawn.TrueCenter(), MyMap);
+                    GenTemperature.PushHeat(Pawn.Position, MyMap, Props.temperatureIncreasePerPuff);
                 }
 
                 // reset avec random // ça fait x10 ?!
-                this.sprayTicksLeft = this.ticksUntilSpray = Rand.RangeInclusive(this.Props.MinTicksBetweenSprays, this.Props.MaxTicksBetweenSprays);
+                sprayTicksLeft = ticksUntilSpray = Rand.RangeInclusive(Props.MinTicksBetweenSprays, Props.MaxTicksBetweenSprays);
             
             }
             // decrease ticks
             else
             {
-                this.sprayTicksLeft --;
+                sprayTicksLeft --;
             }
-
-            if (this.ticksUntilSpray <= 0)
-            {
-                this.sprayTicksLeft = Rand.RangeInclusive(this.Props.MinTicksBetweenSprays, this.Props.MaxTicksBetweenSprays);
-            }
-
         }
 
         public override string CompTipStringExtra
@@ -80,7 +49,7 @@ namespace MoharHediffs
             get
             {
                 string result = string.Empty;
-                result += "Puff in " + this.sprayTicksLeft.ToStringTicksToPeriod();
+                result += "Puff in " + sprayTicksLeft.ToStringTicksToPeriod();
                 return result;
             }
         }

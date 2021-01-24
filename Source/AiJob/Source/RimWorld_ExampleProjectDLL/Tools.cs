@@ -5,6 +5,18 @@ namespace MoharAiJob
 {
     public static class Tools
     {
+        public static Vector3 BetweenTouchingCells(this IntVec3 A, IntVec3 B)
+        {
+            return A.ToVector3Shifted() + (B - A).ToVector3().normalized * 0.5f;
+        }
+
+        public static bool AllowedMoteSpawn(this Map map, Vector3 pos)
+        {
+            if (map == null || map.moteCounter.SaturatedLowPriority || !pos.ShouldSpawnMotesAt(map))
+                return false;
+
+            return true;
+        }
 
         public static bool AllowedMoteSpawn(this Pawn p)
         {

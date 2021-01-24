@@ -23,21 +23,37 @@ namespace MoharAiJob
                 return null;
             }
 
-            CorpseJobDef DefToUse = pawn.RetrieveCJD(out MyDebug, PreRetrieveDebug);
-            CorpseRecipeSettings CRS = pawn.RetrieveCRS(DefToUse, MyDebug);
-
-            Corpse FoundCorpse = pawn.GetClosestCompatibleCorpse(CRS.target, MyDebug);
-
-            if (FoundCorpse.NegligibleThing())
+            CorpseJobDef DefToUse = pawn.RetrieveCorpseJobDef(out MyDebug, PreRetrieveDebug);
+            if (DefToUse == null)
             {
-                if (MyDebug) Log.Warning(myDebugStr + "corpse " + FoundCorpse?.Label + " " + FoundCorpse?.Position + " is negligible; exit");
+                if (PreRetrieveDebug) Log.Warning(myDebugStr + " found no CorpseJobDef; exit");
                 return null;
             }
+                
+            IEnumerable<CorpseRecipeSettings> CRSList = pawn.RetrieveCorpseRecipeSettings(DefToUse, MyDebug);
+            if (CRSList.EnumerableNullOrEmpty())
+            {
+                if (MyDebug) Log.Warning(myDebugStr + " found no CorpseRecipeSettings; exit");
+                return null;
+            }
+                
 
-            if (MyDebug) Log.Warning(myDebugStr + " accepting "+ DefToUse.jobDef.defName + " for corpse " + FoundCorpse?.Label + " " + FoundCorpse?.Position + " => go go");
-            Job job = JobMaker.MakeJob(DefToUse.jobDef, FoundCorpse);
+            foreach (CorpseRecipeSettings CRS in CRSList)
+            {
+                Corpse FoundCorpse = pawn.GetClosestCompatibleCorpse(CRS.target, MyDebug);
 
-            return job;
+                if (FoundCorpse.NegligibleThing())
+                {
+                    if (MyDebug) Log.Warning(myDebugStr + "corpse " + FoundCorpse?.Label + " " + FoundCorpse?.Position + " is negligible; exit");
+                    continue;
+                }
+
+                if (MyDebug) Log.Warning(myDebugStr + " accepting " + DefToUse.jobDef.defName + " for corpse " + FoundCorpse?.Label + " " + FoundCorpse?.Position + " => go go");
+                Job job = JobMaker.MakeJob(DefToUse.jobDef, FoundCorpse);
+
+                return job;
+            }
+            return null;
         }
     }
 }

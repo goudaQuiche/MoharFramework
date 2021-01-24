@@ -10,7 +10,7 @@ namespace MoharAiJob
     {
         private static float GetHitPointsPerc(this Thing t) => (float)t.HitPoints / t.MaxHitPoints;
 
-        private static bool ValidateCorpse(Thing t, Map map, Faction pFaction, CorpseSpecification CS, bool myDebug = false)
+        public static bool ValidateCorpse(Thing t, Map map, Faction pFaction, CorpseSpecification CS, bool myDebug = false)
         {
             if (t.NegligibleThing())
             {
@@ -24,7 +24,7 @@ namespace MoharAiJob
                 return false;
             }
 
-            if (!CS.categoryDef.NullOrEmpty() && !CS.categoryDef.Any(tc => t.def.IsWithinCategory(tc)))
+            if (CS.HasCorpseCategoryDef && !CS.categoryDef.Any(tc => t.def.IsWithinCategory(tc)))
             {
                 if (myDebug) Log.Warning("ValidateCorpse - corpse is not within allowed categories");
                 return false;
@@ -36,7 +36,7 @@ namespace MoharAiJob
                 return false;
             }
 
-            if(CS.HasRelevantMassPerc && !CS.mass.Includes(t.GetStatValue(StatDefOf.Mass))){
+            if (CS.HasRelevantMassPerc && !CS.mass.Includes(t.GetStatValue(StatDefOf.Mass))) {
                 if (myDebug) Log.Warning("ValidateCorpse - corpse is not within allowed mass range");
                 return false;
             }
@@ -44,7 +44,7 @@ namespace MoharAiJob
             if (CS.HasCorpseRotStages)
             {
                 CompRottable comp = t.TryGetComp<CompRottable>();
-                if(comp == null)
+                if (comp == null)
                 {
                     if (myDebug) Log.Warning("ValidateCorpse - corpse has no compRottable");
                     return false;
@@ -56,15 +56,11 @@ namespace MoharAiJob
                 }
             }
 
-            if (pFaction != null)
+            if (CS.requiresExclusiveReservation && map.reservationManager.IsReservedByAnyoneOf(t, pFaction))
             {
-                if (map.reservationManager.IsReservedByAnyoneOf(t, pFaction))
-                {
-                    if (myDebug) Log.Warning("ValidateCorpse - corpse is reserved by someone of the same faction");
-                    return false;
-                }
+                if (myDebug) Log.Warning("ValidateCorpse - corpse is reserved by someone of the same faction");
+                return false;
             }
-                
 
             return true;
         }
