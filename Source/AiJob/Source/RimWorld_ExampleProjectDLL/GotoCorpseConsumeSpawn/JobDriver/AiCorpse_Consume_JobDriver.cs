@@ -10,11 +10,12 @@ namespace MoharAiJob
     public class AiCorpse_Consume_JobDriver : JobDriver
     {
         bool MyDebug = false;
-        public bool PreRetrieveDebug => Prefs.DevMode && DebugSettings.godMode;
+        readonly bool MyCsDebug = false;
+        //public bool PreRetrieveDebug => Prefs.DevMode && DebugSettings.godMode;
+        readonly string DebugStr = "MoharAiJob.AiCorpse_Consume_JobDriver ";
 
-        private const TargetIndex CorpseInd = TargetIndex.A;
-        private const TargetIndex CellInd = TargetIndex.C;
-
+        private TargetIndex CorpseInd => TargetIndex.A;
+        //private TargetIndex CellInd => TargetIndex.C;
         //private static List<IntVec3> tmpCells = new List<IntVec3>();
 
         private Corpse Corpse => (Corpse)job.GetTarget(TargetIndex.A).Thing;
@@ -26,17 +27,21 @@ namespace MoharAiJob
         private const float DefaultNibblingAmount = 1;
         private bool NibblingRequired => NibblingAmount != DefaultNibblingAmount;
 
-        public CorpseProduct corpseProduct = null;
-        public bool HasCorpseProduct => corpseProduct != null;
-        public WorkFlow workFlow = null;
-        public bool HasWorkFlow => workFlow != null;
+        public CorpseRecipeSettings RetrievedCRS = null;
+        public bool HasRCRCS => RetrievedCRS != null;
+
+        public CorpseProduct RetrievedCorpseProduct => (HasRCRCS && RetrievedCRS.HasProductSpec) ? RetrievedCRS.product : null;
+        public bool HasCorpseProduct => RetrievedCorpseProduct != null;
+
+        public WorkFlow RetrievedWorkFlow => (HasRCRCS && RetrievedCRS.HasWorkFlow) ? RetrievedCRS.workFlow : null;
+        public bool HasWorkFlow => RetrievedWorkFlow != null;
 
         public int WorkAmount
         {
             get
             {
-                if (HasWorkFlow && workFlow.HasWorkAmountPerHS)
-                    return (int)(workFlow.workAmountPerHealthScale * Corpse.InnerPawn.RaceProps.baseHealthScale);
+                if (HasWorkFlow && RetrievedWorkFlow.HasWorkAmountPerHS)
+                    return (int)(RetrievedWorkFlow.workAmountPerHealthScale * Corpse.InnerPawn.RaceProps.baseHealthScale);
 
                 return DefaultWorkAmount;
             }
@@ -45,68 +50,104 @@ namespace MoharAiJob
         public int NibblingPeriod {
             get
             {
-                if (HasWorkFlow && workFlow.HasNibblingPeriodPerHS)
-                    return (int)(workFlow.nibblingPeriodPerHealthScale * Corpse.InnerPawn.RaceProps.baseHealthScale);
+                if (HasWorkFlow && RetrievedWorkFlow.HasNibblingPeriodPerHS)
+                    return (int)(RetrievedWorkFlow.nibblingPeriodPerHealthScale * Corpse.InnerPawn.RaceProps.baseHealthScale);
                 return DefaultNibblingPeriod;
             }
         }
-        public float NibblingAmount => HasWorkFlow && workFlow.HasNibblingAmount ? workFlow.nibblingAmount : DefaultNibblingAmount;
-        public SoundDef MySustainSound => HasWorkFlow && workFlow.HasCustomSustainSound ? workFlow.sustainSound : ConsumeCorpseDefaultDefOf.Recipe_Surgery;
-        public EffecterDef MyEffecterDef => HasWorkFlow && workFlow.HasCustomEffecterDef ? workFlow.effecterDef : ConsumeCorpseDefaultDefOf.ButcherFlesh;
+        public float NibblingAmount => HasWorkFlow && RetrievedWorkFlow.HasNibblingAmount ? RetrievedWorkFlow.nibblingAmount : DefaultNibblingAmount;
+        public SoundDef MySustainSound => HasWorkFlow && RetrievedWorkFlow.HasCustomSustainSound ? RetrievedWorkFlow.sustainSound : ConsumeCorpseDefaultDefOf.Recipe_Surgery;
+        public EffecterDef MyEffecterDef => HasWorkFlow && RetrievedWorkFlow.HasCustomEffecterDef ? RetrievedWorkFlow.effecterDef : ConsumeCorpseDefaultDefOf.ButcherFlesh;
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
-            CheckAndFillCorpseProduct();
+            if (CheckAndFillCorpseProduct())
+            {
+                if(RetrievedCRS.HasTargetSpec && RetrievedCRS.target.HasReservationProcess && RetrievedCRS.target.reservation.reserves)
+                {
+                    bool TryingToReserve = pawn.Reserve(TargetA, job, 1, -1, null);
+                    if(MyDebug) Log.Warning(pawn + " reserved " + Corpse.ThingID + ":" + TryingToReserve);
+                }
+            }
+
             pawn.CurJob.count = 1;
             return true;
         }
 
         private bool CheckAndFillCorpseProduct()
         {
-            if (!HasCorpseProduct || !HasWorkFlow)
+            if (HasCorpseProduct && HasWorkFlow)
+                return true;
+
+            if (MyCsDebug)
             {
-                if (PreRetrieveDebug || MyDebug) Log.Warning("AiCorpse_Consume_JobDriver cant work without corpseProduct, Loading it");
-
-                if (pawn.RetrieveCorpseJobDef(out MyDebug, PreRetrieveDebug) is CorpseJobDef DefToUse)
-                {
-                    //CS.categoryDef.Any(tc => t.def.IsWithinCategory(tc))
-                    IEnumerable<CorpseRecipeSettings> CRSList = 
-                        pawn.RetrieveCorpseRecipeSettings(DefToUse, MyDebug)
-                        .Where(c => c.HasTargetCategory && c.target.HasCorpseCategoryDef)
-                        .Where(c => FindCorpse.ValidateCorpse(Corpse, pawn.Map, pawn.Faction, c.target)) ;
-
-                    if (CRSList.EnumerableNullOrEmpty())
-                        return false;
-
-                    CorpseRecipeSettings CRS = CRSList.FirstOrFallback();
-                    if(CRS == null)
-                        return false;
-
-                    corpseProduct = CRS.product;
-                    workFlow = CRS.workFlow;
-                    return true;
-                }
-                return false;
+                Log.Warning(
+                    DebugStr + " cant work without corpseProduct, Loading it " +
+                    "for pawn:" + pawn?.ThingID + " corpse:" + Corpse?.ThingID
+                );
             }
-            return true;
+
+            if (pawn.RetrieveCorpseJobDef(out MyDebug, MyCsDebug) is CorpseJobDef DefToUse)
+            {
+                string meFunc = MyCsDebug ? "CheckAndFillCorpseProduct" : string.Empty;
+
+                IEnumerable<CorpseRecipeSettings> CRSList =
+                    pawn.RetrieveCorpseRecipeSettings(DefToUse, MyDebug)
+                    .Where(c => c.target.ValidateCorpse(Corpse, pawn, MyDebug, meFunc));
+
+                /*
+            IEnumerable<CorpseRecipeSettings> CRSPrime = pawn.RetrieveCorpseRecipeSettings(DefToUse, MyDebug);
+
+            if (MyDebug && !CRSPrime.EnumerableNullOrEmpty())
+                Log.Warning(meFunc + " found " + CRSPrime.Count() + " prime CRS");
+
+            IEnumerable<CorpseRecipeSettings> CRSList = CRSPrime.Where(c => FindCorpse.ValidateCorpse(Corpse, pawn.Map, pawn.Faction, c.target, MyDebug, meFunc));
+                  */
+                if (CRSList.EnumerableNullOrEmpty())
+                {
+                    Log.Warning(DebugStr + "did not find CorpseRecipeSettings relative to Corpse " + Corpse.ThingID);
+                    return false;
+                }
+                else
+                {
+                    if (MyDebug)
+                        Log.Warning(meFunc + " found " + CRSList.Count() + " CRS");
+                }
+
+                RetrievedCRS = CRSList.FirstOrFallback();
+                if (RetrievedCRS == null)
+                {
+                    Log.Warning(DebugStr + "did not find CorpseRecipeSettings relative to Corpse (2)");
+                    return false;
+                }
+
+                if (MyDebug)
+                    Log.Warning(DebugStr + " did it - OK");
+
+                return true;
+            }
+            return false;
+
         }
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
             if (!CheckAndFillCorpseProduct())
             {
-                if (PreRetrieveDebug) Log.Warning("AiCorpse_Consume_JobDriver - Failed to initialize settings");
+                if (MyCsDebug) Log.Warning(DebugStr + " - Failed to initialize settings");
                 yield break;
             }
 
             this.FailOnDestroyedOrNull(CorpseInd);
+
             Toil gotoCorpse = Toils_Goto.GotoThing(CorpseInd, PathEndMode.Touch).FailOnDespawnedOrNull(CorpseInd);
             yield return gotoCorpse;
-            this.FailOnDestroyedOrNull(CorpseInd);
 
             Toil toil =
                 Toils_General.Wait(WorkAmount)
-                .FailOnDespawnedOrNull(CorpseInd).FailOnCannotTouch(CorpseInd, PathEndMode.Touch)
+                .FailOnCannotTouch(CorpseInd, PathEndMode.Touch)
+                .FailOnBurningImmobile(CorpseInd)
+                .FailOnSomeonePhysicallyInteracting(CorpseInd)
                 .WithEffect(MyEffecterDef, CorpseInd)
                 .PlaySustainerOrSound(MySustainSound);
 
@@ -115,12 +156,12 @@ namespace MoharAiJob
                 if ( NibblingRequired && pawn.IsHashIntervalTick(NibblingPeriod))
                 {
                     Corpse.HitPoints = (int)(Corpse.HitPoints * NibblingAmount);
+                    RetrievedWorkFlow.SpawnFilth(Corpse, pawn.Map, MyDebug);
                 }
             };
             yield return toil;
 
-            yield return workFlow.SpawnFilth(Corpse, pawn.Map, MyDebug);
-            yield return corpseProduct.SpawnProductDespawnCorpse(pawn, Corpse.Position, Corpse, pawn.Map, MyDebug);
+            yield return RetrievedCRS.SpawnProductDespawnCorpse(pawn, Corpse, MyDebug);
         }
 
         [DefOf]

@@ -10,7 +10,7 @@ namespace MoharAiJob
     public class Ai_GraveDig_JobDriver : JobDriver
     {
         bool MyDebug = false;
-        public bool PreRetrieveDebug => Prefs.DevMode && DebugSettings.godMode;
+        public bool MyCsDebug => false;
 
         private const TargetIndex GraveInd = TargetIndex.A;
         private const TargetIndex CorpseInd = TargetIndex.B;
@@ -26,8 +26,11 @@ namespace MoharAiJob
         private const int DefaultWorkAmount = 300;
         private const int DefaultDustPeriod = 50;
 
-        public GraveDigWorkFlow workFlow = null;
-        public bool HasWorkFlow => workFlow != null;
+        public GraveDig_JobParameters RetrievedGDJP = null;
+        public bool HasGDJP => RetrievedGDJP != null;
+
+        public GraveDigWorkFlow RetrievedWorkFlow => (HasGDJP && RetrievedGDJP.HasWorkFlow) ? RetrievedGDJP.workFlow : null;
+        public bool HasWorkFlow => RetrievedWorkFlow != null;
 
         public float SpeedFactor => (GraveBuilding.Stuff == null) ? 1 : GraveBuilding.Stuff.GetStatValueAbstract(StatDefOf.DoorOpenSpeed);
 
@@ -35,32 +38,39 @@ namespace MoharAiJob
         {
             get
             {
-                if (HasWorkFlow && workFlow.HasRelevantWorkAmount)
-                    return workFlow.workAmountDoorOpenSpeedWeighted ? (int)(workFlow.workAmount * SpeedFactor) : workFlow.workAmount;
+                if (HasWorkFlow && RetrievedWorkFlow.HasRelevantWorkAmount)
+                    return RetrievedWorkFlow.workAmountDoorOpenSpeedWeighted ? (int)(RetrievedWorkFlow.workAmount * SpeedFactor) : RetrievedWorkFlow.workAmount;
 
                 return DefaultWorkAmount;
             }
         }
 
-        public SoundDef MySustainSound => HasWorkFlow && workFlow.HasCustomSustainSound ? workFlow.sustainSound : GraveDigDefaultDefOf.Tunnel;
-        public int MyDustPeriod => HasWorkFlow && workFlow.HasRelevantDustPeriod ? workFlow.dustPeriod : DefaultDustPeriod;
+        public SoundDef MySustainSound => HasWorkFlow && RetrievedWorkFlow.HasCustomSustainSound ? RetrievedWorkFlow.sustainSound : GraveDigDefaultDefOf.Tunnel;
+        public int MyDustPeriod => HasWorkFlow && RetrievedWorkFlow.HasRelevantDustPeriod ? RetrievedWorkFlow.dustPeriod : DefaultDustPeriod;
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
-            CheckAndFillWorkFlow();
+            if (CheckAndFillWorkFlow())
+            {
+                if (RetrievedGDJP.HasTargetSpec && RetrievedGDJP.target.HasReservation && RetrievedGDJP.target.reservation.reserves)
+                {
+                    bool TryingToReserve = pawn.Reserve(TargetA, job, 1, -1, null);
+                    if (MyDebug) Log.Warning(pawn + " reserved " + GraveBuilding.ThingID + ":" + TryingToReserve);
+                }
+            }
             pawn.CurJob.count = 1;
             return true;
         }
 
         private bool CheckAndFillWorkFlow()
         {
-            if (!HasWorkFlow)
+            if (!HasGDJP)
             {
-                if (PreRetrieveDebug || MyDebug) Log.Warning("Ai_GraveDig_JobDriver cant work without workflow, Loading it");
+                if (MyCsDebug || MyDebug) Log.Warning("Ai_GraveDig_JobDriver cant work without workflow, Loading it");
 
-                if (pawn.RetrieveGDD(out MyDebug, PreRetrieveDebug) is GraveDiggerDef DefToUse && pawn.RetrieveGDJP(DefToUse, MyDebug) is GraveDig_JobParameters GDJP)
+                if (pawn.RetrieveGDD(out MyDebug, MyCsDebug) is GraveDiggerDef DefToUse && pawn.RetrieveGDJP(DefToUse, MyDebug) is GraveDig_JobParameters GDJP)
                 {
-                    workFlow = GDJP.workFlow;
+                    RetrievedGDJP = GDJP;
                     return true;
                 }
                 return false;
@@ -72,7 +82,7 @@ namespace MoharAiJob
         {
             if (!CheckAndFillWorkFlow())
             {
-                if (PreRetrieveDebug) Log.Warning("Ai_GraveDig_JobDriver - Failed to initialize settings");
+                if (MyCsDebug) Log.Warning("Ai_GraveDig_JobDriver - Failed to initialize settings");
                 yield break;
             }
 
@@ -110,7 +120,34 @@ namespace MoharAiJob
             yield return Toils_Haul.PlaceHauledThingInCell(CellInd, null, storageMode: false);
 
             yield return Forbid();
+            if (RetrievedWorkFlow.HasJobGiverToChain)
+                yield return ChainJob();
+        }
 
+        private Toil ChainJob()
+        {
+            return new Toil
+            {
+                initAction = delegate
+                {
+                    if (RetrievedWorkFlow.tryToChainJobGiver.FirstOrFallback() is ThinkNode_JobGiver JG)
+                    {
+                        if (MyDebug) Log.Warning("trying to thinknode: " + JG.ToString());
+                        ThinkResult TR = JG.TryIssueJobPackage(pawn, default(JobIssueParams));
+                        if (MyDebug) Log.Warning(TR.ToString());
+                        if (TR != ThinkResult.NoJob)
+                        {
+                            pawn.jobs.jobQueue.EnqueueFirst(TR.Job);
+                        }
+                        else if (MyDebug) Log.Warning("failed to chain job");
+
+                    }
+                    else
+                    {
+                        if (MyDebug) Log.Warning("no thinknode");
+                    }
+                }
+            };
         }
 
         private Toil FindCellToDropCorpseToil()

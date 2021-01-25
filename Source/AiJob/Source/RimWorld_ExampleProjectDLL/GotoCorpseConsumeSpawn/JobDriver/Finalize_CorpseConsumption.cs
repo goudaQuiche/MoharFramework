@@ -9,54 +9,91 @@ namespace MoharAiJob
 {
     public static class Finalize_CorpseConsumption
     {
-        public static void TrySpawnFilth(Thing refT, float filthRadius, ThingDef filthDef)
+        public static bool TrySpawnFilth(Thing refT, float filthRadius, ThingDef filthDef)
         {
-            if (refT.Map != null && CellFinder.TryFindRandomReachableCellNear(refT.Position, refT.Map, filthRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors), (IntVec3 x) => x.Standable(refT.Map), (Region x) => true, out IntVec3 result))
+            if (refT.Map == null)
+                return false;
+
+            if(CellFinder.TryFindRandomReachableCellNear(
+                refT.Position, refT.Map, filthRadius, 
+                TraverseParms.For(TraverseMode.NoPassClosedDoors), 
+                (IntVec3 x) => x.Standable(refT.Map), 
+                (Region x) => true, 
+                out IntVec3 result))
+
+                return FilthMaker.TryMakeFilth(result, refT.Map, filthDef);
+
+            return false;
+        }
+
+        public static ThingDef GetFilthDef(this WorkFlow WF, Corpse corpse)
+        {
+            if (WF.bloodFilth)
+                return corpse.InnerPawn.RaceProps.BloodDef;
+            else if (WF.filthDef != null)
+                return WF.filthDef;
+            
+            return null;
+        }
+
+        public static void SpawnFilth(this WorkFlow WF, Corpse corpse, Map map, bool MyDebug = false)
+        {
+            //if (MyDebug)Log.Warning("Trying to spawnfilth");
+            ThingDef filthDef = WF.GetFilthDef(corpse);
+            if (filthDef == null)
+                return;
+
+            int filthNum = Math.Max(1, (int)(corpse.InnerPawn.RaceProps.baseHealthScale * WF.filthPerHealthScale.RandomInRange));
+
+            //if (MyDebug) Log.Warning("fDef:" + filthDef + "fNum:" + filthNum);
+
+            for (int i = 0; i < filthNum; i++)
             {
-                FilthMaker.TryMakeFilth(result, refT.Map, filthDef);
+                bool DidIt = TrySpawnFilth(corpse, WF.filthRadius, filthDef);
+                //if (DidIt && MyDebug) Log.Warning("spawned " + filthDef);
             }
+            TrySpawnFilth(corpse, 1, filthDef);
         }
 
-        public static Toil SpawnFilth(this WorkFlow WF, Corpse corpse, Map map, bool MyDebug = false)
-        {
-            return new Toil
-            {
-                initAction = delegate
-                {
-                    int filthNum = (int)(corpse.InnerPawn.RaceProps.baseHealthScale * WF.filthPerHealthScale.RandomInRange);
-                    ThingDef filthDef = null;
-                    if (WF.bloodFilth)
-                        filthDef = corpse.InnerPawn.RaceProps.BloodDef;
-                    else if (WF.filthDef != null)
-                        filthDef = WF.filthDef;
-                    if (filthDef == null)
-                        return;
-
-                    for(int i = 0; i<filthNum; i++)
-                    {
-                        TrySpawnFilth(corpse, WF.filthRadius, filthDef);
-                    }
-                },
-                atomicWithPrevious = true
-            };
-        }
-
-        public static Toil SpawnProductDespawnCorpse(this CorpseProduct CP, Pawn ParentPawn, IntVec3 SpawnPos, Corpse corpse, Map map, bool MyDebug = false)
+        public static Toil SpawnProductDespawnCorpse(this CorpseRecipeSettings CRS, Pawn ParentPawn, Corpse corpse, bool MyDebug = false)
         {
             return new Toil {
                 initAction = delegate
                 {
-                    CP.SpawnConsumptionProduct(corpse, ParentPawn, SpawnPos, map, MyDebug);
+                    //CRS.product.SpawnConsumptionProduct(corpse, ParentPawn, SpawnPos, map, MyDebug);
+                    CRS.product.SpawnConsumptionProduct(corpse, ParentPawn, corpse.Position, MyDebug);
+
+                    if (CRS.HasWorkFlow && CRS.workFlow.MustStrip)
+                        CRS.workFlow.strip.StripAndDamageBelongings(corpse);
+
                     corpse.Destroy(DestroyMode.KillFinalize);
                 },
                 atomicWithPrevious = true
             };
         }
 
-        public static void DestroyCorpse(this Corpse corpse)
+        public static void StripAndDamageBelongings(this StripAndDamage SPD, Corpse corpse)
         {
-            Log.Warning("DestroyCorpse");
-            
+            Pawn p = corpse.InnerPawn;
+
+            if (SPD.mustStrip || corpse.NegligibleThing() || !corpse.AnythingToStrip())
+                return;
+
+            if (SPD.mustDamage)
+            {
+                if (p.inventory != null & !p.inventory.innerContainer.EnumerableNullOrEmpty())
+                    foreach (Thing t in p.inventory.innerContainer)
+                        t.HitPoints = Math.Max(1, (int)(t.HitPoints * SPD.inventoryDamagingRatio.RandomInRange));
+
+                if (p.equipment != null && !p.equipment.Primary.DestroyedOrNull())
+                    p.equipment.Primary.HitPoints = Math.Max(1, (int)(p.equipment.Primary.HitPoints * SPD.primaryDamagingRatio.RandomInRange));
+
+                if (p.apparel != null && !p.apparel.WornApparel.NullOrEmpty())
+                    foreach (Thing t in p.apparel.WornApparel)
+                        t.HitPoints = Math.Max(1, (int)(t.HitPoints * SPD.apparelsDamagingRatio.RandomInRange));
+            }
+
+            corpse.Strip();
         }
 
         public static bool MakeManhunter(this Pawn p, bool MyDebug = false)
@@ -77,8 +114,10 @@ namespace MoharAiJob
             return p.mindState.mentalStateHandler.TryStartMentalState(manhunterState);
         }
 
-        public static void SpawnConsumptionProduct(this CorpseProduct CP, Corpse corpse, Pawn ParentPawn, IntVec3 SpawnPos, Map map, bool MyDebug = false)
+        public static void SpawnConsumptionProduct(this CorpseProduct CP, Corpse corpse, Pawn ParentPawn, IntVec3 SpawnPos, bool MyDebug = false)
         {
+            Map map = ParentPawn.Map;
+
             string DebugStr = MyDebug? ParentPawn.ThingID + " SpawnConsumptionProduct " : null;
             //Log.Warning("SpawnConsumptionProduct");
             //PawnKindDef PKD = CP.pawnKind.RandomElementByWeight()

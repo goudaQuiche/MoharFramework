@@ -1,4 +1,5 @@
 ﻿using Verse;
+using Verse.AI;
 using System;
 using RimWorld;
 using System.Collections.Generic;
@@ -25,6 +26,10 @@ namespace MoharAiJob
         public GraveDigWorkFlow workFlow;
         public GraveSpecification target;
 
+        private bool HasTarget => target != null;
+        public bool HasTargetSpec => HasTarget && target.HasEligibleGraves;
+        public bool HasWorkFlow => workFlow != null;
+
         public bool HasWorkerRequirement => workerRequirement != null;
     }
 
@@ -33,7 +38,10 @@ namespace MoharAiJob
         public List<ThingDef> eligibleGraves;
         public float maxDistance = 10;
 
+        public ReservationProcess reservation;
+
         public bool HasEligibleGraves => !eligibleGraves.NullOrEmpty();
+        public bool HasReservation => reservation != null;
     }
 
     public class GraveDigWorkFlow
@@ -46,7 +54,11 @@ namespace MoharAiJob
         public SoundDef sustainSound = null;
         public bool HasCustomSustainSound => sustainSound != null;
 
+        public List<ThinkNode_JobGiver> tryToChainJobGiver;
+
         public bool HasRelevantWorkAmount => workAmount > 0;
         public bool HasRelevantDustPeriod => dustPeriod> 0;
+
+        public bool HasJobGiverToChain => !tryToChainJobGiver.NullOrEmpty();
     }
 }

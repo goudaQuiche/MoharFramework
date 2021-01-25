@@ -9,7 +9,7 @@ namespace MoharAiJob
     {
         public static CorpseJobDef RetrieveCorpseJobDef(this Pawn p, out bool outDebug, bool MyDebug = false)
         {
-            string myDebugStr = MyDebug ? p.ThingID + " MoharAiJob.RetrieveDefs.RetrieveCorpseJobDef - " : string.Empty;
+            string myDebugStr = MyDebug ? p.LabelShort + " AiCorpse_JobGiver TryGiveJob " : "";
             CorpseJobDef DefToUse = DefDatabase<CorpseJobDef>.AllDefs.Where(cjd => cjd.workerPawnKind.Contains(p.kindDef)).FirstOrFallback(null);
             outDebug = false;
             if (DefToUse == null || DefToUse.IsEmpty)
@@ -18,30 +18,26 @@ namespace MoharAiJob
                 return null;
             }
             outDebug = DefToUse.debug;
-
-            //if (MyDebug) Log.Warning(myDebugStr + "found CJD for " + p.kindDef + ", debug is now:" + outDebug + "; OK");
-
             return DefToUse;
         }
         
+
         public static IEnumerable<CorpseRecipeSettings> RetrieveCorpseRecipeSettings(this Pawn p, CorpseJobDef CJD, bool MyDebug = false)
         {
-            string myDebugStr = MyDebug ? p.ThingID + " MoharAiJob.RetrieveDefs.RetrieveCorpseRecipeSettings " : string.Empty;
+            string myDebugStr = MyDebug ? p.LabelShort + " RetrieveDefs RetrieveCRS " : "";
 
-            IEnumerable <CorpseRecipeSettings> CRSList = p.WorkerFulfillsRequirements(CJD, MyDebug);
+            IEnumerable <CorpseRecipeSettings> CRSList = p.WorkerFulfillsRequirements(CJD);
             if (CRSList.EnumerableNullOrEmpty())
             {
                 if (MyDebug) Log.Warning(myDebugStr + "pawns does not fulfil requirements; exit");
                 return null;
             }
 
-            if (!CRSList.Any(c => c.HasTargetSpec))
+            if (!CRSList.Any(c => c.target.HasCorpseCategoryDef))
             {
                 if (MyDebug) Log.Warning(myDebugStr + "CRS has no Corpse category def; exit");
                 return null;
             }
-
-            //if (MyDebug) Log.Warning(myDebugStr + "found CRS ("+CRSList.Count()+") OK");
 
             return CRSList;
         }

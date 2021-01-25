@@ -42,31 +42,6 @@ namespace MoharAiJob
             return pawn == null || !pawn.Spawned || pawn.Map == null || pawn.Position == null;
         }
 
-        public static bool NegligiblePawnDebug(this Pawn pawn, bool debug = false)
-        {
-            if (pawn == null)
-            {
-                if (debug) Log.Warning("null pawn");
-                return false;
-            }
-            if (!pawn.Spawned)
-            {
-                if (debug) Log.Warning("pawn not spawned");
-                return false;
-            }
-            if (pawn.Map == null)
-            {
-                if (debug) Log.Warning("pawn null map");
-                return false;
-            }
-            if (pawn.Position == null)
-            {
-                if (debug) Log.Warning("pawn null position");
-                return false;
-            }
-            return true;
-        }
-
         public static bool NegligibleThing(this Thing thing)
         {
             return thing == null || !thing.Spawned || thing.Map == null || thing.Position == null;

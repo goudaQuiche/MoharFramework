@@ -8,9 +8,12 @@ namespace MoharAiJob
 {
     public static class FindGrave
     {
-        private static bool ValidateGrave(Thing t, Map map, Faction pFaction, GraveSpecification GS, bool myDebug = false)
+        private static bool ValidateGrave(Thing t, Pawn worker, GraveSpecification GS, bool myDebug = false)
         {
             string debugStr = myDebug ? "ValidateGrave - " : "";
+
+            Faction pFaction = worker.Faction;
+            Map map = worker.Map;
 
             if (t.NegligibleThing())
             {
@@ -53,6 +56,28 @@ namespace MoharAiJob
                 return false;
             }
 
+            if (map != null && GS.HasReservation && GS.reservation.respectsThingReservation)
+            {
+                if (myDebug) Log.Warning(debugStr + " checking reservations");
+
+                //foreach (Thing reservedT in map.reservationManager.AllReservedThings()) Log.Warning(reservedT.ThingID);
+
+                LocalTargetInfo LTI = new LocalTargetInfo(t);
+                if (!map.reservationManager.ReservationsReadOnly
+                    .Where(r => r.Target == LTI)
+                    .Where(r => GS.reservation.respectsPawnKind ? r.Claimant.kindDef == worker.kindDef : false)
+                    .Where(r => GS.reservation.respectsFaction ? r.Claimant.Faction == pFaction : false)
+                    .EnumerableNullOrEmpty())
+                {
+                    if (myDebug) Log.Warning(debugStr + "is reserved");
+                    return false;
+                }
+                else
+                {
+                    if (myDebug) Log.Warning(debugStr + " found no reservation for " + t);
+                }
+            }
+
             return true;
         }
 
@@ -71,7 +96,7 @@ namespace MoharAiJob
                 TraverseParms.For(pawn),
                 GS.maxDistance,
                 delegate (Thing graveBuilding) {
-                    return ValidateGrave(graveBuilding, pawn.Map, pawn.Faction, GS, myDebug);
+                    return ValidateGrave(graveBuilding, pawn, GS, myDebug);
                 }
             );
 

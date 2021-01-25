@@ -1,0 +1,3 @@
+﻿1>------ Début de la génération : Projet : LTF_CloneBay, Configuration : Debug Any CPU ------
+1>  LTF_CloneBay -> C:\Program Files (x86)\Steam\SteamApps\common\RimWorld\Mods\LTF_CloneBay\Source\RimWorld_ExampleProjectDLL\bin\Debug\LTF_CloneBay.dll
+========== Génération : 1 a réussi, 0 a échoué, 0 mis à jour, 0 a été ignoré ==========
