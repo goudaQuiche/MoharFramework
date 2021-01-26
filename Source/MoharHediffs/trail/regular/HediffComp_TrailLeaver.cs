@@ -1,33 +1,25 @@
-﻿using RimWorld;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-
+﻿using UnityEngine;
 using Verse;
 
 namespace MoharHediffs
 {
+    //MoteMaker.MakeWaterSplash(vector, pawn.Map, Mathf.Sqrt(pawn.BodySize) * 2f, 1.5f);
+
     public class HediffComp_TrailLeaver : HediffComp
     {
-        private Vector3 lastMotePos;
-        private Color lastColor = Color.black;
-        private bool toTheTop = true;
+        public Vector3 lastMotePos;
+        public Color lastColor = Color.black;
+        public bool lastFootprintRight;
 
         private Map MyMap => Pawn.Map;
-        private bool TerrainDoesNotAllowMotes(TerrainDef terrain) 
-            => 
-            terrain == null || 
-            (!Props.allowedInWater && terrain.IsWater) || 
-            !Props.allowedWithSnowDepth.Includes(MyMap.snowGrid.GetDepth(Pawn.Position));
 
-        private bool MyDebug => Props.debug;
-        public HediffCompProperties_TrailLeaver Props => (HediffCompProperties_TrailLeaver)this.props;
+        public bool MyDebug => Props.debug;
+        public HediffCompProperties_TrailLeaver Props => (HediffCompProperties_TrailLeaver)props;
+        public bool HasMotePool => Props.HasMotePool;
 
         public override void CompPostMake()
         {
-            Init();
+            PropsCheck();
         }
 
         public override void CompPostTick(ref float severityAdjustment)
@@ -37,12 +29,11 @@ namespace MoharHediffs
                 if (MyDebug) Log.Warning("null pawn");
                 return;
             }
-
+            
             if (!Pawn.IsHashIntervalTick(Props.period))
                 return;
 
-            TerrainDef terrain = Pawn.Position.GetTerrain(MyMap);
-            if (TerrainDoesNotAllowMotes(terrain))
+            if (!this.IsTerrainAllowed(MyMap, Pawn.Position.GetTerrain(MyMap), Pawn.Position))
             {
                 if (MyDebug) Log.Warning("terrain does not allow motes");
                 return;
@@ -51,64 +42,69 @@ namespace MoharHediffs
             //if (MyDebug) Log.Warning(Pawn.ThingID + " trying to spawn mote - bodytype:" + Pawn.story?.bodyType?.defName);
             TryPlaceMote();
         }
-        public void Init()
+        public void PropsCheck()
         {
             if (!MyDebug)
                 return;
 
-            if (!Props.HasMotePool )
+            if (!HasMotePool)
+            {
                 Log.Warning("Mote pool is empty, trailLeaver needs at least 1 mote");
+                /*
+                parent.Severity = 0;
+                Pawn.health.RemoveHediff(parent);
+                */
+            }
 
             if (!Props.HasOffset)
             {
-                Log.Warning("no offset found, will use default:" + Props.defaultOffset);
+                Log.Warning("no offset per body type found, will use default:" + Props.defaultOffset);
             }
             else
             {
+                string dump = "BodyTypeOffsets dump => ";
                 foreach(BodyTypeOffset BTO in Props.offSetPerBodyType)
-                {
-                    Log.Warning(BTO.bodyType.defName + ":" + BTO.offset);
-                }
+                    dump += BTO.bodyType.defName + ":" + BTO.offset +"; ";
+
+                Log.Warning(dump);
+            }
+
+            if (Props.UsesFootPrints)
+            {
+                Log.Warning("footprints => " + Props.footprint.Dump());
             }
         }
 
         private void TryPlaceMote()
         {
-            Vector3 drawPos = Pawn.DrawPos;
-            Vector3 normalized = (drawPos - lastMotePos).normalized;
-            float rot = normalized.AngleFlat();
+            if (!HasMotePool)
+                return;
 
-            Vector3 vector = drawPos + GetOffset;
-            //if (MyDebug) Log.Warning(Pawn.ThingID + " dp:" + drawPos + " offset:" + GetOffset + " => vector:"+vector);
+            Vector3 drawPos = Pawn.DrawPos;
+
+            // wont exit because we want to record lastFootPos + use old value before recording it
             if (Pawn.Position.InBounds(MyMap))
             {
-                if (vector.TryMoteSpawn(MyMap, rot, Props.scale.RandomInRange, Props.motePool.RandomElementWithFallback(), MyDebug) is Mote mote)
+                float rot = this.GetMoteRotation(drawPos, out Vector3 normalized);
+                Vector3 drawPosWithOffset = drawPos + this.GetBodyTypeOffset() + this.GetFootPrintOffset(normalized);
+
+                if (MyDebug) Log.Warning(
+                    Pawn.ThingID +" "+ parent.def.defName + " TryPlaceMote - " +
+                    " dynRot:" + Props.dynamicRotation + " footprint:" + Props.UsesFootPrints +
+                    " drawPos:" + drawPos + " offset:" + drawPosWithOffset + 
+                    " rot:" + rot + " normalized:" + normalized
+                );
+
+                float scale = Props.randomScale.RandomInRange;
+                ThingDef moteDef = Props.motePool.RandomElementWithFallback();
+
+                if (drawPosWithOffset.TryMoteSpawn(MyMap, rot, scale, moteDef, MyDebug) is Mote mote)
                 {
-                    if (Props.useColorRange)
-                    {
-                        if (lastColor == Color.black)
-                            lastColor = Props.colorRange.colorA;
-
-                        lastColor = Props.colorRange.RandomPickColor(lastColor, MyDebug);
-
-                        mote.instanceColor = lastColor;
-                    }
+                    this.ChangeMoteColor(mote);
                 }
             }
-            lastMotePos = drawPos;
+
+            this.RecordMotePos(drawPos);
         }
-
-        public Vector3 GetOffset
-        {
-            get
-            {
-                if (Pawn.story?.bodyType == null || !Props.HasOffset)
-                    return Props.defaultOffset;
-
-                BodyTypeOffset BTO = Props.offSetPerBodyType.Where(b => b.bodyType == Pawn.story.bodyType).FirstOrFallback();
-                return BTO == null ? Props.defaultOffset : BTO.offset;
-            }
-        }
-
     }
 }

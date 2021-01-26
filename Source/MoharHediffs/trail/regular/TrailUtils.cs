@@ -1,9 +1,6 @@
-﻿using RimWorld;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using UnityEngine;
+using System.Linq;
 
 using Verse;
 
@@ -11,6 +8,24 @@ namespace MoharHediffs
 {
     public static class TrailUtils
     {
+        public static bool IsTerrainAllowed(this HediffComp_TrailLeaver comp, Map map, TerrainDef terrain, IntVec3 pPos)
+        {
+            if (terrain == null || map == null)
+                return false;
+
+            if (!comp.Props.HasTerrainRestriction)
+                return true;
+
+            if (!comp.Props.terrain.allowedInWater && terrain.IsWater)
+                return false;
+            if (comp.Props.terrain.HasRelevantSnowRestriction && !comp.Props.terrain.allowedSnowDepth.Includes(map.snowGrid.GetDepth(pPos)))
+                return false;
+            if (comp.Props.terrain.HasForbiddenTerrains && comp.Props.terrain.forbiddenTerrains.Contains(terrain))
+                return false;
+
+            return true;
+        }
+
         public static float Clamp(this float value, float min, float max)
         {
             return Math.Min(Math.Max(value, min), max);
@@ -18,15 +33,11 @@ namespace MoharHediffs
 
         public static int GetProgressSign(float limA, float limB, float val)
         {
-            //int rD = Math.Sign(limA - limB);
-            // 128 256 => -1
-            // 256 128 => +1
-
             if (val <= limA && limA < limB)
                 return 1;
             else if (val >= limB && limB > limA)
                 return -1;
-            
+
             return Rand.Chance(.5f) ? 1 : -1;
         }
 
@@ -66,66 +77,7 @@ namespace MoharHediffs
             */
             return newColor;
         }
-        /*
-        public static bool PingPongPickColor(this ColorRange colorRange, Color oldColor, bool ToTheTop, out Color newColor, bool debug=false)
-        {
-            newColor = oldColor;
-            float iterationDice = Rand.Range(0, colorRange.variationPerIteration);
-            float redDelta, greenDelta, blueDelta;
 
-            bool redMax = (oldColor.r >= colorRange.maxColor.r);
-            bool greenMax = (oldColor.g >= colorRange.maxColor.g);
-            bool blueMax = (oldColor.b >= colorRange.maxColor.b);
-
-            if (ToTheTop)
-            {
-                redDelta = redMax ? 0 : Math.Min(colorRange.maxColor.r - oldColor.r, Rand.Range(0, iterationDice));
-                greenDelta = greenMax ? 0 : Math.Min(colorRange.maxColor.g - oldColor.g, Rand.Range(0, redDelta));
-                blueDelta = blueMax ? 0 : Math.Min(colorRange.maxColor.b - oldColor.b, Rand.Range(0, greenDelta));
-
-                newColor.r += redDelta;
-                newColor.g += greenDelta;
-                newColor.b += blueDelta;
-                if (debug) Log.Warning(
-                    "oldcolor:" + oldColor.ToString() +
-                    " toTheTop:" + ToTheTop +
-                    " Dice:" + iterationDice +
-                    " rD:" + redDelta +
-                    " gD:" + greenDelta +
-                    " bD:" + blueDelta +
-                    " => newColor:" + newColor.ToString()
-                    );
-                if (newColor.r >= colorRange.maxColor.r && newColor.g >= colorRange.maxColor.g && newColor.b >= colorRange.maxColor.b)
-                    return false;
-            }
-            else
-            {
-
-                redDelta = (oldColor.r <= colorRange.minColor.r) ? 0 : Math.Min(oldColor.r - colorRange.minColor.r, Rand.Range(0, iterationDice));
-                greenDelta = (oldColor.g <= colorRange.minColor.g) ? 0 : Math.Min(oldColor.g - colorRange.minColor.g, Rand.Range(0, redDelta));
-                blueDelta = (oldColor.b <= colorRange.minColor.b) ? 0 : Math.Min(oldColor.b - colorRange.minColor.b, Rand.Range(0, greenDelta));
-
-                newColor.r -= redDelta;
-                newColor.g -= greenDelta;
-                newColor.b -= blueDelta;
-
-                if (debug) Log.Warning(
-                        "oldcolor:" + oldColor.ToString() +
-                        " toTheTop:" + ToTheTop +
-                        " Dice:" + iterationDice +
-                        " rD:" + redDelta +
-                        " gD:" + greenDelta +
-                        " bD:" + blueDelta +
-                        " => newColor:" + newColor.ToString()
-                        );
-
-                if (newColor.r <= colorRange.minColor.r && newColor.g <= colorRange.minColor.g && newColor.b <= colorRange.minColor.b)
-                    return true;
-            }
-
-            return ToTheTop;
-        }
-        */
         public static Thing TryMoteSpawn(this Vector3 loc, Map map, float rot, float scale, ThingDef moteDef, bool debug = false)
         {
             if (loc.ForbiddenMote(map))
@@ -144,9 +96,71 @@ namespace MoharHediffs
             moteThrown.Scale = scale;
             moteThrown.exactRotation = rot;
             moteThrown.exactPosition = loc;
-            
+
             //if (debug) Log.Warning("mote loc:" + loc + " mote.ep:"+ moteThrown.exactPosition);
             return GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map, WipeMode.Vanish);
+        }
+
+        public static float GetMoteRotation(this HediffComp_TrailLeaver comp, Vector3 drawPos, out Vector3 normalized)
+        {
+            normalized = Vector3.zero;
+            float rot = comp.Props.dynamicRotation ? comp.GetDynamicRotation(drawPos, out normalized) : 0;
+            rot += comp.Props.HasRotationOffset ? comp.Props.rotationOffset : 0;
+
+            if (comp.MyDebug) Log.Warning("GetMoteRotation normalized" + normalized);
+
+            return rot % 360;
+        }
+
+        public static float GetDynamicRotation(this HediffComp_TrailLeaver comp, Vector3 drawPos, out Vector3 normalized)
+        {
+            normalized = (drawPos - comp.lastMotePos).normalized;
+            return normalized.AngleFlat();
+        }
+
+        public static Vector3 GetFootPrintOffset(this HediffComp_TrailLeaver comp, Vector3 normalized)
+        {
+            if (!comp.Props.UsesFootPrints)
+                return Vector3.zero;
+
+            float angle = comp.lastFootprintRight ? 90 : (-90);
+            Vector3 b = normalized.RotatedBy(angle) * comp.Props.footprint.distanceBetweenFeet * Mathf.Sqrt(comp.Pawn.BodySize);
+
+            comp.lastFootprintRight = !comp.lastFootprintRight;
+
+            if (comp.MyDebug)
+                Log.Warning($"{comp.Props.footprint.offset} {b}");
+
+            return comp.Props.footprint.offset + b;
+        }
+
+        public static Vector3 GetBodyTypeOffset(this HediffComp_TrailLeaver comp)
+        {
+            if (comp.Pawn.story?.bodyType == null || !comp.Props.HasOffset)
+                return comp.Props.defaultOffset;
+
+            BodyTypeOffset BTO = comp.Props.offSetPerBodyType.Where(b => b.bodyType == comp.Pawn.story.bodyType).FirstOrFallback();
+            return BTO == null ? comp.Props.defaultOffset : BTO.offset;
+        }
+
+        public static void ChangeMoteColor(this HediffComp_TrailLeaver comp, Mote mote)
+        {
+            if (!comp.Props.HasColorRange || mote == null)
+                return;
+
+            if (comp.lastColor == Color.black)
+                comp.lastColor = comp.Props.colorRange.colorA;
+
+            comp.lastColor = comp.Props.colorRange.RandomPickColor(comp.lastColor, comp.MyDebug);
+
+            mote.instanceColor = comp.lastColor;
+        }
+        public static void RecordMotePos(this HediffComp_TrailLeaver comp, Vector3 drawPos)
+        {
+            if (!comp.Props.dynamicRotation)
+                return;
+
+            comp.lastMotePos = drawPos;
         }
     }
 }
