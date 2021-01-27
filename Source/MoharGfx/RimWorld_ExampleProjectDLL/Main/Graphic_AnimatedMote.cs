@@ -97,13 +97,8 @@ namespace MoharGfx
             //int index = (GetIndex + ThingHash(thing) + FrameOffset) % subGraphics.Length;
             int index = (GetIndex + FrameOffset) % subGraphics.Length;
 
-            
-              if (MyDebug)
-                Log.Warning(
-                    " in Graphic_animatedMote:" +
-                    "; FrameOffset:" + FrameOffset + "; index:" + index + "; GetIndex:" + GetIndex);
+            //if (MyDebug)Log.Warning(" in Graphic_animatedMote:" +"; FrameOffset:" + FrameOffset + "; index:" + index + "; GetIndex:" + GetIndex);
                     
-
             Graphic graphic = subGraphics[index];
             Material myMaterial = graphic.MatSingle;
 

@@ -1,5 +1,6 @@
 ﻿using Verse;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace MoharGfx
 {
@@ -8,15 +9,17 @@ namespace MoharGfx
         public CustomTransformation transformation;
         public bool HasTransformation => transformation != null;
 
-        public bool HasAnimatedMoteSpecifics => HasTransformation && transformation.HasAnimatedMoteSpecifics;
+        public bool HasAnimatedMote => HasTransformation && transformation.HasAnimatedMote;
 
-        public bool HasRandomRotation => HasTransformation && transformation.HasRandomRotation;
-        public bool HasRotationSpecifics => HasTransformation && transformation.HasRotationSpecifics;
+        public bool HasRotation => HasTransformation && transformation.HasRotation;
+        public bool HasPeriodicRandomRotation => HasRotation && transformation.rotation.HasPeriodicRandRot;
+        public bool HasRandomRotationRate => HasRotation && transformation.rotation.HasRandRotRate;
+        public bool HasStraightenUp => HasRotation && transformation.rotation.HasStraightenUp;
 
-        public bool HasScaleSpecifics => HasTransformation && transformation.HasScaleSpecifics;
-        public bool HasPulsingScale => HasScaleSpecifics && transformation.scaleSpecifics.pulsingScale != null;
+        public bool HasScale => HasTransformation && transformation.HasScale;
+        public bool HasPulsingScale => HasScale && transformation.scale.HasPulsingScale;
 
-        public bool HasSpacialSpecifics => HasTransformation && transformation.HasSpacialSpecifics;
+        public bool HasMisc => HasTransformation && transformation.HasMisc;
 
         public bool debug = false;
 
@@ -25,54 +28,82 @@ namespace MoharGfx
 
     public class CustomTransformation
     {
-        public RandomRotationTransformation randomRotation;
-        public bool HasRandomRotation => randomRotation != null;
+        public Rotation rotation;
+        public AnimatedMote animatedMote;
+        public Scale scale;
+        public Misc misc;
 
-        public AnimatedMoteSpecifics animatedMoteSpecifics;
-        public bool HasAnimatedMoteSpecifics => animatedMoteSpecifics != null;
-
-        public RotationSpecifics rotationSpecifics;
-        public bool HasRotationSpecifics => rotationSpecifics != null;
-
-        public ScaleSpecifics scaleSpecifics;
-        public bool HasScaleSpecifics => scaleSpecifics != null;
-
-        public SpacialSpecifics spacialSpecifics;
-        public bool HasSpacialSpecifics => spacialSpecifics != null;
+        public bool HasRotation => rotation != null;
+        public bool HasAnimatedMote => animatedMote != null;
+        public bool HasScale => scale != null;
+        public bool HasMisc => misc != null;
     }
 
-    public class SpacialSpecifics
+    public class Misc
     {
         //public Vector3 offSet;
         public bool flipped = false;
     }
 
-    public class RandomRotationTransformation
+    public class Rotation
+    {
+        public PeriodicRandomRotation periodicRandRot;
+        public RandomRotationRate randRotRate;
+        public StraightenUpRotation straightenUp;
+
+        public bool HasPeriodicRandRot => periodicRandRot != null;
+        public bool HasRandRotRate => randRotRate != null;
+        public bool HasStraightenUp => straightenUp != null;
+    }
+
+    public class PeriodicRandomRotation
     {
         public FloatRange randomAngle;
         public float chance;
         public IntRange period;
     }
 
-    public class RotationSpecifics
+    public class RandomRotationRate
     {
-        public FloatRange rotationRange;
+        public FloatRange range;
     }
 
-    public class ScaleSpecifics
+    public class StraightenUpRotation
+    {
+        public float aimedRotation;
+        public float goalLifeSpanRatio;
+
+        public List<FloatRange> gracePeriod;
+
+        public float tolerance;
+
+        public bool HasGracePeriod => !gracePeriod.NullOrEmpty();
+
+        public bool IsWithinGracePeriod(float curLifeSpanRatio)
+        {
+            if (!HasGracePeriod)
+                return false;
+
+            return gracePeriod.Any(fr => fr.Includes(curLifeSpanRatio));
+        }
+    }
+
+    public class Scale
     {
         public PulsingScale pulsingScale;
-    }
-
-    public class AnimatedMoteSpecifics
-    {
-        public IntRange randomFrameOffset;
-        public int frameOffset;
-        public int ticksPerFrame;
+        public bool HasPulsingScale => pulsingScale != null;
     }
     public class PulsingScale
     {
         public Vector2 range;
         public float speed;
     }
+
+    public class AnimatedMote
+    {
+        //public IntRange randomFrameOffset;
+        public int frameOffset;
+        public int ticksPerFrame;
+    }
+
 }

@@ -52,37 +52,29 @@ namespace MoharGfx
         {
             static void Mote_SpawnSetup_Postfix(Mote __instance)
             {
-                if (__instance.Graphic is Graphic_AnimatedMote GAM && 
-                    CustomTransformation_MoteDef.MyNamed(__instance.def.defName) is CustomTransformation_MoteDef CTMD )
+                if (__instance.Graphic is Graphic_AnimatedMote GAM &&
+                    CustomTransformation_MoteDef.MyNamed(__instance.def.defName) is CustomTransformation_MoteDef CTMD)
                 {
                     GAM.MyDebug = CTMD.debug;
 
-                    if (CTMD.HasSpacialSpecifics)
+                    if (CTMD.HasMisc)
                     {
-                        GAM.Flipped = CTMD.transformation.spacialSpecifics.flipped;
+                        GAM.Flipped = CTMD.transformation.misc.flipped;
                     }
 
-                    if (CTMD.HasAnimatedMoteSpecifics)
+                    if (CTMD.HasAnimatedMote)
                     {
-                        
-                        GAM.FrameOffset = CTMD.transformation.animatedMoteSpecifics.frameOffset;
-                        GAM.FrameOffset += CTMD.transformation.animatedMoteSpecifics.randomFrameOffset.RandomInRange;
-                        
-                        GAM.TicksPerFrame = CTMD.transformation.animatedMoteSpecifics.ticksPerFrame;
+                        GAM.FrameOffset = CTMD.transformation.animatedMote.frameOffset;
+                        //GAM.FrameOffset += CTMD.transformation.animatedMote.randomFrameOffset.RandomInRange;
+                        GAM.TicksPerFrame = CTMD.transformation.animatedMote.ticksPerFrame;
                     }
-                    if (CTMD.HasRotationSpecifics)
-                    {
-                        __instance.rotationRate = CTMD.transformation.rotationSpecifics.rotationRange.RandomInRange;
-                    }
+                    if (CTMD.HasRandomRotationRate)
+                        __instance.rotationRate = CTMD.transformation.rotation.randRotRate.range.RandomInRange;
 
-                    if (CTMD.HasScaleSpecifics)
+                    if (CTMD.HasPulsingScale)
                     {
-                        if (CTMD.HasPulsingScale)
-                        {
-                            GAM.PulsingScaleRange = CTMD.transformation.scaleSpecifics.pulsingScale.range;
-                            GAM.PulsingScaleSpeed = CTMD.transformation.scaleSpecifics.pulsingScale.speed;
-                        }
-
+                        GAM.PulsingScaleRange = CTMD.transformation.scale.pulsingScale.range;
+                        GAM.PulsingScaleSpeed = CTMD.transformation.scale.pulsingScale.speed;
                     }
                 }
             }

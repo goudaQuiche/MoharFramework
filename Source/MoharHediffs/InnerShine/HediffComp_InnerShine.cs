@@ -6,19 +6,15 @@ namespace MoharHediffs
 {
     //MoteMaker.MakeWaterSplash(vector, pawn.Map, Mathf.Sqrt(pawn.BodySize) * 2f, 1.5f);
 
-    public class HediffComp_TrailLeaver : HediffComp
+    public class HediffComp_InnerShine : HediffComp
     {
         public int currentPeriod = 0;
-
-        public Vector3 lastMotePos;
-        public Color lastColor = Color.black;
-        public bool lastFootprintRight;
 
         public Map MyMap => Pawn.Map;
         public bool NullMap => MyMap == null;
 
         public bool MyDebug => Props.debug;
-        public HediffCompProperties_TrailLeaver Props => (HediffCompProperties_TrailLeaver)props;
+        public HediffCompProperties_InnerShine Props => (HediffCompProperties_InnerShine)props;
         public bool HasMotePool => Props.HasMotePool;
 
         public TerrainRestriction TerrainRestriction => (!Props.HasRestriction || !Props.restriction.HasTerrainRestriction) ? null : Props.restriction.terrain;

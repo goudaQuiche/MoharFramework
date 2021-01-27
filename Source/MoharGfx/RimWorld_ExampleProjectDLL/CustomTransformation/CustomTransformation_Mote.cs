@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Verse;
+using System;
 
 namespace MoharGfx
 {
@@ -9,15 +10,33 @@ namespace MoharGfx
 
         public CustomTransformation_MoteDef Def => def as CustomTransformation_MoteDef;
         public bool MyDebug => Def.debug;
+        public string MainDebugStr => MyDebug ? Def.defName + " CustomTransformation_Mote - " : string.Empty;
 
         public int randRot_NextPeriod;
-        public bool HasRandomRotation => Def.HasRandomRotation && this.IsHashIntervalTick(randRot_NextPeriod);
+        public bool IsPeriodicRandomRotationTime => Def.HasPeriodicRandomRotation && this.IsHashIntervalTick(randRot_NextPeriod);
+
+        int TickAge => Find.TickManager.TicksGame - spawnTick;
+        int TickLifeSpan => (int)(Def.mote.Lifespan * 60);
+        float LifeSpentRatio => (float)TickAge / TickLifeSpan;
+
+        public StraightenUpRotation SUDef => Def.transformation.rotation.straightenUp;
+        public float SUAim => SUDef.aimedRotation;
+        public float SUTolerance => SUDef.tolerance;
+        public float SUGoalRatio => SUDef.goalLifeSpanRatio;
+
+        public bool HasStraightenUp => Def.HasStraightenUp;
+        public float SUWorkTodo => Math.Abs(SUAim - exactRotation);
+        public bool ReachedStraightenUpGoal => SUWorkTodo < SUTolerance;
+
+        public bool SUReached = false;
+        public bool NeedsStraightenUp => HasStraightenUp && !SUReached;
 
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
             base.SpawnSetup(map, respawningAfterLoad);
+            //if (MyDebug) Log.Warning(MainDebugStr + "SpawnSetup");
 
-            if (Def.HasRandomRotation)
+            if (Def.HasPeriodicRandomRotation)
             {
                 //Log.Warning(Def.defName + "=> HasRandomRotation");
                 SetNextPeriod();
@@ -26,19 +45,81 @@ namespace MoharGfx
 
         void SetNextPeriod()
         {
-            randRot_NextPeriod = Def.transformation.randomRotation.period.RandomInRange;
+            randRot_NextPeriod = Def.transformation.rotation.periodicRandRot.period.RandomInRange;
+        }
+
+        float GetSUExactRotation
+        {
+            get
+            {
+                if (exactRotation > 180)
+                    return exactRotation - 360;
+                else if (exactRotation < -180)
+                    return exactRotation + 360;
+                else
+                    return exactRotation;
+            }
+        }
+
+        public bool TryStraightenUp()
+        {
+            /*
+            if (MyDebug && HasStraightenUp)
+            {
+                Log.Warning(
+                    $" {SUAim} {exactRotation} => {SUWorkTodo} ? {SUTolerance}"+
+                    "NeedsStraightenUp:" + NeedsStraightenUp +
+                    "; ReachedStraightenUpGoal:" + ReachedStraightenUpGoal
+                );
+            }
+            */
+
+            if (NeedsStraightenUp)
+            {
+                if (SUDef.IsWithinGracePeriod(LifeSpentRatio))
+                {
+                    //if (MyDebug) Log.Warning("Is in grace period: " + LifeSpentRatio);
+                    return false;
+                }
+                //else if (MyDebug) Log.Warning("Is not within grace period: " + LifeSpentRatio);
+
+                //if (MyDebug) Log.Warning("trying to straighten up");
+                float SURotation = GetSUExactRotation;
+
+                //rotationLeftToApply
+                float diff = SUAim - SURotation;
+                int ticksUntilLimit = (int)(SUGoalRatio * TickLifeSpan - TickAge);
+                if (ticksUntilLimit != 0)
+                {
+                    float IncRot = diff / ticksUntilLimit;
+                    //if (MyDebug) Log.Warning($"nowRotation{SURotation} diff{diff} ticksUntilLimit{ticksUntilLimit} IncRot{IncRot}");
+                    exactRotation += IncRot;
+                }
+
+                SUReached = ReachedStraightenUpGoal;
+
+                return true; 
+            }
+            return false;
+        }
+        public void TryPeriodicRandomRotation()
+        {
+            if (!IsPeriodicRandomRotationTime)
+                return;
+
+            if (Rand.Chance(Def.transformation.rotation.periodicRandRot.chance))
+                exactRotation += (Rand.Chance(.5f) ? -1 : 1) * Def.transformation.rotation.periodicRandRot.randomAngle.RandomInRange;
+            SetNextPeriod();
         }
 
         public override void Tick()
         {
             base.Tick();
 
-            if (!HasRandomRotation)
-                return;
-
-            if (Rand.Chance(Def.transformation.randomRotation.chance))
-                exactRotation += (Rand.Chance(.5f) ? -1 : 1) * Def.transformation.randomRotation.randomAngle.RandomInRange;
-            SetNextPeriod();
+            //if (MyDebug) Log.Warning(MainDebugStr + "ticking Def.HasStraightenUp:" + Def.HasStraightenUp);
+            TryStraightenUp();
+            //if ( TryStraightenUp() && MyDebug) Log.Warning("Did straighten Up");
+            TryPeriodicRandomRotation();
         }
     }
 }

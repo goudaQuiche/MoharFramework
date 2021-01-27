@@ -7,16 +7,15 @@ namespace MoharHediffs
 {
     public class HediffCompProperties_TrailLeaver : HediffCompProperties
     {
-        public int period = 20;
+        public IntRange period = new IntRange(15,25);
 
         public List<ThingDef> motePool;
 
         public List<BodyTypeOffset> offSetPerBodyType;
         public Vector3 defaultOffset = new Vector3(0, 0, -.32f);
-        public TerrainMoteAffordance terrain;
 
+        public Restriction restriction;
         public Footprint footprint;
-
         public ColorRange colorRange;
 
         public float rotationOffset = 0;
@@ -24,9 +23,8 @@ namespace MoharHediffs
         public FloatRange randomScale = new FloatRange(.5f, .8f);
          
         public bool debug = false;
-        
-        public bool HasTerrainRestriction => terrain != null;
 
+        public bool HasRestriction => restriction != null;
         public bool HasColorRange => colorRange != null;
         public bool UsesFootPrints => footprint != null;
         public bool HasMotePool => !motePool.NullOrEmpty();
@@ -54,7 +52,18 @@ namespace MoharHediffs
         }
     }
 
-    public class TerrainMoteAffordance
+    public class Restriction
+    {
+        public bool onlyWhenMoving = true;
+        public List<PawnPosture> allowedPostures;
+
+        public TerrainRestriction terrain;
+
+        public bool HasTerrainRestriction => terrain != null;
+        public bool HasPostureRestriction => !allowedPostures.NullOrEmpty();
+    }
+
+    public class TerrainRestriction
     {
         public bool allowedInWater = false;
         public FloatRange allowedSnowDepth = new FloatRange(0, 0.4f);

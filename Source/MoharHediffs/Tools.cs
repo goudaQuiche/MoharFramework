@@ -4,11 +4,17 @@ using System.Linq;
 using Verse;
 using AlienRace;
 using UnityEngine;
+using System;
 
 namespace MoharHediffs
 {
     public static class Tools
     {
+        public static float Clamp(this float value, float min, float max)
+        {
+            return Math.Min(Math.Max(value, min), max);
+        }
+
         public static void DestroyParentHediff(Hediff parentHediff, bool debug=false)
         {
             if (parentHediff.pawn != null && parentHediff.def.defName != null)
