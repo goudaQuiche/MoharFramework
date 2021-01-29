@@ -6,15 +6,20 @@ namespace MoharGfx
 {
     public class CustomTransformation_Mote : MoteThrown
     {
-        private Vector3 attacheeLastPosition = new Vector3(-1000f, -1000f, -1000f);
+        /*
+        private Vector3 linkDrawPos = new Vector3(-1000f, -1000f, -1000f);
+        public bool isLinked = false;
+        */
 
         public CustomTransformation_MoteDef Def => def as CustomTransformation_MoteDef;
         public bool MyDebug => Def.debug;
         public string MainDebugStr => MyDebug ? Def.defName + " CustomTransformation_Mote - " : string.Empty;
 
+        // periodic random rotation
         public int randRot_NextPeriod;
         public bool IsPeriodicRandomRotationTime => Def.HasPeriodicRandomRotation && this.IsHashIntervalTick(randRot_NextPeriod);
 
+        //Straighten up
         int TickAge => Find.TickManager.TicksGame - spawnTick;
         int TickLifeSpan => (int)(Def.mote.Lifespan * 60);
         float LifeSpentRatio => (float)TickAge / TickLifeSpan;
@@ -26,7 +31,7 @@ namespace MoharGfx
 
         public bool HasStraightenUp => Def.HasStraightenUp;
         public float SUWorkTodo => Math.Abs(SUAim - exactRotation);
-        public bool ReachedStraightenUpGoal => SUWorkTodo < SUTolerance;
+        public bool SUReachedGoal => SUWorkTodo < SUTolerance;
 
         public bool SUReached = false;
         public bool NeedsStraightenUp => HasStraightenUp && !SUReached;
@@ -74,34 +79,33 @@ namespace MoharGfx
             }
             */
 
-            if (NeedsStraightenUp)
+            if (!NeedsStraightenUp)
+                return false;
+
+            if (SUDef.IsWithinGracePeriod(LifeSpentRatio))
             {
-                if (SUDef.IsWithinGracePeriod(LifeSpentRatio))
-                {
-                    //if (MyDebug) Log.Warning("Is in grace period: " + LifeSpentRatio);
-                    return false;
-                }
-                //else if (MyDebug) Log.Warning("Is not within grace period: " + LifeSpentRatio);
-
-                //if (MyDebug) Log.Warning("trying to straighten up");
-                float SURotation = GetSUExactRotation;
-
-                //rotationLeftToApply
-                float diff = SUAim - SURotation;
-                int ticksUntilLimit = (int)(SUGoalRatio * TickLifeSpan - TickAge);
-                if (ticksUntilLimit != 0)
-                {
-                    float IncRot = diff / ticksUntilLimit;
-                    //if (MyDebug) Log.Warning($"nowRotation{SURotation} diff{diff} ticksUntilLimit{ticksUntilLimit} IncRot{IncRot}");
-                    exactRotation += IncRot;
-                }
-
-                SUReached = ReachedStraightenUpGoal;
-
-                return true; 
+                //if (MyDebug) Log.Warning("Is in grace period: " + LifeSpentRatio);
+                return false;
             }
-            return false;
+            //else if (MyDebug) Log.Warning("Is not within grace period: " + LifeSpentRatio);
+
+            //if (MyDebug) Log.Warning("trying to straighten up");
+            float SURotation = GetSUExactRotation;
+
+            //rotationLeftToApply
+            float diff = SUAim - SURotation;
+            int ticksUntilLimit = (int)(SUGoalRatio * TickLifeSpan - TickAge);
+            if (ticksUntilLimit != 0)
+            {
+                float IncRot = diff / ticksUntilLimit;
+                //if (MyDebug) Log.Warning($"nowRotation{SURotation} diff{diff} ticksUntilLimit{ticksUntilLimit} IncRot{IncRot}");
+                exactRotation += IncRot;
+            }
+            SUReached = SUReachedGoal;
+
+            return true;
         }
+
         public void TryPeriodicRandomRotation()
         {
             if (!IsPeriodicRandomRotationTime)
@@ -121,5 +125,17 @@ namespace MoharGfx
             //if ( TryStraightenUp() && MyDebug) Log.Warning("Did straighten Up");
             TryPeriodicRandomRotation();
         }
+
+        /*
+        public override void Destroy(DestroyMode mode = DestroyMode.Vanish)
+        {
+            if (IsLinked)
+            {
+
+            }
+            base.Destroy(mode);
+
+        }
+        */
     }
 }
