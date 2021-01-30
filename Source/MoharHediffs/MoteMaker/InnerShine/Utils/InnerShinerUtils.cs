@@ -9,6 +9,22 @@ namespace MoharHediffs
 {
     public static class InnerShinerUtils
     {
+        public static InnerShineItem RetrieveISI(this HediffComp_InnerShine comp, string label)
+        {
+
+            if (comp.Props.HasRawShinePool)
+            {
+                if(comp.Props.innerShinePool.Where(i => i.label == label).FirstOrFallback() is InnerShineItem ISI)
+                    return ISI;
+            }
+            if (comp.Props.HasShineDefPool)
+            {
+                if (comp.Props.innerShineDefPool.Where(i => i.item.label == label).FirstOrFallback() is InnerShineDef ISD)
+                    return ISD.item;
+            }
+            return null;
+        }
+
         public static void SelfDestroy(this HediffComp_InnerShine comp)
         {
             comp.parent.Severity = 0;
@@ -37,7 +53,7 @@ namespace MoharHediffs
             {
                 if (ISI.HasDefaultDrawRules)
                 {
-                    offset = ISI.defaultDrawRules.offset;
+                    offset = ISI.defaultDrawRules.GetRotationOffset(p);
                     scale = ISI.defaultDrawRules.randomScale.RandomInRange;
                 }
                  return;
@@ -48,14 +64,14 @@ namespace MoharHediffs
             {
                 if (ISI.HasDefaultDrawRules)
                 {
-                    offset = ISI.defaultDrawRules.offset;
+                    offset = ISI.defaultDrawRules.GetRotationOffset(p);
                     scale = ISI.defaultDrawRules.randomScale.RandomInRange;
                 }
 
                 return;
             }
 
-            offset = BTS.drawRules.offset;
+            offset = BTS.drawRules.GetRotationOffset(p);
             scale = BTS.drawRules.randomScale.RandomInRange;
         }
 
@@ -77,16 +93,16 @@ namespace MoharHediffs
             if (p.story?.bodyType == null || !ISI.HasBodyTypeDrawRules)
             {
                 if (ISI.HasDefaultDrawRules)
-                    return ISI.defaultDrawRules.offset;
+                    return ISI.defaultDrawRules.GetRotationOffset(p);
                 else
                     return Vector3.zero;
             }
 
             BodyTypeSpecificities BTS = ISI.bodyTypeDrawRules.Where(b => b.bodyTypeDef == p.story.bodyType).FirstOrFallback();
             if (BTS == null)
-                return ISI.HasDefaultDrawRules ? ISI.defaultDrawRules.offset : Vector3.zero;
+                return ISI.HasDefaultDrawRules ? ISI.defaultDrawRules.GetRotationOffset(p) : Vector3.zero;
 
-            return BTS.drawRules.offset;
+            return BTS.drawRules.GetRotationOffset(p);
         }
 
         public static bool AlreadyReachedMax(this InnerShineRecord ISR, int max)

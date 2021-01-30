@@ -69,8 +69,10 @@
     <Compile Include="Conjugate\HediffConditionnalRemover\Utils\KeepingConditionBuilder.cs" />
     <Compile Include="Conjugate\HediffConditionnalRemover\Utils\HediffIntersect.cs" />
     <Compile Include="Conjugate\HediffConditionnalRemover\Utils\KeepingConditionCompatibility.cs" />
-    <Compile Include="MoteMaker\InnerShine\structure\MoteToPawnLink.cs" />
-    <Compile Include="MoteMaker\InnerShine\structure\InnerShineMoteTracer.cs" />
+    <Compile Include="MoteMaker\InnerShine\structure\Properties.cs" />
+    <Compile Include="MoteMaker\InnerShine\structure\LinkNature.cs" />
+    <Compile Include="MoteMaker\InnerShine\structure\InnerShineDef.cs" />
+    <Compile Include="MoteMaker\InnerShine\Utils\Tracer.cs" />
     <Compile Include="MoteMaker\InnerShine\Utils\InnerShinerUtils.cs" />
     <Compile Include="Conjugate\NoMsgRandHediffGiver\NoMsgRandHediffGiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

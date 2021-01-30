@@ -30,15 +30,23 @@ namespace MoharHediffs
         {
             comp.Tracer = new List<InnerShineRecord>();
 
-            foreach(InnerShineItem ISI in comp.Props.innerShinePool)
-            {
-                comp.Tracer.Add(new InnerShineRecord(ISI));
-            }
+            if (comp.Props.HasRawShinePool)
+                foreach (InnerShineItem ISI in comp.Props.innerShinePool)
+                    comp.Tracer.Add(new InnerShineRecord(ISI));
+
+            if (comp.Props.HasShineDefPool)
+                foreach (InnerShineDef ISD in comp.Props.innerShineDefPool)
+                    comp.Tracer.Add(new InnerShineRecord(ISD.item));
 
             if (comp.MyDebug)
+            {
+                int i = 0;
                 foreach (InnerShineRecord ISR in comp.Tracer)
-                    Log.Warning(ISR.Dump);
-
+                {
+                    Log.Warning(i.ToString("00") + "=>" + ISR.Dump);
+                    i++;
+                }
+            }
         }
 
         public static int NewPeriod(this InnerShineItem ISI) => ISI.spawningRules.period.RandomInRange;
@@ -68,26 +76,34 @@ namespace MoharHediffs
                 }
             }
         }
-        public static void UpdateMotes(this InnerShineItem ISI, InnerShineRecord ISR, Pawn pawn, bool debug=false)
+        public static void UpdateMotes(this InnerShineItem ISI, InnerShineRecord ISR, Pawn pawn, bool debug = false)
         {
             if (ISR.spawned.NullOrEmpty())
                 return;
-            for(int i = ISR.spawned.Count -1; i>=0; i--)
+            for (int i = ISR.spawned.Count - 1; i >= 0; i--)
             {
                 Thing curT = ISR.spawned[i];
-                if (curT.DestroyedOrNull() || !ISI.HasCompatibleActivity(pawn))
+
+                if (curT.DestroyedOrNull())
                 {
                     ISR.spawned.RemoveAt(i);
                     continue;
                 }
-                if(curT is Mote mote)
+                if (!ISI.HasCompatibleActivity(pawn))
+                {
+                    curT.Destroy();
+                    ISR.spawned.RemoveAt(i);
+                    continue;
+                }
+                if (curT is Mote mote)
                 {
                     mote.exactPosition = pawn.DrawPos + pawn.GetLinkOffset(ISI.linkType) + ISI.GetDrawOffset(pawn);
                     //if (debug) Log.Warning(ISR.label + $" => mote.exactPosition: {mote.exactPosition} mote.DrawPos:{mote.DrawPos}");
                 }
-                
+
             }
         }
+
         public static void InitSpecs(this InnerShineItem ISI, InnerShineRecord ISR, Pawn pawn, out Vector3 drawPosWithOffset, out float scale)
         {
             Vector3 drawPos = pawn.DrawPos;

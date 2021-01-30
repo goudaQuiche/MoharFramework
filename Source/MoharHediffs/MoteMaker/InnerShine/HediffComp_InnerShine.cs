@@ -46,7 +46,8 @@ namespace MoharHediffs
 
             foreach (InnerShineRecord ISR in Tracer)
             {
-                InnerShineItem ISI = Props.innerShinePool.Where(i => i.label == ISR.label).FirstOrFallback();
+                //InnerShineItem ISI = Props.innerShinePool.Where(i => i.label == ISR.label).FirstOrFallback();
+                InnerShineItem ISI = this.RetrieveISI(ISR.label);
                 if (ISI == null)
                 {
                     if (MyDebug) Log.Warning("Did not find ISI with label:" + ISR.label);
@@ -84,16 +85,42 @@ namespace MoharHediffs
             if (!MyDebug)
                 return;
 
-            if (Props.innerShinePool.Where(s => s.HasMotePool) is IEnumerable<InnerShineItem> noMotePoolItems)
-                foreach (InnerShineItem isi in noMotePoolItems)
-                    Log.Warning(isi.label + " has no mote pool");
+            if (Props.HasRawShinePool)
+            {
+                if (Props.innerShinePool.Where(s => !s.HasMotePool) is IEnumerable<InnerShineItem> noMotePoolItems)
+                    foreach (InnerShineItem isi in noMotePoolItems)
+                        Log.Warning(isi.label + " has no mote pool");
 
-            if (Props.innerShinePool.Where(s => !s.HasDefaultDrawRules && !s.HasBodyTypeDrawRules) is IEnumerable<InnerShineItem> noDrawRulesItems)
-                foreach (InnerShineItem isi in noDrawRulesItems)
-                    Log.Warning(isi.label + " has no default nor bodytypedef draw rules, at least one is required");
+                if (Props.innerShinePool.Where(s => !s.HasDefaultDrawRules && !s.HasBodyTypeDrawRules) is IEnumerable<InnerShineItem> noDrawRulesItems)
+                    foreach (InnerShineItem isi in noDrawRulesItems)
+                        Log.Warning(isi.label + " has no default nor bodytypedef draw rules, at least one is required");
 
-            foreach (InnerShineItem ISI in Props.innerShinePool)
-                Log.Warning(ISI.Dump());
+                int i = 0;
+                foreach (InnerShineItem ISI in Props.innerShinePool)
+                {
+                    Log.Warning("Raw" + i.ToString("00") + " => " + ISI.Dump());
+                    i++;
+                }
+
+            }
+            if (Props.HasShineDefPool)
+            {
+                if (Props.innerShineDefPool.Where(s => !s.item.HasMotePool) is IEnumerable<InnerShineDef> noMotePoolItems)
+                    foreach (InnerShineDef isd in noMotePoolItems)
+                        Log.Warning(isd.item.label + " has no mote pool");
+
+                if (Props.innerShineDefPool.Where(s => !s.item.HasDefaultDrawRules && !s.item.HasBodyTypeDrawRules) is IEnumerable<InnerShineDef> noDrawRulesItems)
+                    foreach (InnerShineDef isd in noDrawRulesItems)
+                        Log.Warning(isd.item.label + " has no default nor bodytypedef draw rules, at least one is required");
+
+                int i = 0;
+                foreach (InnerShineDef ISD in Props.innerShineDefPool)
+                {
+                    Log.Warning("Def" + i.ToString("00") + " => " + ISD.item.Dump());
+                    i++;
+                }
+
+            }
 
         }
     }
