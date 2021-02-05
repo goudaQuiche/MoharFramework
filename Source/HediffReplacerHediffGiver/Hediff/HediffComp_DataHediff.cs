@@ -6,17 +6,17 @@ namespace HEREHEGI
 {
     public class HediffComp_DataHediff : HediffComp
     {
-        public HediffCompProperties_DataHediff Props
-        {
-            get
-            {
-                return (HediffCompProperties_DataHediff)this.props;
-            }
-        }
+        public HediffCompProperties_DataHediff Props => (HediffCompProperties_DataHediff)this.props;
 
         bool MyDebug => Props.debug;
-        public bool IsValid => !Props.InputHediffPool.NullOrEmpty() && !Props.OutputHediffPool.NullOrEmpty() && Props.InputHediffPool.Count == Props.OutputHediffPool.Count;
-        public bool HasChances => !Props.HediffReplacementChance.NullOrEmpty() && Props.InputHediffPool.Count == Props.HediffReplacementChance.Count;
+        public bool IsValid => !Props.replaceHediffs.NullOrEmpty() && !Props.replaceHediffs.Any(i => !i.IsValid);
+
+        public override void CompPostMake()
+        {
+            base.CompPostMake();
+            if (!StaticCheck.IsOk)
+                parent.Severity = 0;
+        }
 
         public override string CompTipStringExtra
         {
@@ -33,13 +33,16 @@ namespace HEREHEGI
                     return result;
                 }
 
-                for (int i = 0; i < Props.InputHediffPool.Count; i++)
-                    result += 
-                        ' ' + i.ToString("00")+ Props.InputHediffPool[i].label + 
-                        " => " + 
-                        (Props.OutputHediffPool[i].IsNullHediff()?"Removed": Props.OutputHediffPool[i].label) + 
-                        (HasChances? "("+Props.HediffReplacementChance[i].ToStringPercent()+")" : "") +
+                for (int i = 0; i < Props.replaceHediffs.Count; i++)
+                {
+                    ReplaceHediffItem RHI = Props.replaceHediffs[i];
+                    result +=
+                        ' ' + i.ToString("00") + RHI.inputH.label +
+                        " => " +
+                        (RHI.outputH!=null ? RHI.outputH.label : "destroy") +
+                        (RHI.HasConsiderableChances ? "(" + RHI.chance + ")" : "") +
                         ";\n";
+                }
 
                 return result;
             }

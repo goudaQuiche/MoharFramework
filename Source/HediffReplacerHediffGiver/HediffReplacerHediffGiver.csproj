@@ -54,11 +54,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="HediffGiver\HediffReplacer_HediffGiver.cs" />
     <Compile Include="HediffGiver\HediffGiverUtility.cs" />
+    <Compile Include="HediffGiver\HediffReplacer_HediffGiver.cs" />
     <Compile Include="Hediff\HediffCompProperties_DataHediff.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MyDefs.cs" />
+    <Compile Include="StaticCheck.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="ToolsBodyPart.cs" />
     <Compile Include="Hediff\HediffComp_DataHediff.cs" />
@@ -66,6 +67,11 @@
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CheckModActive, Version=0.15.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\..\Users\Etienne\Mes projets\Rimworld modding\CheckModActive\Assembly\CheckModActive.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">

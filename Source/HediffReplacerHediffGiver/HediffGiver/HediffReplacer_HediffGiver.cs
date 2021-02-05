@@ -9,7 +9,7 @@ namespace HEREHEGI
 {
     public class HediffReplacer_HediffGiver : HediffGiver
     {
-        private bool MyDebug = false;
+        private bool MyDebug = Prefs.DevMode && DebugSettings.godMode;
         private string debugWarning = "HEREHEGI - OnHediffAdded - ";
 
         public override void OnIntervalPassed(Pawn pawn, Hediff cause)
@@ -28,13 +28,13 @@ namespace HEREHEGI
             Hediff DataHediff = pawn.health.hediffSet.GetFirstHediffOfDef(DataHediffDef);
             if (DataHediff == null)
             {
-                Tools.Warn(debugWarning + "Could not retrieve " + DataHediffDef.label, Prefs.DevMode && DebugSettings.godMode);
+                if(MyDebug)Log.Warning(debugWarning + "Could not retrieve " + DataHediffDef.label);
                 return false;
             }
             HediffComp_DataHediff hComp = DataHediff.TryGetComp<HediffComp_DataHediff>();
             if (DataHediff == null)
             {
-                Tools.Warn(debugWarning + "Could not retrieve HediffComp_DataHediff", Prefs.DevMode && DebugSettings.godMode);
+                if (MyDebug) Log.Warning(debugWarning + "Could not retrieve HediffComp_DataHediff");
                 return false;
             }
 
@@ -42,13 +42,13 @@ namespace HEREHEGI
 
             if (!hComp.IsValid)
             {
-                Tools.Warn(debugWarning + "HediffComp_DataHediff is invalid, wont apply anything", MyDebug);
+                if (MyDebug) Log.Warning(debugWarning + "HediffComp_DataHediff is invalid, wont apply anything");
                 return false;
             }
 
-            if (!hComp.RetrieveHediffIndex(hediff.def, out int hediffIndex))
+            if (!hComp.RetrieveItem(hediff.def, out ReplaceHediffItem RHI))
             {
-                Tools.Warn(debugWarning + "Could not find hediff.def " + hediff.def.label + " - this is not critical", MyDebug);
+                if (MyDebug) Log.Warning(debugWarning + "Could not find hediff.def " + hediff.def.label + " - this is not critical");
                 return false;
             }
 
@@ -56,34 +56,42 @@ namespace HEREHEGI
             float OldHediffSeverity = hediff.Severity;
             BodyPartRecord BPR = hediff?.Part ?? null;
 
-            if (hComp.HasChances)
+            if (RHI.HasConsiderableChances)
             {
-                float Chances = hComp.Props.HediffReplacementChance[hediffIndex];
+                float Chances = RHI.chance.RandomInRange;
                 if (!Rand.Chance(Chances))
                 {
-                    Tools.Warn(debugWarning + "replacement dice roll failure for " + hediff.def.label +
-                        " - chances were: " + Chances.ToStringPercent(), MyDebug);
+                    if (MyDebug) Log.Warning(debugWarning + "replacement dice roll failure for " + hediff.def.label +
+                        " - chances were: " + Chances.ToStringPercent());
                     return false;
                 }
                 else
                 {
-                    Tools.Warn(debugWarning + "replacement dice roll success for " + hediff.def.label +
-                        " - chances were: " + Chances.ToStringPercent(), MyDebug);
+                    if (MyDebug) Log.Warning(debugWarning + "replacement dice roll success for " + hediff.def.label +
+                        " - chances were: " + Chances.ToStringPercent());
                 }
                 
             }
 
             pawn.health.RemoveHediff(hediff);
-            Tools.Warn(debugWarning + "hediff removed: " + hediff.Label, MyDebug);
+            if (MyDebug) Log.Warning(debugWarning + "hediff removed: " + hediff.Label);
 
-            HediffDef outputHediff = hComp.Props.OutputHediffPool[hediffIndex];
-            if (!outputHediff.IsNullHediff())
+            if (RHI.destroy)
+                return true;
+
+
+            HediffDef outputHediff = RHI.outputH;
+            if (outputHediff != null)
             {
                 Hediff newHediff = HediffMaker.MakeHediff(outputHediff, pawn, BPR);
                 newHediff.Severity = OldHediffSeverity;
 
                 pawn.health.AddHediff(newHediff);
-                Tools.Warn(debugWarning + "hediff " + newHediff.Label + " added to " + BPR.Label, MyDebug);
+                if (MyDebug) Log.Warning(debugWarning + "hediff " + newHediff.Label + " added to " + BPR?.Label);
+            }
+            else
+            {
+                return false;
             }
 
             return true;
