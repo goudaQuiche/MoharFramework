@@ -133,7 +133,7 @@ namespace MoharHediffs
 
         public override void CompPostMake()
         {
-            Tools.Warn(">>> " + Pawn?.Label + " - " + parent.def.defName + " - CompPostMake start", MyDebug);
+            if(MyDebug)Log.Warning(">>> " + Pawn?.Label + " - " + parent.def.defName + " - CompPostMake start");
 
             if (!StaticCheck.IsOk)
                 BlockAndDestroy();
@@ -145,27 +145,26 @@ namespace MoharHediffs
         {
             string debugStr = MyDebug ? Pawn.LabelShort + " HediffComp_RandySpawnUponDeath Notify_PawnDied" : "";
 
-            Tools.Warn(debugStr + " Entering", MyDebug);
+            if (MyDebug) Log.Warning(debugStr + " Entering");
 
             bool failure = false;
 
             if (Pawn.Corpse.Negligible())
             {
-                Tools.Warn(debugStr + " Corpse is no more, cant find its position - giving up", MyDebug);
+                if (MyDebug) Log.Warning(debugStr + " Corpse is no more, cant find its position - giving up");
                 failure = true;
             }
 
             if (blockSpawn)
             {
-                Tools.Warn(debugStr + " blockSpawn for some reason- giving up", MyDebug);
+                if (MyDebug) Log.Warning(debugStr + " blockSpawn for some reason- giving up");
                 failure = true;
             }
 
-            Thing closestContainerThing = null;
 
-            if(!this.FulfilsRequirement(out closestContainerThing))
+            if (!this.FulfilsRequirement(out Thing closestContainerThing))
             {
-                Tools.Warn(debugStr + "not Fulfiling requirements- giving up", MyDebug);
+                if (MyDebug) Log.Warning(debugStr + "not Fulfiling requirements- giving up");
                 failure = true;
             }
 
@@ -178,44 +177,38 @@ namespace MoharHediffs
             int RandomIteration = Props.iterationRange.RandomInRange;
             List<int> AlreadyPickedOptions = new List<int>();
 
-            Tools.Warn(debugStr + "iterationNum: "+ RandomIteration, MyDebug);
+            if (MyDebug) Log.Warning(debugStr + "iterationNum: "+ RandomIteration);
 
             for (int i = 0; i < RandomIteration; i++){
 
-                Tools.Warn(debugStr + " Trying to spawn " + i + "/" + (RandomIteration-1), MyDebug);
+                if (MyDebug) Log.Warning(debugStr + " Trying to spawn " + i + "/" + (RandomIteration-1));
 
                 if (!DiceThrow(AlreadyPickedOptions))
                 {
-                    Tools.Warn(debugStr + " DiceThrow wrong results", MyDebug);
+                    if (MyDebug) Log.Warning(debugStr + " DiceThrow wrong results");
                     base.Notify_PawnDied();
                     return;
                 }
                 else
-                    Tools.Warn(
-                        debugStr +
-                        " index: " + RandomIndex + " quantity: " + RandomQuantity +
-                        " nature: " + ChosenItem.ItemDump
-                        , MyDebug
-                    );
+                    if (MyDebug) Log.Warning( debugStr +" index: " + RandomIndex + " quantity: " + RandomQuantity +" nature: " + ChosenItem.ItemDump);
 
                 if(PrecedentIterationsExclusion)
                     AlreadyPickedOptions.Add(RandomIndex);
 
                 if (CheckShouldSpawn(closestContainerThing))
                 {
-                    Tools.Warn(
+                    if (MyDebug) Log.Warning(
                         debugStr +
                         " Spawn " + i + "/" + (RandomIteration - 1) + " occured " +
                         " nature: t:" + ChosenItem.ItemDump
-                        , MyDebug
                     );
                 }
 
-                Tools.Warn("#################", MyDebug);
+                if (MyDebug) Log.Warning("#################");
             }
             if (CheckShouldHandleCorpse())
             {
-                Tools.Warn(debugStr + " Corpse handled", MyDebug);
+                if (MyDebug) Log.Warning(debugStr + " Corpse handled");
             }
 
             base.Notify_PawnDied();
@@ -238,7 +231,7 @@ namespace MoharHediffs
 
             if(!ValidQuantity)
             {
-                Tools.Warn("random quantity: " + RandomQuantity + " - impossible to spawn anything", MyDebug);
+                if (MyDebug) Log.Warning("random quantity: " + RandomQuantity + " - impossible to spawn anything");
                 return false;
             }
 
@@ -247,26 +240,25 @@ namespace MoharHediffs
 
         public void BlockAndDestroy(string ErrorLog = "", bool myDebug = false)
         {
-            Tools.Warn(ErrorLog, myDebug && !ErrorLog.NullOrEmpty());
+            if (MyDebug && !ErrorLog.NullOrEmpty()) Log.Warning(ErrorLog, myDebug);
             blockSpawn = true;
             Tools.DestroyParentHediff(parent, myDebug);
         }
 
         private bool CheckShouldSpawn(Thing closestThing)
         {
-            Tools.Warn(Pawn.LabelShort + " CheckShouldSpawn", MyDebug);
+            if (MyDebug) Log.Warning(Pawn.LabelShort + " CheckShouldSpawn");
 
-            Tools.Warn(
+            if (MyDebug) Log.Warning(
                 " Trying to spawn " + RandomQuantity + " " +
                 ThingOfChoice + "/" +
                 PawnOfChoice
-                , MyDebug
             );
 
             Thing referenceThing = HasCustomSpawn ? closestThing : Pawn.Corpse;
 
             bool didSpawn = this.TryDoSpawn(referenceThing, RandomQuantity);
-            Tools.Warn("TryDoSpawn: " + didSpawn, MyDebug);
+            if(MyDebug) Log.Warning("TryDoSpawn: " + didSpawn);
 
             return didSpawn;
         }
@@ -282,38 +274,5 @@ namespace MoharHediffs
 
             return didSomething;
         }
-
-        /*
-        public override void CompPostTick(ref float severityAdjustment)
-        {
-            base.CompPostTick(ref severityAdjustment);
-            //updateSkills();
-        }
-        */
-
-            /*
-        public override void Notify_PawnPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
-        {
-            base.Notify_PawnPostApplyDamage(dinfo, totalDamageDealt);
-
-            Tools.Warn("Notify_PawnPostApplyDamage", MyDebug);
-
-            //updateSkills();
-        }
-        */
-
-            /*
-        public void updateSkills()
-        {
-            if (rememberSkillTracker == null)
-                rememberSkillTracker = new Pawn_SkillTracker(Pawn);
-
-            if (Find.TickManager.TicksGame - lastSkillUpdateTick - 120 > 0)
-            {
-                rememberSkillTracker.skills = Pawn.skills.skills.ListFullCopy();
-                lastSkillUpdateTick = Find.TickManager.TicksGame;
-            }
-        }
-*/
     }
 }

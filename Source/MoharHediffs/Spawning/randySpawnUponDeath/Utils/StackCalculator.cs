@@ -19,7 +19,7 @@ namespace MoharHediffs
             else
                 result = pawnWeightedMeat / pawnBasisMeat;
 
-            Tools.Warn("pawnWeightedMeat:" + pawnWeightedMeat + "; pawnBasisMeat:" + pawnBasisMeat + "=> ratio:" + result, myDebug);
+            if(myDebug)Log.Warning("pawnWeightedMeat:" + pawnWeightedMeat + "; pawnBasisMeat:" + pawnBasisMeat + "=> ratio:" + result);
 
             return result;
         }

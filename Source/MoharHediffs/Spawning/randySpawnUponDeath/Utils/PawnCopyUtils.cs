@@ -144,33 +144,31 @@ namespace MoharHediffs
                 float decayRatio = comp.ChosenItem.copyParent.skillDecay.RandomInRange;
                 int wantedLevel = (int)(comp.Pawn.skills.skills[i].levelInt * decayRatio);
 
-                Tools.Warn(
+                if (debug) Log.Warning(
                     myDebugSr + " browsing " + comp.Pawn.skills.skills[i].def.defName +
                     " ori: " + comp.Pawn.skills.skills[i].levelInt +
                     " new: " + newPawn.skills.skills[i].levelInt +
                     " decayRatio: " + decayRatio +
                     " wantedSkill: " + wantedLevel
                     //" rememberSkillTracker: " + comp.rememberSkillTracker.skills[i].levelInt
-                    , debug
                 );
 
                 if (wantedLevel > newPawn.skills.skills[i].levelInt)
                 {
-                    Tools.Warn(myDebugSr + "Calling gainskill", debug);
+                    if (debug) Log.Warning(myDebugSr + "Calling gainskill");
                     comp.GainSkill(newPawn, wantedLevel, i, debug);
                 }
                 else if (wantedLevel < newPawn.skills.skills[i].levelInt)
                 {
-                    Tools.Warn(myDebugSr + "Calling loseskill", debug);
+                    if (debug) Log.Warning(myDebugSr + "Calling loseskill");
                     comp.LoseSkill(newPawn, wantedLevel, i, debug);
                 }
-                    
 
-                Tools.Warn(
+
+                if (debug) Log.Warning(
                     myDebugSr + " copied skill [" + i + "]:" + comp.Pawn.skills.skills[i].def.defName +
 
                     " new: " + newPawn.skills.skills[i].levelInt
-                    , debug
                 );
 
 
@@ -182,20 +180,19 @@ namespace MoharHediffs
         public static void GainSkill(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn, int wantedLevel, int index, bool debug = false)
         {
             string myDebugSr = newPawn.LabelShort + " - GainSkill - ";
-            Tools.Warn(myDebugSr + "Entering", debug);
+            if (debug) Log.Warning(myDebugSr + "Entering");
 
             int loopBreaker = 20;
             while (wantedLevel > newPawn.skills.skills[index].levelInt && loopBreaker > 0)
             {
                 float xpInjected = newPawn.skills.skills[index].XpRequiredForLevelUp;
 
-                Tools.Warn(
+                if (debug) Log.Warning(
                     myDebugSr +
                     " loop: " + loopBreaker +
                     " xpInjected: " + xpInjected +
                     " ori: " + comp.Pawn.skills.skills[index].levelInt +
                     " new: " + newPawn.skills.skills[index].levelInt
-                    , debug
                 );
 
                 newPawn.skills.skills[index].Learn(xpInjected, true);
@@ -206,20 +203,19 @@ namespace MoharHediffs
         public static void LoseSkill(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn, int wantedLevel, int index, bool debug = false)
         {
             string myDebugSr = newPawn.LabelShort + " - LoseSkill - ";
-            Tools.Warn(myDebugSr + "Entering", debug);
+            if(debug)Log.Warning(myDebugSr + "Entering");
 
             int loopBreaker = 20;
             while (wantedLevel < newPawn.skills.skills[index].levelInt && loopBreaker > 0)
             {
                 float xpInjected = -(newPawn.skills.skills[index].levelInt*1000);
 
-                Tools.Warn(
+                if(debug)Log.Warning(
                     myDebugSr +
                     " loop: " + loopBreaker +
                     " xpInjected: " + xpInjected +
                     " ori: " + comp.Pawn.skills.skills[index].levelInt +
                     " new: " + newPawn.skills.skills[index].levelInt
-                    , debug
                 );
 
                 newPawn.skills.skills[index].Learn(xpInjected, true);
@@ -282,6 +278,8 @@ namespace MoharHediffs
 
         public static void UpdateDisabilities(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
         {
+            if (newPawn.skills == null)
+                return;
             newPawn.skills.Notify_SkillDisablesChanged();
         }
     }

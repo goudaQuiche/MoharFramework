@@ -12,11 +12,11 @@ namespace MoharHediffs
         public static bool FulfilsSeverityRequirement(this HediffComp_RandySpawnUponDeath comp)
         {
             string debugStr = comp.MyDebug ? comp.Pawn.LabelShort + " FulfilsSeverityRequirement - " : "";
-            Tools.Warn(debugStr + "Entering", comp.MyDebug);
+            if(comp.MyDebug)Log.Warning(debugStr + "Entering");
 
             if (comp.Pawn == null || !comp.HasHediffRequirement)
             {
-                Tools.Warn(debugStr + " null pawn or no requirement", comp.MyDebug);
+                if(comp.MyDebug)Log.Warning(debugStr + " null pawn or no requirement");
                 return false;
             }
 
@@ -39,7 +39,7 @@ namespace MoharHediffs
 
                 if (!FoundHediff)
                 {
-                    Tools.Warn(debugStr + " did not find "+ HRS.hediffDef, comp.MyDebug);
+                    if(comp.MyDebug)Log.Warning(debugStr + " did not find "+ HRS.hediffDef);
                     return false;
                 }
                     
@@ -51,13 +51,13 @@ namespace MoharHediffs
         public static bool FulfilsThingRequirement(this HediffComp_RandySpawnUponDeath comp, Corpse corpse, out Thing closestThing)
         {
             string debugStr = comp.MyDebug ? comp.Pawn.LabelShort + " FulfilsThingRequirement - " : "";
-            Tools.Warn(debugStr + "Entering", comp.MyDebug);
+            if(comp.MyDebug)Log.Warning(debugStr + "Entering");
 
             closestThing = null;
 
             if (corpse.Negligible() || !comp.HasThingRequirement)
             {
-                Tools.Warn(debugStr + " negligeable corpse or no requirement", comp.MyDebug);
+                if(comp.MyDebug)Log.Warning(debugStr + " negligeable corpse or no requirement");
                 return false;
             }
 
@@ -90,7 +90,7 @@ namespace MoharHediffs
 
                 if (!FoundThing)
                 {
-                    Tools.Warn(debugStr + " did not find " + TRS.thingDef, comp.MyDebug);
+                    if(comp.MyDebug)Log.Warning(debugStr + " did not find " + TRS.thingDef);
                     return false;
                 }
                     
@@ -108,12 +108,12 @@ namespace MoharHediffs
 
             if (comp.HasHediffRequirement && !comp.FulfilsSeverityRequirement())
             {
-                Tools.Warn("hediff requirements not fulfiled", comp.MyDebug);
+                if(comp.MyDebug)Log.Warning("hediff requirements not fulfiled");
                 return false;
             }
             if (comp.HasThingRequirement && !comp.FulfilsThingRequirement(comp.Pawn.Corpse, out closestThing))
             {
-                Tools.Warn("thing requirements not fulfiled", comp.MyDebug);
+                if(comp.MyDebug)Log.Warning("thing requirements not fulfiled");
                 return false;
             }
 

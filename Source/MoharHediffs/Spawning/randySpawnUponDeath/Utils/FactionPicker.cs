@@ -28,7 +28,7 @@ namespace MoharHediffs
             int FactionIndex = comp.GetWeightedRandomFaction();
             if (FactionIndex == -1)
             {
-                Tools.Warn("ComputeRandomFaction - found no index", comp.MyDebug);
+                if(comp.MyDebug)Log.Warning("ComputeRandomFaction - found no index");
                 return;
             }
 
@@ -38,7 +38,7 @@ namespace MoharHediffs
                 FPP.Dump();
 
             comp.RandomFaction = comp.GetFaction(FPP);
-            Tools.Warn("ComputeRandomFaction - found:" + comp.RandomFaction?.GetCallLabel(), comp.MyDebug);
+            if(comp.MyDebug)Log.Warning("ComputeRandomFaction - found:" + comp.RandomFaction?.GetCallLabel());
 
         }
 
@@ -55,12 +55,12 @@ namespace MoharHediffs
             {
                 if ((DiceThrow -= RFP[i].weight) < 0)
                 {
-                    Tools.Warn("GetWeightedRandomIndex : returning " + i, comp.MyDebug);
+                    if(comp.MyDebug)Log.Warning("GetWeightedRandomIndex : returning " + i);
                     return i;
                 }
             }
 
-            Tools.Warn("GetWeightedRandomFaction : failed to return proper index, returning -1", comp.MyDebug);
+            if(comp.MyDebug)Log.Warning("GetWeightedRandomFaction : failed to return proper index, returning -1");
 
             return -1;
         }

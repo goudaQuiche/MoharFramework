@@ -94,7 +94,7 @@ namespace MoharHediffs
                     {
                         if (!Casket.TryAcceptThing(NewPawn))
                         {
-                            Tools.Warn(debugStr + " tried to add " + NewPawn.LabelShort + " to " + refThing.Label + ", but failed", comp.MyDebug);
+                            if (comp.MyDebug) Log.Warning(debugStr + " tried to add " + NewPawn.LabelShort + " to " + refThing.Label + ", but failed");
                         }
                     }
                 }
@@ -103,18 +103,18 @@ namespace MoharHediffs
 
                 comp.TrySpawnAllFilth(refThing);
 
-                Tools.Warn("------------------", comp.MyDebug);
+                if(comp.MyDebug)Log.Warning("------------------");
             }
 
             return true;
         }
 
         public static void TrySpawnAllFilth(this HediffComp_RandySpawnUponDeath comp, Thing refThing, bool debug = false) {
-            Tools.Warn(comp.Pawn.LabelShort + " - TrySpawnAllFilth", debug);
+            if(debug)Log.Warning(comp.Pawn.LabelShort + " - TrySpawnAllFilth");
 
             if (!comp.HasFilth)
             {
-                Tools.Warn("no filth found", debug);
+                if (debug) Log.Warning("no filth found");
                 return;
             }
 
@@ -123,12 +123,13 @@ namespace MoharHediffs
 
             for (int i = 0; i < randFilthNum; i++)
             {
-                Tools.Warn(
+                if (debug) Log.Warning(
                     "filth " + i + "/" + randFilthNum +
                     " - fDef:" + comp.FilthToSpawn +
                     " - pos:" + refThing.Position + 
                     " - map null?" + (refThing.Map == null)
-                    , debug);
+                    );
+
                 TrySpawnFilth(refThing, comp.FilthRadius.RandomInRange, comp.FilthToSpawn);
             }
 
@@ -200,7 +201,7 @@ namespace MoharHediffs
 
                 if (loopBreaker++ > 10)
                 {
-                    Tools.Warn("Had to break the loop", comp.MyDebug);
+                    if (comp.MyDebug) Log.Warning("Had to break the loop");
                     return false;
                 }
 
@@ -216,18 +217,18 @@ namespace MoharHediffs
         {
             if (thing.Negligible())
             {
-                Tools.Warn("TryDoSpawn - negligeable", comp.MyDebug);
+                if(comp.MyDebug)Log.Warning("TryDoSpawn - negligeable");
                 return false;
             }
 
             if (comp.HasChosenPawn)
             {
-                Tools.Warn("TryDoSpawn -> TrySpawnPawn", comp.MyDebug);
+                if (comp.MyDebug) Log.Warning("TryDoSpawn -> TrySpawnPawn");
                 return comp.TrySpawnPawn(thing, randomQuantity);
             }
             else if (comp.HasChosenThing)
             {
-                Tools.Warn("TryDoSpawn -> TrySpawnPawn", comp.MyDebug);
+                if (comp.MyDebug) Log.Warning("TryDoSpawn -> TrySpawnPawn", comp.MyDebug);
                 return comp.TrySpawnThing(thing, randomQuantity);
             }
 
@@ -241,7 +242,7 @@ namespace MoharHediffs
             if (refThing.Negligible())
             {
                 result = IntVec3.Invalid;
-                Tools.Warn("TryFindSpawnCell Null - pawn null", comp.MyDebug);
+                if (comp.MyDebug) Log.Warning("TryFindSpawnCell Null - pawn null");
                 return false;
             }
 
@@ -279,7 +280,7 @@ namespace MoharHediffs
                 }
             }
 
-            Tools.Warn("TryFindSpawnCell Null - no spawn cell found", comp.MyDebug);
+            if (comp.MyDebug) Log.Warning("TryFindSpawnCell Null - no spawn cell found");
             result = IntVec3.Invalid;
             return false;
 

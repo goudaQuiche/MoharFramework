@@ -17,10 +17,9 @@ namespace MoharHediffs
 
         public void LogParams(bool myDebug = false)
         {
-            Tools.Warn(
+            if(myDebug)Log.Warning(
                 "HasSomethingToSpawn:" + HasSomethingToSpawn + "; "  +
                 "HasDefaultSettings:" + HasDefaultSettings + "; "
-                , myDebug
             );
         }
         

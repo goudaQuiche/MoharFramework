@@ -54,8 +54,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CompProperties_Spawner.cs" />
-    <Compile Include="Comp_CustomLifeSpan.cs" />
+    <Compile Include="CompProperties_FuelPoweredSpawner.cs" />
+    <Compile Include="CompFuelPoweredSpawner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Utility.cs" />
