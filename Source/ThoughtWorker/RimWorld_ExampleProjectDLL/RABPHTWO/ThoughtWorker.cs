@@ -18,8 +18,8 @@ namespace MoharThoughts
                     m =>
                      m.race == p.def &&
                     def == m.thought &&
-                    m.HasTarget
-                    //(m.HasLifeStages ? m.lifeStages.Contains(p.ageTracker.CurLifeStage) : true)
+                    m.HasTarget &&
+                    (m.HasLifeStages ? m.lifeStages.Contains(p.ageTracker.CurLifeStage) : true)
                 ).SingleOrDefault();
 
             if (myTWD == null)
@@ -31,8 +31,8 @@ namespace MoharThoughts
                 .Where(h =>
                 h.Part != null &&
                 myTWD.ValidateBP(h.Part) &&
-                h.def == myTWD.hediff 
-                /*||                 (myTWD.HasApplyList && myTWD.applyThoughtHediffList.Contains(h.def))*/
+                //h.def == myTWD.hediff 
+                (h.def == myTWD.hediff || (myTWD.HasApplyList && myTWD.applyThoughtHediffList.Contains(h.def)))
             );
 
             if (HA.EnumerableNullOrEmpty())
@@ -45,7 +45,7 @@ namespace MoharThoughts
                     !p.health.hediffSet.PartOrAnyAncestorHasDirectlyAddedParts(h.Part)
                 );
             }
-            else if ( myTWD.HasAccessList)
+            else if (myTWD.HasAccessList)
             {
                 HA = HA
                 .Where(h =>

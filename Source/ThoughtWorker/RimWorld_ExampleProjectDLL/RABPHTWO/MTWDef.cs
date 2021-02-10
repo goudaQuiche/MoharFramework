@@ -16,7 +16,7 @@ namespace MoharThoughts
         
         public HediffDef hediff;
         public IntRange bpNum = new IntRange(0, 0);
-        //public List<LifeStageDef> lifeStages;
+        public List<LifeStageDef> lifeStages;
 
         public List<HediffDef> applyThoughtHediffList;
         public List<HediffDef> ignoreThoughtHediffList;
@@ -33,11 +33,10 @@ namespace MoharThoughts
         public bool HasTarget => HasBodyPartDefTarget || HasBodyPartLabelTarget;
 
         public bool HasRequiredBpNum => bpNum.min != 0 || bpNum.max != 0;
-        //public bool HasLifeStages => !lifeStages.NullOrEmpty();
+        public bool HasLifeStages => !lifeStages.NullOrEmpty();
         public bool HasApplyList => !applyThoughtHediffList.NullOrEmpty();
         public bool HasIgnoreList => !ignoreThoughtHediffList.NullOrEmpty();
 
         public bool HasAccessList => HasApplyList || HasIgnoreList;
-        //public bool IgnoreForAnyAddedPart => !ignoreWhenHediff.NullOrEmpty();
     }
 }

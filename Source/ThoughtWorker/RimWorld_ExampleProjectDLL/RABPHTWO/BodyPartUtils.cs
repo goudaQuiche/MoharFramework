@@ -41,18 +41,18 @@ namespace MoharThoughts
         {
             if (mTWDef.HasApplyList && p.PartOrAnyAncestorHasHediff(bpr, mTWDef.applyThoughtHediffList))
             {
-                Log.Warning(p.LabelShort + " " + bpr.Label + " is in apply list");
+                if(debug)Log.Warning(p.LabelShort + " " + bpr.Label + " is in apply list");
                 return true;
             }
                 
 
             if (mTWDef.HasIgnoreList && p.PartOrAnyAncestorHasHediff(bpr, mTWDef.ignoreThoughtHediffList))
             {
-                Log.Warning(p.LabelShort + " " + bpr.Label + " is in ignore list");
+                if (debug) Log.Warning(p.LabelShort + " " + bpr.Label + " is in ignore list");
                 return false;
             }
 
-            Log.Warning(p.LabelShort + " " + bpr.Label + " is ACL compatible");
+            if (debug) Log.Warning(p.LabelShort + " " + bpr.Label + " is ACL compatible");
             return true;
         }
 
