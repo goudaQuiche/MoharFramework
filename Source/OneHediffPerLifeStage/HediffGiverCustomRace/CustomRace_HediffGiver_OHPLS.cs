@@ -23,13 +23,13 @@ namespace OHPLS
 
             if (!Is_Wanted_Hediff)
             {
-                Tools.Warn(myPawnResume + " calling hediff(" + hediff?.defName + ") is wrong ", debug);
+                if (debug) Log.Warning(myPawnResume + " calling hediff(" + hediff?.defName + ") is wrong ");
                 return;
             }
 
             if (!pawn.IsRaceMember(raceDefName))
             {
-                Tools.Warn(myPawnResume + " is not race member of " + raceDefName, debug);
+                if (debug) Log.Warning(myPawnResume + " is not race member of " + raceDefName);
                 return;
             }
 
@@ -39,7 +39,7 @@ namespace OHPLS
                 return;
             }
 
-            Tools.Warn(myPawnResume + " => got " + myHediffDesc + " applied on ", debug);
+            if (debug) Log.Warning(myPawnResume + " => got " + myHediffDesc + " applied on ");
             HealthUtility.AdjustSeverity(pawn, hediff, .1f);
         }
     }

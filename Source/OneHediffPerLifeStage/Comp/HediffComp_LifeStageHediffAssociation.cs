@@ -10,7 +10,7 @@ namespace OHPLS
 {
     public class HediffComp_LifeStageHediffAssociation : HediffComp
     {
-        Pawn myPawn = null;
+        //Pawn myPawn = null;
         Map myMap = null;
 
         //60 = 1 sec; 1800 = 30s
@@ -34,13 +34,13 @@ namespace OHPLS
 
         public void UpdateHediffDependingOnLifeStage()
         {
-            LifeStageDef lifeStageDef = myPawn.ageTracker.CurLifeStage;
+            LifeStageDef lifeStageDef = Pawn.ageTracker.CurLifeStage;
             foreach(Association association in Props.associations)
             {
                 // unlegitimate hediff regarding lifestage
                 if(Pawn.HasHediff(association.hediff) && association.lifeStageDef != lifeStageDef)
                 {
-                    Hediff destroyhediff = myPawn.health.hediffSet.GetFirstHediffOfDef(association.hediff);
+                    Hediff destroyhediff = Pawn.health.hediffSet.GetFirstHediffOfDef(association.hediff);
                     destroyhediff.Severity = 0; destroyhediff.PostRemoved();
                 }
 
@@ -54,13 +54,13 @@ namespace OHPLS
                     {
                         IEnumerable<BodyPartRecord> bodyPartRecords;
                         if (!Props.bodyPartLabel.NullOrEmpty())
-                            bodyPartRecords = myPawn.RaceProps.body.GetPartsWithDef(Props.bodyPartDef).Where(bp => bp.customLabel == Props.bodyPartLabel);
+                            bodyPartRecords = Pawn.RaceProps.body.GetPartsWithDef(Props.bodyPartDef).Where(bp => bp.customLabel == Props.bodyPartLabel);
                         else
-                            bodyPartRecords = myPawn.RaceProps.body.GetPartsWithDef(Props.bodyPartDef);
+                            bodyPartRecords = Pawn.RaceProps.body.GetPartsWithDef(Props.bodyPartDef);
 
                         if (bodyPartRecords.EnumerableNullOrEmpty())
                         {
-                            Tools.Warn("Cant find BPR with def: " + Props.bodyPartDef.defName + ", skipping", MyDebug);
+                            if(MyDebug) Log.Warning("Cant find BPR with def: " + Props.bodyPartDef.defName + ", skipping");
                             continue;
                         }
                         myBPR = bodyPartRecords.FirstOrFallback();
@@ -70,43 +70,44 @@ namespace OHPLS
 
                     if(HasBPSpecification && myBPR == null)
                     {
-                        Tools.Warn("Cant find BPR with def: " + Props.bodyPartDef.defName + ", skipping", MyDebug);
+                        if (MyDebug) Log.Warning("Cant find BPR with def: " + Props.bodyPartDef.defName + ", skipping");
                         continue;
                     }
 
-                    lifeStageHediff = HediffMaker.MakeHediff(association.hediff, myPawn, myBPR);
+                    lifeStageHediff = HediffMaker.MakeHediff(association.hediff, Pawn, myBPR);
                     if (lifeStageHediff == null)
                     {
-                        Tools.Warn("hediff maker null", MyDebug);
+                        if (MyDebug) Log.Warning("hediff maker null");
                     }
-                    myPawn.health.AddHediff(lifeStageHediff, myBPR, null);
+                    Pawn.health.AddHediff(lifeStageHediff, myBPR, null);
                 }
             }
         }
 
         public override void CompPostTick(ref float severityAdjustment)
         {
-            if (myPawn == null)
+            if (myMap == null)
                 Init();
-
+                
             if (shouldSkip)
                 return;
 
-            if (!myPawn.Spawned)
+            if (!Pawn.Spawned)
             {
-                Tools.Warn("pawn unspawned", MyDebug);
+                if (MyDebug) Log.Warning("pawn unspawned");
                 return;
             }
 
-            if (Tools.TrueEvery30Sec)
+            //if (Tools.TrueEvery30Sec)
+            if (Pawn.IsHashIntervalTick(1800))
                 UpdateHediffDependingOnLifeStage();
         }
 
         public void Init()
         {
-            Tools.Warn("Entering Init", MyDebug);
-            myPawn = parent.pawn;
-            myMap = myPawn.Map;
+            if (MyDebug) Log.Warning("Entering Init");
+            //myPawn = parent.pawn;
+            myMap = Pawn.Map;
 
             if (SafeRemoval)
             {
@@ -116,9 +117,9 @@ namespace OHPLS
                 parent.PostRemoved();
                 return;
             }
-            if(myPawn == null || myMap == null)
+            if(Pawn == null || myMap == null)
             {
-                Tools.Warn("Null pawn or map", MyDebug);
+                if (MyDebug) Log.Warning("Null pawn or map");
                 parent.Severity = 0;
                 shouldSkip = true;
                 return;
@@ -134,7 +135,7 @@ namespace OHPLS
             // Props array checking
             if (Props.associations.NullOrEmpty())
             {
-                Tools.Warn("no Props.associations found, destroying hediff", MyDebug);
+                if (MyDebug) Log.Warning("no Props.associations found, destroying hediff");
                 parent.Severity = 0;
                 shouldSkip = true;
                 return;
@@ -165,7 +166,7 @@ namespace OHPLS
                 if (Props.debug)
                 {
                     result +=
-                        myPawn.PawnResumeString() 
+                        Pawn.PawnResumeString() 
                         //+ "; hasAssociationHediffMaster: " + myPawn.Has_OHPLS()
                        ;
                 }

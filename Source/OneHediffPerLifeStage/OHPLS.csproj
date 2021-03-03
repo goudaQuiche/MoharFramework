@@ -62,7 +62,6 @@
     <Compile Include="Comp\HediffCompProperties_LifeStageHediffAssociation.cs" />
     <Compile Include="Comp\HediffComp_LifeStageHediffAssociation.cs" />
     <Compile Include="ModSettings.cs" />
-    <Compile Include="MyDefs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="ToolsPawn.cs" />

@@ -18,3 +18,7 @@ https://github.com/Chillu1/RimWorldDecompiled/blob/a917643cda263dc432279afa8b9aa
 explosion
 
 thoughts management for randy spawner ?
+
+weight spawner on hediff severity
+
+make no food/rest/.... need

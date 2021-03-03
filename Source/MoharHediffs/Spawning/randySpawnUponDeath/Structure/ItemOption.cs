@@ -16,6 +16,8 @@ namespace MoharHediffs
         public CopyPawnSettings copyParent;
         public RedressSettings redressNewPawn;
 
+        public List<MentalStateOption> mentalState;
+
         //age
         public IntRange biologicalAgeRange = new IntRange(18, 80);
         public IntRange chronologicalAgeRange = new IntRange(0, 500);
@@ -34,6 +36,7 @@ namespace MoharHediffs
         public string ItemDump => IsThingSpawner ? "thing:" + thingToSpawn : (IsPawnSpawner ? (IsCopier ? "parentCopier" : "pawn:" + pawnKindToSpawn) : "nothing?!");
 
         public bool HasFactionParams => !faction.NullOrEmpty();
+        public bool HasMentalStateParams => !mentalState.NullOrEmpty();
 
         public bool IsCopier => copyParent != null;
         public bool IsRedresser => redressNewPawn != null;

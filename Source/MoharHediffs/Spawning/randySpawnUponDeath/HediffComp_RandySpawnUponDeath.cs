@@ -12,6 +12,7 @@ namespace MoharHediffs
 
         private int RandomIndex = -1;
         public Faction RandomFaction = null;
+        public MentalStateDef RandomMS = null;
         private int RandomQuantity = 0;
 
         //public bool newBorn = false;
@@ -240,7 +241,7 @@ namespace MoharHediffs
 
         public void BlockAndDestroy(string ErrorLog = "", bool myDebug = false)
         {
-            if (MyDebug && !ErrorLog.NullOrEmpty()) Log.Warning(ErrorLog, myDebug);
+            if (MyDebug && !ErrorLog.NullOrEmpty()) Log.Warning(ErrorLog);
             blockSpawn = true;
             Tools.DestroyParentHediff(parent, myDebug);
         }

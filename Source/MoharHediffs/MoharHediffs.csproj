@@ -87,6 +87,7 @@
     <Compile Include="Spawning\randySpawner\Structure\RandySpawnerUtils.cs" />
     <Compile Include="Spawning\randySpawner\Structure\RandySpawnerStruct.cs" />
     <Compile Include="Spawning\randySpawnUponDeath\Structure\ChannelColorCondition.cs" />
+    <Compile Include="Spawning\randySpawnUponDeath\Structure\MentalStateOption.cs" />
     <Compile Include="Spawning\randySpawnUponDeath\Structure\Requirements\Requirement.cs" />
     <Compile Include="Spawning\randySpawnUponDeath\Structure\Requirements\HediffRequirement.cs" />
     <Compile Include="Spawning\randySpawnUponDeath\Structure\Requirements\ThingRequirement.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Spawning\randySpawnUponDeath\Structure\ItemOption.cs" />
     <Compile Include="Spawning\randySpawnUponDeath\Structure\ItemFactionOption.cs" />
     <Compile Include="Spawning\randySpawnUponDeath\Structure\00Main.cs" />
+    <Compile Include="Spawning\randySpawnUponDeath\Utils\MentalStatePicker.cs" />
     <Compile Include="Spawning\randySpawnUponDeath\Utils\FactionPicker.cs" />
     <Compile Include="Spawning\randySpawnUponDeath\Utils\StackCalculator.cs" />
     <Compile Include="Spawning\randySpawnUponDeath\Utils\RequirementUtils.cs" />

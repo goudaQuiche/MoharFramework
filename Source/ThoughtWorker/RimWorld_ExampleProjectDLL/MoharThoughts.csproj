@@ -36,9 +36,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="RABPHTWO\MTWDef.cs" />
-    <Compile Include="RABPHTWO\ThoughtWorker.cs" />
-    <Compile Include="RABPHTWO\BodyPartUtils.cs" />
+    <Compile Include="ThoughtUponJob\MTWDef.cs" />
+    <Compile Include="ThoughtUponJob\ThoughtWorker.cs" />
+    <Compile Include="ThoughtUponHediffOnBodyPart\MTWDef.cs" />
+    <Compile Include="ThoughtUponHediffOnBodyPart\ThoughtWorker.cs" />
+    <Compile Include="ThoughtUponHediffOnBodyPart\BodyPartUtils.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

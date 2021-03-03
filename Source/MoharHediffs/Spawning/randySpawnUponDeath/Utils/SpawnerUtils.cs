@@ -101,6 +101,13 @@ namespace MoharHediffs
                 else
                     GenSpawn.Spawn(NewPawn, position, map, WipeMode.Vanish);
 
+                if (comp.ChosenItem.HasMentalStateParams)
+                {
+                    comp.ComputeRandomMentalState();
+                    if (comp.RandomMS != null)
+                        NewPawn.mindState.mentalStateHandler.TryStartMentalState(comp.RandomMS, null, forceWake: false, causedByMood: false, otherPawn: null, transitionSilently: true);
+                }
+
                 comp.TrySpawnAllFilth(refThing);
 
                 if(comp.MyDebug)Log.Warning("------------------");
