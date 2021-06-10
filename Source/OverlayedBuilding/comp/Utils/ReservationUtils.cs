@@ -2,11 +2,29 @@
 using Verse;
 using Verse.AI;
 using System.Linq;
+using UnityEngine;
 
 namespace OLB
 {
     public static class ReservationUtils
     {
+        public static Vector2 GetOffset(this Offset offset, Rot4 rot)
+        {
+            switch (rot.AsInt)
+            {
+                case 0:
+                    return offset.north;
+                case 1:
+                    return offset.east;
+                case 2:
+                    return offset.south;
+                case 3:
+                    return offset.west;
+                default:
+                    return offset.north;
+            }
+        }
+
         public static bool UpdateReservation(this CompDecorate comp)
         {
             comp.reservations = comp.parent.Map.reservationManager.ReservationsReadOnly.Where(

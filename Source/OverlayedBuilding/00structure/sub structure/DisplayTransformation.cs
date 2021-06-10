@@ -23,5 +23,7 @@ namespace OLB
         public FloatRange randomHalfRotation = new FloatRange(0, 0);
 
         public FloatRange scale = new FloatRange(1, 1);
+
+        public bool HasOffset => offset != null;
     }
 }

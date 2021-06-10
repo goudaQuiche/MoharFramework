@@ -98,8 +98,15 @@ namespace OLB
 
             // more drawpos
             Vector3 randomV3 = new Vector3(myItemData.randomXOffset.RandomInRange, 0, myItemData.randomYOffset.RandomInRange);
-            Vector3 myOffset = new Vector3(Offset.GetOffset(building.Rotation).x + randomV3.x, 0, Offset.GetOffset(building.Rotation).y + randomV3.y);
-            mote.exactPosition = drawPos + myOffset.RotatedBy(building.Rotation.AsAngle);
+            
+            mote.exactPosition = drawPos;
+
+            if (myItemData.HasOffset)
+            {
+                //Vector3 myOffset = new Vector3(Offset.GetOffset(building.Rotation).x + randomV3.x, 0, Offset.GetOffset(building.Rotation).y + randomV3.y);
+                Vector3 myOffset = new Vector3(myItemData.offset.GetOffset(building.Rotation).x + randomV3.x, 0, myItemData.offset.GetOffset(building.Rotation).y + randomV3.y);
+                mote.exactPosition += myOffset.RotatedBy(building.Rotation.AsAngle);
+            }
 
             // rotation
             mote.rotationRate = myItemData.rotationRate.RandomInRange;
