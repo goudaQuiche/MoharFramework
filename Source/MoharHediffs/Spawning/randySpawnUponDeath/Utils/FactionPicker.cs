@@ -77,7 +77,7 @@ namespace MoharHediffs
         {
             Pawn p = comp.Pawn;
 
-            if (FPP.HasInheritedFaction)
+            if (FPP.HasInheritedFaction && p.Faction != null)
                 return p.Faction.def;
             else if (FPP.HasForcedFaction)
                 return FPP.forcedFaction;
