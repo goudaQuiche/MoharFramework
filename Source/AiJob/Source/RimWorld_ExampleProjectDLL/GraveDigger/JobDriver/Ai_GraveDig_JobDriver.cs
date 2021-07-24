@@ -187,7 +187,8 @@ namespace MoharAiJob
             if (!map.AllowedMoteSpawn(loc))
                 return;
 
-            MoteMaker.ThrowDustPuffThick(loc, map, Rand.Range(1.5f, 3f), new Color(1f, 1f, 1f, 2.5f));
+            //MyMoteMaker.ThrowDustPuffThick(loc, map, Rand.Range(1.5f, 3f), new Color(1f, 1f, 1f, 2.5f));
+            FleckMaker.ThrowDustPuffThick(loc, map, Rand.Range(1.5f, 3f), new Color(1f, 1f, 1f, 2.5f));
         }
 
         [DefOf]

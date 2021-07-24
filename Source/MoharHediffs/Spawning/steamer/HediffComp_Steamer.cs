@@ -29,7 +29,8 @@ namespace MoharHediffs
                 if (Rand.Chance(Props.puffingChance))
                 {
                     //Log.Warning("Puffing");
-                    MoteMaker.ThrowAirPuffUp(Pawn.TrueCenter(), MyMap);
+                    //MoteMaker.ThrowAirPuffUp(Pawn.TrueCenter(), MyMap);
+                    FleckMaker.ThrowAirPuffUp(Pawn.TrueCenter(), MyMap);
                     GenTemperature.PushHeat(Pawn.Position, MyMap, Props.temperatureIncreasePerPuff);
                 }
 

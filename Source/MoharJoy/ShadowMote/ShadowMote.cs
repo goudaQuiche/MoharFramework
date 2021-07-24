@@ -164,7 +164,8 @@ namespace MoharJoy
                             MSE.waterLandSound.PlayOneShot(new TargetInfo(DrawPos.ToIntVec3(), Map));
 
                         if (MSE.makeWaterSplashOnImpact)
-                            MoteMaker.MakeWaterSplash(exactPosition, Map, 2, Speed * 2);
+                            FleckMaker.WaterSplash(exactPosition, Map, 2, Speed * 2);
+                        //MoteMaker.MakeWaterSplash(exactPosition, Map, 2, Speed * 2);
 
                         if (MSE.destroyParentOnImpact)
                             this.Destroy();

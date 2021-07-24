@@ -106,7 +106,7 @@ namespace MoharAiJob
 
             if (p.mindState == null || p.mindState.mentalStateHandler == null)
             {
-                if (MyDebug) Log.Warning(p.LabelShort + " null mindstate", MyDebug);
+                if (MyDebug) Log.Warning(p.LabelShort + " null mindstate");
                 return false;
             }
 

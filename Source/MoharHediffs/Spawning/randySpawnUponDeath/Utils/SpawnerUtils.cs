@@ -235,7 +235,7 @@ namespace MoharHediffs
             }
             else if (comp.HasChosenThing)
             {
-                if (comp.MyDebug) Log.Warning("TryDoSpawn -> TrySpawnPawn", comp.MyDebug);
+                if (comp.MyDebug) Log.Warning("TryDoSpawn -> TrySpawnPawn");
                 return comp.TrySpawnThing(thing, randomQuantity);
             }
 

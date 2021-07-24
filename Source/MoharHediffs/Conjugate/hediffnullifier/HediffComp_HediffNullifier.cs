@@ -96,7 +96,7 @@ namespace MoharHediffs
 
             foreach (Hediff curHediff in Pawn.health.hediffSet.hediffs.Where(h => Props.hediffToNullify.Contains(h.def)))
             {
-                if (myDebug) Log.Warning(Pawn.Label + " - " + curHediff.def.defName, myDebug);
+                if (myDebug) Log.Warning(Pawn.Label + " - " + curHediff.def.defName);
 
                 curHediff.Severity = 0;
                 //Pawn.DestroyHediff(curHediff);

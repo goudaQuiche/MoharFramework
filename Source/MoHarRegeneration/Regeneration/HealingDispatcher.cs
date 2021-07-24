@@ -101,7 +101,8 @@ namespace MoHarRegeneration
             if (NextHediffIfDidIt && DidIt || NextHediffIfDoneWithIt && DoneWithIt)
             {
                 if (MyMoteDef != null)
-                    MoteMaker.ThrowMetaIcon(p.Position, p.Map, MyMoteDef);
+                    FleckMaker.ThrowMetaIcon(p.Position, p.Map, MyMoteDef);
+                //MoteMaker.ThrowMetaIcon(p.Position, p.Map, MyMoteDef);
 
                 comp.RemoveProgressHediff();
                 comp.ApplyCompleteHediff();
