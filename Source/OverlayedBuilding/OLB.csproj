@@ -71,7 +71,6 @@
     <Compile Include="00structure\sub structure\Offset.cs" />
     <Compile Include="00structure\work structure\MoteTracer.cs" />
     <Compile Include="00structure\work structure\MoteTracerUtils.cs" />
-    <Compile Include="StaticCheck.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
@@ -82,11 +81,6 @@
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="CheckModActive, Version=0.15.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\..\Users\Etienne\Mes projets\Rimworld modding\CheckModActive\Assembly\CheckModActive.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

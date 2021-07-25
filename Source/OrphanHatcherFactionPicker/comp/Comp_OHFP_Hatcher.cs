@@ -39,10 +39,6 @@ namespace OHFP
         public override void PostExposeData()
         {
             base.PostExposeData();
-
-            if (!StaticCheck.IsOk)
-                return;
-
             Scribe_Values.Look(ref gestateProgress, "gestateProgress", 0f);
             Scribe_References.Look(ref hatcheeParent, "hatcheeParent");
             Scribe_References.Look(ref otherParent, "otherParent");
@@ -51,9 +47,6 @@ namespace OHFP
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
-            if (!StaticCheck.IsOk)
-                return;
-
             if (HasForcedFaction)
             {
                 SetForcedFaction();

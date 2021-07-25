@@ -31,9 +31,6 @@ namespace MoharHediffs
                
         public override void CompPostMake()
         {
-            if (!StaticCheck.IsOk)
-                BlockAndDestroy();
-
             //base.CompPostMake();
             if (myDebug)Log.Warning(">>>" + parent.def.defName + " - CompPostMake start");
 

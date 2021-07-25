@@ -281,7 +281,8 @@ namespace CustomLifeSpan
                 if (Props.moteDef == null)
                 {
                     Tools.Warn("no Props.moteDef, will spawn smoke", myDebug);
-                    Lifespan_Utility.ThrowCustomSmoke(ThingDefOf.Mote_Smoke, origin, refThing.Map, Props.moteScale.RandomInRange);
+                    FleckMaker.ThrowSmoke(origin, refThing.Map, Props.moteScale.RandomInRange);
+                    //Lifespan_Utility.ThrowCustomSmoke(ThingDefOf.Mote_Smoke, origin, refThing.Map, Props.moteScale.RandomInRange);
                 }
                     
                 else

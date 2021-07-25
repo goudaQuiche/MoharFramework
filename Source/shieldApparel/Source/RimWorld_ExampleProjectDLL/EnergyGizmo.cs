@@ -5,6 +5,7 @@ using RimWorld;
 namespace ShieldApparel
 {
 	[StaticConstructorOnStartup]
+	//public class MyGizmo_EnergyShieldStatus : Gizmo
 	public class MyGizmo_EnergyShieldStatus : Gizmo
 	{
 		public ShieldApparel shield;
@@ -12,6 +13,7 @@ namespace ShieldApparel
 		private static readonly Texture2D FullShieldBarTex = SolidColorMaterials.NewSolidColorTexture(new Color(0.2f, 0.2f, 0.24f));
 		private static readonly Texture2D EmptyShieldBarTex = SolidColorMaterials.NewSolidColorTexture(Color.clear);
 
+		//public MyGizmo_EnergyShieldStatus()
 		public MyGizmo_EnergyShieldStatus()
 		{
 			order = -100f;
@@ -22,7 +24,7 @@ namespace ShieldApparel
 			return 140f;
 		}
 
-		public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth)
+		public override GizmoResult GizmoOnGUI(Vector2 topLeft, float maxWidth, GizmoRenderParms parms)
 		{
 			Rect rect = new Rect(topLeft.x, topLeft.y, GetWidth(maxWidth), 75f);
 			Rect rect2 = rect.ContractedBy(6f);

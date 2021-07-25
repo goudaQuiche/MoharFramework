@@ -46,10 +46,6 @@
       <HintPath>..\..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="CheckModActive">
-      <HintPath>..\..\..\..\..\..\..\..\..\..\Users\Etienne\Mes projets\Rimworld modding\CheckModActive\Assembly\CheckModActive.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -70,7 +66,6 @@
     <Compile Include="MoharBodyAddon\CanDrawAddon\HARConditions.cs" />
     <Compile Include="MoharBodyAddon\CanDrawAddon\MoHarConditions.cs" />
     <Compile Include="MoharBodyAddon\BodyPartTools.cs" />
-    <Compile Include="MoharBodyAddon\StaticCheck.cs" />
     <Compile Include="MoharBodyAddon\Tools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

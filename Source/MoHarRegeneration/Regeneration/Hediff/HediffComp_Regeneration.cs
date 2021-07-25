@@ -57,9 +57,6 @@ namespace MoHarRegeneration
         {
             Tools.Warn("HediffComp_Regeneration - CompPostMake", MyDebug);
 
-            if (!StaticCheck.IsOk)
-                return;
-
             InitCheckCounter();
             InitBodyPartsHP();
             //regenerationPriority = new RegenerationPriority(this);

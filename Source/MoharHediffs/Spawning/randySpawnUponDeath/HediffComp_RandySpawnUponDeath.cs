@@ -136,9 +136,6 @@ namespace MoharHediffs
         {
             if(MyDebug)Log.Warning(">>> " + Pawn?.Label + " - " + parent.def.defName + " - CompPostMake start");
 
-            if (!StaticCheck.IsOk)
-                BlockAndDestroy();
-
            // CalculateValues();
         }
 

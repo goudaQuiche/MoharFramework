@@ -243,9 +243,6 @@ namespace ConPoDra
         {
             string debugStr = MyDebug ? parent.LabelShort + " PostSpawnSetup -" : "";
 
-            if (!StaticCheck.IsOk)
-                return;
-
             compFuel = parent.TryGetComp<CompRefuelable>();
             compPower = parent.TryGetComp<CompPowerTrader>();
             if (parent is Building b)

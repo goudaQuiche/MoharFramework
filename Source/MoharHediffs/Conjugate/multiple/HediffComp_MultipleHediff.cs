@@ -87,9 +87,6 @@ namespace MoharHediffs
 
             Tools.Warn(DebugStr + "CompPostMake", MyDebug);
 
-            if (!StaticCheck.IsOk)
-                BlockAndDestroy();
-
             CheckProps();
         }
 

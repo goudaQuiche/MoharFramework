@@ -32,8 +32,6 @@ namespace MoharCustomHAR
 
         public override bool CanDrawAddon(Pawn pawn)
         {
-            if (!StaticCheck.IsOk)return false;
-
             bool result =
                 this.ApparelCondition(pawn) && 
                 this.PostureCondition(pawn) &&

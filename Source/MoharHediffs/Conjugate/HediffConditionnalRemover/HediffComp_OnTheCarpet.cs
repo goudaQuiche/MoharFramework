@@ -32,9 +32,6 @@ namespace MoharHediffs
         {
             base.CompPostMake();
 
-            if (!StaticCheck.IsOk)
-                BlockAndDestroy();
-
             string debugStr = MyDebug ? $"{Pawn.LabelShort} {parent.def.defName} CompPostMake - " : "";
 
             if (!HasItems)

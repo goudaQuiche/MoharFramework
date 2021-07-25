@@ -11,13 +11,6 @@ namespace HEREHEGI
         bool MyDebug => Props.debug;
         public bool IsValid => !Props.replaceHediffs.NullOrEmpty() && !Props.replaceHediffs.Any(i => !i.IsValid);
 
-        public override void CompPostMake()
-        {
-            base.CompPostMake();
-            if (!StaticCheck.IsOk)
-                parent.Severity = 0;
-        }
-
         public override string CompTipStringExtra
         {
             get

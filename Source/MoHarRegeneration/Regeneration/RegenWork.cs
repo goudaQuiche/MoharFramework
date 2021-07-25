@@ -35,7 +35,8 @@ namespace MoHarRegeneration
             }
 
             Tools.Warn("TryTendBleeding OK", comp.MyDebug);
-            comp.currentHediff.Tended_NewTemp(TendingQuality, 2f);
+            //comp.currentHediff.Tended_NewTemp(TendingQuality, 2f);
+            comp.currentHediff.Tended(TendingQuality, 2f);
 
             if (comp.HasLimits)
                 comp.TreatmentPerformedQuality += TendingQuality;
@@ -68,7 +69,8 @@ namespace MoHarRegeneration
             }
                 
             Tools.Warn("TryTendRegularDisease OK", comp.MyDebug);
-            comp.currentHediff.Tended_NewTemp(TendingQuality, 2f);
+            //comp.currentHediff.Tended_NewTemp(TendingQuality, 2f);
+            comp.currentHediff.Tended(TendingQuality, 2f);
 
             if (comp.HasLimits)
                 comp.TreatmentPerformedQuality += TendingQuality;
@@ -101,7 +103,8 @@ namespace MoHarRegeneration
             }
 
             Tools.Warn("TryTendChronic OK", comp.MyDebug);
-            comp.currentHediff.Tended_NewTemp(TendingQuality, 2f);
+            //comp.currentHediff.Tended_NewTemp(TendingQuality, 2f);
+            comp.currentHediff.Tended(TendingQuality, 2f);
 
             if (comp.HasLimits)
                 comp.TreatmentPerformedQuality += TendingQuality;

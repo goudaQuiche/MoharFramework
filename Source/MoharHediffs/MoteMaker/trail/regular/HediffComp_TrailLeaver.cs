@@ -30,8 +30,6 @@ namespace MoharHediffs
         public override void CompPostMake()
         {
             PropsCheck();
-            if (!StaticCheck.IsOk)
-                parent.Severity = 0;
         }
 
         public void NewPeriod()

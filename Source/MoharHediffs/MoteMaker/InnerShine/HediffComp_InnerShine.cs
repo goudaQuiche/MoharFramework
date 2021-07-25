@@ -24,9 +24,6 @@ namespace MoharHediffs
 
         public override void CompPostMake()
         {
-            if (!StaticCheck.IsOk)
-                this.SelfDestroy();
-
             PropsCheck();
             this.CreateTracer();
         }

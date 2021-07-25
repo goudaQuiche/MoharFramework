@@ -80,14 +80,36 @@ namespace ShieldApparel
 
 		public override IEnumerable<Gizmo> GetWornGizmos()
 		{
-			if (Find.Selector.SingleSelectedThing == base.Wearer)
+            foreach (Gizmo gizmo in base.GetWornGizmos())
+            {
+                yield return gizmo;
+            }
+            if (Find.Selector.SingleSelectedThing == base.Wearer)
 			{
-                MyGizmo_EnergyShieldStatus gizmo_EnergyShieldStatus = new MyGizmo_EnergyShieldStatus();
-
-                gizmo_EnergyShieldStatus.shield = this;
-				yield return gizmo_EnergyShieldStatus;
+                //Gizmo_EnergyShieldStatus gizmo_EnergyShieldStatus = new Gizmo_EnergyShieldStatus
+                MyGizmo_EnergyShieldStatus gizmo_EnergyShieldStatus = new MyGizmo_EnergyShieldStatus
+                {
+                    shield = this
+                };
+                yield return gizmo_EnergyShieldStatus;
 			}
-		}
+            yield break;
+            /*
+            foreach (Gizmo gizmo in base.GetWornGizmos())
+            {
+                yield return gizmo;
+            }
+            IEnumerator<Gizmo> enumerator = null;
+            if (Find.Selector.SingleSelectedThing == base.Wearer)
+            {
+                yield return new Gizmo_EnergyShieldStatus
+                {
+                    shield = this
+                };
+            }
+            yield break;
+            */
+        }
 
 		public override float GetSpecialApparelScoreOffset()
 		{
@@ -161,12 +183,14 @@ namespace ShieldApparel
 			impactAngleVect = Vector3Utility.HorizontalVectorFromAngle(dinfo.Angle);
 			Vector3 loc = base.Wearer.TrueCenter() + impactAngleVect.RotatedBy(180f) * 0.5f;
 			float num = Mathf.Min(10f, 2f + dinfo.Amount / 10f);
-			MoteMaker.MakeStaticMote(loc, base.Wearer.Map, ThingDefOf.Mote_ExplosionFlash, num);
-			int num2 = (int)num;
+            //MoteMaker.MakeStaticMote(loc, base.Wearer.Map, ThingDefOf.Mote_ExplosionFlash, num);
+            FleckMaker.Static(loc, base.Wearer.Map, FleckDefOf.ExplosionFlash, num);
+            int num2 = (int)num;
 			for (int i = 0; i < num2; i++)
 			{
-				MoteMaker.ThrowDustPuff(loc, base.Wearer.Map, Rand.Range(0.8f, 1.2f));
-			}
+				//MoteMaker.ThrowDustPuff(loc, base.Wearer.Map, Rand.Range(0.8f, 1.2f));
+                FleckMaker.ThrowDustPuff(loc, base.Wearer.Map, Rand.Range(0.8f, 1.2f));
+            }
 			lastAbsorbDamageTick = Find.TickManager.TicksGame;
 			KeepDisplaying();
 		}
@@ -177,15 +201,19 @@ namespace ShieldApparel
                 return;
 
             SoundDefOf.EnergyShield_Broken.PlayOneShot(new TargetInfo(Wearer.Position, Wearer.Map));
-			MoteMaker.MakeStaticMote(Wearer.TrueCenter(), Wearer.Map, ThingDefOf.Mote_ExplosionFlash, 12f);
-			for (int i = 0; i < 6; i++)
+			//MoteMaker.MakeStaticMote(Wearer.TrueCenter(), Wearer.Map, ThingDefOf.Mote_ExplosionFlash, 12f);
+            FleckMaker.Static(base.Wearer.TrueCenter(), base.Wearer.Map, FleckDefOf.ExplosionFlash, 12f);
+            for (int i = 0; i < 6; i++)
 			{
+                /*
 				MoteMaker.ThrowDustPuff(
                     Wearer.TrueCenter() + Vector3Utility.HorizontalVectorFromAngle(Rand.Range(0, 360)) * Rand.Range(0.3f, 0.6f),
                     Wearer.Map,
                     Rand.Range(0.8f, 1.2f)
                     );
-			}
+                */
+                FleckMaker.ThrowDustPuff(base.Wearer.TrueCenter() + Vector3Utility.HorizontalVectorFromAngle((float)Rand.Range(0, 360)) * Rand.Range(0.3f, 0.6f), base.Wearer.Map, Rand.Range(0.8f, 1.2f));
+            }
 			energy = 0f;
 			ticksToReset = StartingTicksToReset;
 		}
@@ -195,8 +223,9 @@ namespace ShieldApparel
 			if (base.Wearer.Spawned)
 			{
 				SoundDefOf.EnergyShield_Reset.PlayOneShot(new TargetInfo(base.Wearer.Position, base.Wearer.Map));
-				MoteMaker.ThrowLightningGlow(base.Wearer.TrueCenter(), base.Wearer.Map, 3f);
-			}
+				//MoteMaker.ThrowLightningGlow(base.Wearer.TrueCenter(), base.Wearer.Map, 3f);
+                FleckMaker.ThrowLightningGlow(base.Wearer.TrueCenter(), base.Wearer.Map, 3f);
+            }
 			ticksToReset = -1;
 			energy = EnergyOnReset;
 		}

@@ -76,9 +76,6 @@ namespace OLB
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
-            if (!StaticCheck.IsOk)
-                DoNothing = true;
-
                 this.CheckGeneral();
             RequiresReservationUpdate = IsReservationUpdateRequired;
             if (RequiresReservationUpdate)

@@ -23,7 +23,7 @@ namespace MoHarRegeneration
             bool NextHediffIfDidIt = false;
             bool NextHediffIfDoneWithIt = false;
             bool ResetHealingTick = true;
-            ThingDef MyMoteDef = HP.MoteDef ?? null;
+            FleckDef MyFleckDef = HP.FleckDef ?? null;
 
             // 00 Tending - Blood loss
             if (curHT.IsBloodLossTending())
@@ -100,8 +100,8 @@ namespace MoHarRegeneration
 
             if (NextHediffIfDidIt && DidIt || NextHediffIfDoneWithIt && DoneWithIt)
             {
-                if (MyMoteDef != null)
-                    FleckMaker.ThrowMetaIcon(p.Position, p.Map, MyMoteDef);
+                if (MyFleckDef != null)
+                    FleckMaker.ThrowMetaIcon(p.Position, p.Map, MyFleckDef);
                 //MoteMaker.ThrowMetaIcon(p.Position, p.Map, MyMoteDef);
 
                 comp.RemoveProgressHediff();

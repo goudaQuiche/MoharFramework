@@ -65,14 +65,6 @@
       <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.1\Assemblies\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="0JecsTools">
-      <HintPath>..\..\..\..\..\..\workshop\content\294100\932008009\Assemblies\0JecsTools.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="AbilityUser">
-      <HintPath>..\..\..\..\..\..\workshop\content\294100\932008009\Assemblies\AbilityUser.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="AlienRace">
       <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.1\Assemblies\AlienRace.dll</HintPath>
       <Private>False</Private>

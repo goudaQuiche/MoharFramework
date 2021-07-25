@@ -11,7 +11,8 @@ namespace MoHarRegeneration
         public IntRange PeriodBase = new IntRange(300, 600);
         public FloatRange HealingQuality = new FloatRange(.75f, 2f);
 
-        public ThingDef MoteDef;
+        //public ThingDef MoteDef;
+        public FleckDef FleckDef;
 
         public string TreatmentLabel = string.Empty;
 

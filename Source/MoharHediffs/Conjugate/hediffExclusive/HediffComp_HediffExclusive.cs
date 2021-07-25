@@ -98,9 +98,6 @@ namespace MoharHediffs
 
         public void ApplyHediff()
         {
-            if (!StaticCheck.IsOk)
-                return;
-
             HediffDef hediff2use = Props.hediffToApply;
             if (hediff2use == null)
             {

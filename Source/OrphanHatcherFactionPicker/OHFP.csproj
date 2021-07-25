@@ -61,7 +61,6 @@
     <Compile Include="HarmonyPatch\CompEggLayer.cs" />
     <Compile Include="MyGfx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StaticCheck.cs" />
     <Compile Include="Tools.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -75,11 +74,6 @@
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="CheckModActive, Version=0.15.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\..\Users\Etienne\Mes projets\Rimworld modding\CheckModActive\Assembly\CheckModActive.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">

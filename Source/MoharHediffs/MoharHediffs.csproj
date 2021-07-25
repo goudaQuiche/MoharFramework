@@ -106,12 +106,10 @@
     <Compile Include="Spawning\randySpawnUponDeath\Utils\ItemPickerUtils.cs" />
     <Compile Include="MyDefs.cs" />
     <Compile Include="BodyPartsTools.cs" />
-    <Compile Include="StaticCheck.cs" />
     <Compile Include="MoteMaker\InnerShine\HediffCompProperties_InnerShine.cs" />
     <Compile Include="MoteMaker\InnerShine\HediffComp_InnerShine.cs" />
     <Compile Include="MoteMaker\trail\rainbow\HediffCompProperties_RainbowTrail.cs" />
     <Compile Include="MoteMaker\trail\regular\HediffCompProperties_TrailLeaver.cs" />
-    <Compile Include="MoteMaker\footprinter\HediffCompProperties_FootPrinter.cs" />
     <Compile Include="Conjugate\multiple\HediffCompProperties_MultipleHediff.cs" />
     <Compile Include="Conjugate\hediffExclusive\HediffCompProperties_HediffExclusive.cs" />
     <Compile Include="Conjugate\hediffnullifier\HediffCompProperties_HediffNullifier.cs" />
@@ -126,7 +124,6 @@
     <Compile Include="MoteMaker\trail\regular\Utils\MoteColorChange.cs" />
     <Compile Include="MoteMaker\trail\regular\Utils\TrailUtils.cs" />
     <Compile Include="MoteMaker\trail\regular\HediffComp_TrailLeaver.cs" />
-    <Compile Include="MoteMaker\footprinter\HediffComp_FootPrinter.cs" />
     <Compile Include="Conjugate\multiple\HediffComp_MultipleHediff.cs" />
     <Compile Include="Conjugate\hediffExclusive\HediffComp_HediffExclusive.cs" />
     <Compile Include="Conjugate\hediffnullifier\HediffComp_HediffNullifier.cs" />
@@ -147,11 +144,6 @@
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="CheckModActive, Version=0.15.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\..\Users\Etienne\Mes projets\Rimworld modding\CheckModActive\Assembly\CheckModActive.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MoharGfx, Version=0.15.1.0, Culture=neutral, processorArchitecture=MSIL">
