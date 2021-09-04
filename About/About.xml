@@ -9,7 +9,7 @@
 		<li>1.3</li>
 	</supportedVersions>
 	
-	<packageId>goudaquiche.MoharFramework</packageId>
+	<packageId>goudaquiche.MoharFramework_SOURCE</packageId>
 
 	<modDependencies>
 		<li>
