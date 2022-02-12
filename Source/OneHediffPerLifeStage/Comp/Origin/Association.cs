@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using Verse;
+﻿using Verse;
 using RimWorld;
-//using System.Xml;
 
 namespace OHPLS
 {

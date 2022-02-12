@@ -30,7 +30,7 @@ namespace OHPLS
 
         public override string SettingsCategory()
         {
-            return "OHPLS stands for One Hediff Per Life Stage";
+            return "MOHAR - OHPLS stands for One Hediff Per Life Stage";
         }
 
         public override void DoSettingsWindowContents(Rect inRect)

@@ -378,7 +378,7 @@ namespace CustomLifeSpan
             {
                 if(MyDebug) Log.Warning("found negligeable pawn, wont tick");
                 return;
-            }else if ((IsBuilding || IsThing) && building.Negligeable())
+            }else if ( (IsBuilding && building.Negligeable()) || (IsThing && thing.Negligeable()) )
             {
                 if(MyDebug) Log.Warning("found negligeable thing/building, wont tick");
                 return;

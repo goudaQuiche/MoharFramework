@@ -36,6 +36,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CustomTransformation\IndexEngine.cs" />
     <Compile Include="CustomTransformation\CustomTransformation_Mote.cs" />
     <Compile Include="CustomTransformation\CustomTransformation_MoteDef.cs" />
     <Compile Include="Main\HarmonyPatch_Mote.cs" />

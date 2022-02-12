@@ -39,12 +39,6 @@ namespace OHPLS
             }
         }
 
-        public static void Warn(string warning, bool debug = false)
-        {
-            if(debug)
-                Log.Warning(warning);
-        }
-
         public static bool Get_LifeStageHediffAssociation_HediffComp_debug_and_race(HediffDef hediffdef, out bool debug, out string raceDefName)
         {
             HediffCompProperties_LifeStageHediffAssociation maybe;

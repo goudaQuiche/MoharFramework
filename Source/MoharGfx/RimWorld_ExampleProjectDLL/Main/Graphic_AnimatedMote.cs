@@ -13,6 +13,8 @@ namespace MoharGfx
 
         public int TicksPerFrame = 7;
         public int FrameOffset = 0;
+        public IndexEngine.TickEngine Engine = IndexEngine.TickEngine.synced;
+
         public bool Flipped = false;
 
         private FloatRange FlickeringAlphaRange = new FloatRange(1, 1);
@@ -29,6 +31,23 @@ namespace MoharGfx
 
         //public override Material MatSingle => subGraphics[0].MatSingle;
 
+        public int TickEngine(Mote mote)
+        {
+            if (Engine == IndexEngine.TickEngine.moteLifespan)
+            {
+                //Log.Warning(Find.TickManager.TicksGame + " - " + mote.spawnTick + " = " + (Find.TickManager.TicksGame - mote.spawnTick));
+                return Find.TickManager.TicksGame - mote.spawnTick;
+            }
+                
+
+            if (Engine == IndexEngine.TickEngine.relativeMoteLifespan)
+                return (int)( (Find.TickManager.TicksGame - mote.spawnTick) * (mote.AgeSecs / mote.def.mote.Lifespan));
+
+            //IndexEngine.TickEngine.synced
+            return Find.TickManager.TicksGame;
+        }
+
+        // Historical
         public int GetIndex
         {
             get
@@ -37,6 +56,13 @@ namespace MoharGfx
                 int curFrame = stairCaseInput % subGraphics.Length;
                 return curFrame;
             }
+        }
+
+        public int GetAnotherIndex(Mote mote)
+        {
+            int stairCaseInput = (int)Math.Floor((double)(TickEngine(mote) / TicksPerFrame));
+            int curFrame = stairCaseInput % subGraphics.Length;
+            return curFrame;
         }
 
         public override void DrawWorker(Vector3 loc, Rot4 rot, ThingDef thingDef, Thing thing, float extraRotation)
@@ -95,7 +121,9 @@ namespace MoharGfx
             //else if (MyDebug) Log.Warning("CTM Not Found in Graphic_AnimatedMote; Thing:" + thing.def);
 
             //int index = (GetIndex + ThingHash(thing) + FrameOffset) % subGraphics.Length;
-            int index = (GetIndex + FrameOffset) % subGraphics.Length;
+            //int index = (GetIndex + FrameOffset) % subGraphics.Length;
+
+            int index = (GetAnotherIndex(mote)+ FrameOffset) % subGraphics.Length;
 
             //if (MyDebug)Log.Warning(" in Graphic_animatedMote:" +"; FrameOffset:" + FrameOffset + "; index:" + index + "; GetIndex:" + GetIndex);
                     

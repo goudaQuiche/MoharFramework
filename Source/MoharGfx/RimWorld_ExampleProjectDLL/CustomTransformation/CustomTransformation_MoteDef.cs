@@ -104,6 +104,7 @@ namespace MoharGfx
         //public IntRange randomFrameOffset;
         public int frameOffset;
         public int ticksPerFrame;
+        public IndexEngine.TickEngine engine = IndexEngine.TickEngine.synced;
     }
 
 }

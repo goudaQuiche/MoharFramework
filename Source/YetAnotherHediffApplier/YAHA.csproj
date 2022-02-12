@@ -6,8 +6,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>OneHediffPerLifeStage</RootNamespace>
-    <AssemblyName>OneHediffPerLifeStage</AssemblyName>
+    <RootNamespace>YetAnotherHediffApplier</RootNamespace>
+    <AssemblyName>YetAnotherHediffApplier</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <TargetFrameworkProfile />
@@ -57,12 +57,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Comp\Origin\Association.cs" />
-    <Compile Include="HediffGiverCustomRace\CustomRace_HediffGiver_OHPLS.cs" />
-    <Compile Include="Comp\Origin\HediffCompProperties_LifeStageHediffAssociation.cs" />
-    <Compile Include="Comp\Origin\HediffComp_LifeStageHediffAssociation.cs" />
-    <Compile Include="ModSettings.cs" />
+    <Compile Include="Comp\Array\AssociatedHediffHistory.cs" />
+    <Compile Include="Comp\Array\AssociationArray.cs" />
+    <Compile Include="Comp\Array\HediffCompProperties_YetAnotherHediffApplier.cs" />
+    <Compile Include="Comp\Array\HediffComp_YetAnotherHediffApplier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ConditionCheck.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="ToolsPawn.cs" />
   </ItemGroup>

@@ -67,6 +67,7 @@ namespace MoharGfx
                         GAM.FrameOffset = CTMD.transformation.animatedMote.frameOffset;
                         //GAM.FrameOffset += CTMD.transformation.animatedMote.randomFrameOffset.RandomInRange;
                         GAM.TicksPerFrame = CTMD.transformation.animatedMote.ticksPerFrame;
+                        GAM.Engine = CTMD.transformation.animatedMote.engine;
                     }
                     if (CTMD.HasRandomRotationRate)
                         __instance.rotationRate = CTMD.transformation.rotation.randRotRate.range.RandomInRange;
