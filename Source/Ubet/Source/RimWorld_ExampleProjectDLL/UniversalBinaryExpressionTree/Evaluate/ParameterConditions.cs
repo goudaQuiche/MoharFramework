@@ -12,7 +12,7 @@ namespace Ubet
         //
         public static bool PawnBelongsToLifeStage(this Pawn p, List<string> parameters)
         {
-            foreach(string s in parameters)
+            foreach (string s in parameters)
             {
                 LifeStageDef LSD = DefDatabase<LifeStageDef>.GetNamed(s);
                 if (p.ageTracker.CurLifeStage == LSD)
@@ -52,7 +52,7 @@ namespace Ubet
 
                 return false;
             }
-                
+
 
             foreach (string s in parameters)
             {
@@ -122,6 +122,70 @@ namespace Ubet
 
             }
             return false;
+        }
+
+        public static bool PawnHasRelation(this Pawn p, List<string> parameters, bool alive)
+        {
+            if (p.relations == null || !p.relations.RelatedToAnyoneOrAnyoneRelatedToMe)
+                return false;
+
+            IEnumerable<PawnRelationDef> PRD = DefDatabase<PawnRelationDef>.AllDefs.Where(x => parameters.Contains(x.defName));
+            if (PRD.EnumerableNullOrEmpty())
+                return false;
+
+            if (p.relations.DirectRelations.Any(r => PRD.Contains(r.def) && (alive?(!r.otherPawn.Dead):r.otherPawn.Dead) ))
+                return true;
+
+            return false;
+        }
+
+        public static bool PawnHasDeadRelation(this Pawn p, List<string> parameters)
+        {
+            return p.PawnHasRelation(parameters, false);
+        }
+
+        public static bool PawnHasAliveRelation(this Pawn p, List<string> parameters)
+        {
+            return p.PawnHasRelation(parameters, true);
+        }
+
+        public static bool PawnHasBodyPart(this Pawn p, List<string> parameters)
+        {
+            IEnumerable<BodyPartRecord> bodyPartRecords = p.health.hediffSet.GetNotMissingParts().Where(bpr => parameters.Contains(bpr.untranslatedCustomLabel) || parameters.Contains(bpr.def.defName));
+
+            return !bodyPartRecords.EnumerableNullOrEmpty();
+        }
+
+        public static bool ThingIsMadeOfStuff(this Thing t, List<string> parameters)
+        {
+            return t.def.MadeFromStuff && t.Stuff != null && parameters.Contains(t.Stuff.defName);
+        }
+        public static bool ThingHasIngredient(this Thing t, List<string> parameters)
+        {
+            return !t.def.costList.NullOrEmpty() && t.def.costList.Any(b => parameters.Contains(b.thingDef.defName));
+        }
+
+        public static bool PawnWearsApparelMadeOf(this Pawn p, List<string> parameters)
+        {
+            if (p.apparel == null || p.apparel.WornApparelCount == 0)
+                return false;
+
+            IEnumerable<Apparel> apparel = p.apparel.WornApparel.Where(a =>
+               a.ThingIsMadeOfStuff(parameters) ||
+               a.ThingHasIngredient(parameters)
+            );
+
+            return !apparel.EnumerableNullOrEmpty();
+        }
+
+        public static bool PawnUsesWeaponMadeOf(this Pawn p, List<string> parameters)
+        {
+            if (p.equipment == null || p.equipment.Primary.DestroyedOrNull())
+                return false;
+
+            ThingWithComps w = p.equipment.Primary;
+
+            return w.ThingIsMadeOfStuff(parameters) || w.ThingHasIngredient(parameters);
         }
     }
 }

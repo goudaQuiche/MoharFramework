@@ -29,19 +29,6 @@ namespace Ubet
                 if (debug) Log.Warning("RecursiveNodeComputation - leaf depth: " + depth);
             }
 
-            if (branch.leaf.NullOrEmpty())
-            {
-                bool conditionResult = t.ConditionCheck(branch.condition, debug);
-
-                if (branch.operand == Operand.not) {
-                    if (debug) Log.Warning("no leaf; not operand; result: " + !conditionResult);
-                    return !conditionResult;
-                } else {
-                    if (debug) Log.Warning("no leaf; empty operand; result: " + conditionResult);
-                    return conditionResult;
-                }
-            }
-
             bool branchValue = true;
             if (branch.operand == Operand.and)
                 branchValue = true;
@@ -54,17 +41,26 @@ namespace Ubet
                 {
                     string debugStr = "Browsing leaves; depth=" + depth;
                     debugStr += "; operand:" + branch.operand.DescriptionAttr();
-                    debugStr += (branch.condition == null) ? ("; no condition"): ("; condition:" + branch.condition.type.DescriptionAttr());
+                    debugStr += (branch.condition == null) ? ("; no condition") : ("; condition:" + branch.condition.type.DescriptionAttr());
 
                     Log.Warning(debugStr);
                 }
-                bool leafValue = t.RecursiveNodeComputation(leaf, depth + 1, debug);
+                bool leafValue;
+
+                if (leaf.leaf.NullOrEmpty() && leaf.condition != null)
+                {
+                    leafValue = t.ConditionCheck(leaf.condition, debug);
+                }
+                else
+                {
+                    leafValue = t.RecursiveNodeComputation(leaf, depth + 1, debug);
+                }
 
                 if (branch.operand == Operand.and)
                 {
                     if (!leafValue)
                     {
-                        if (debug) Log.Warning("depth="+depth+" - AND operand && false : fast exit with false");
+                        if (debug) Log.Warning("depth=" + depth + " - AND operand && false : fast exit with false");
                         return false;
                     }
 
@@ -77,9 +73,12 @@ namespace Ubet
                         if (debug) Log.Warning("depth=" + depth + " - OR operand && true : fast exit with true");
                         return true;
                     }
-                        
 
                     branchValue |= leafValue;
+                }
+                else
+                {
+                    return (leaf.operand == Operand.not) ? !leafValue : leafValue;
                 }
             }
 

@@ -37,6 +37,19 @@ namespace Ubet
         [Description("is on map with season")]
         isOnMapWithSeason,
 
+        [Description("has alive relation")]
+        hasAliveRelation,
+        [Description("has dead relation")]
+        hasDeadRelation,
+
+        [Description("has body part")]
+        hasBodyPart,
+
+        [Description("wears apparel made of")]
+        wearsApparelMadeOf,
+        [Description("uses weapon made of")]
+        usesWeaponMadeOf,
+
         [Description("empty condition")]
         empty
     }
