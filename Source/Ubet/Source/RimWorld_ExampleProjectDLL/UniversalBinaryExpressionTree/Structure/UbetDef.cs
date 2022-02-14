@@ -7,7 +7,7 @@ namespace Ubet
 {
     public class UbetDef : Def
     {
-        public UbetNode trunk;
+        public Leaf trunk;
         
         public bool debug = false;
 
@@ -16,46 +16,20 @@ namespace Ubet
         public override int GetHashCode() => defName.GetHashCode();
     }
     
-    public class UbetNode
+    public class Leaf
     {
-        public int depth;
-        public bool? valueLeaf = null;
-        
-        public UbetOperand operand;
-        public UbetCondition condition;
+        public Condition initialCondition;
+        public Operand operand = Operand.empty;
+        public Condition condition;
 
-        public UbetNode parent;
-        public UbetNode leftBranch;
-        public UbetNode rightBranch;
+        public List<Leaf> leaf;
 
-        public bool IsTrunk => depth == 0;
+        public bool HasInitialCondition => initialCondition != null;
     }
 
-    public class UbetCondition
+    public class Condition
     {
-        public Condition condition = Condition.Void;
-        public Func<Thing, bool> conditionMethod;
-    }
-    public class UbetOperand
-    {
-        public Operand operand = Operand.Void;
-        public Func<bool, bool, bool> operandMethod;
-    }
-
-    public enum Condition
-    {
-        IsHuman,
-        IsNegligible,
-        IsPawn,
-
-        Void
-    }
-
-    public enum Operand
-    {
-        And,
-        Or,
-
-        Void
+        public ConditionType type = ConditionType.empty;
+        public List<string> parameter;
     }
 }
