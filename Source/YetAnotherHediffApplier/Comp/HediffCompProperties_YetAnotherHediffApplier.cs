@@ -7,9 +7,10 @@ namespace YAHA
     public class HediffCompProperties_YetAnotherHediffApplier : HediffCompProperties
     {
         public List<HediffAssociation> associations;
-        public int checkFrequency = 1800;
 
+        public int checkFrequency = 1800;
         public bool debug = false;
+
         public bool PeriodicCheck => checkFrequency > 0;
 
         public HediffCompProperties_YetAnotherHediffApplier()

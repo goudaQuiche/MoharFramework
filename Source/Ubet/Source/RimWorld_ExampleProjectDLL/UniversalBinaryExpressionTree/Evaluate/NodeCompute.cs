@@ -9,7 +9,9 @@ namespace Ubet
             //return t.RecursiveNodeComputation(trunk);
 
             bool result = t.RecursiveNodeComputation(trunk, 0, debug);
-            Log.Warning("final result:" + result);
+
+            if (debug) Log.Warning("final result:" + result);
+
             return result;
         }
 
@@ -18,10 +20,18 @@ namespace Ubet
             if (depth == 0) {
                 if (debug) Log.Warning("RecursiveNodeComputation - trunk detected");
 
-                if (branch.HasInitialCondition && (!t.ConditionCheck(branch.initialCondition)))
-                {
-                    if (debug) Log.Warning("RecursiveNodeComputation - initial condition false");
-                    return false;
+                if (branch.HasInitialCondition) {
+                    if (!t.ConditionCheck(branch.initialCondition))
+                    {
+                        if (debug)
+                            Log.Warning("RecursiveNodeComputation - initial condition false");
+                        return false;
+                    }else if(branch.leaf == null)
+                    {
+                        if (debug)
+                            Log.Warning("RecursiveNodeComputation - initial condition true");
+                        return true;
+                    }
                 }
             }
             else

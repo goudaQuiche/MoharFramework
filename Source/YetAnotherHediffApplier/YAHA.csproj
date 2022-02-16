@@ -57,26 +57,28 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Comp\Array\AssociatedHediffHistory.cs" />
-    <Compile Include="Comp\Array\AssociationArray.cs" />
-    <Compile Include="Comp\Array\HediffCompProperties_YetAnotherHediffApplier.cs" />
-    <Compile Include="Comp\Array\HediffComp_YetAnotherHediffApplier.cs" />
+    <Compile Include="HarmonyPatch\DraftTriggeredPatch.cs" />
+    <Compile Include="HarmonyPatch\WearTriggeredPatch.cs" />
+    <Compile Include="Structure\AssociatedHediffHistory.cs" />
+    <Compile Include="Structure\HediffAssociation.cs" />
+    <Compile Include="Comp\HediffCompProperties_YetAnotherHediffApplier.cs" />
+    <Compile Include="Comp\HediffComp_YetAnotherHediffApplier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ConditionCheck.cs" />
+    <Compile Include="Structure\RandomHediff.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="ToolsPawn.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.1\Assemblies\0Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="Ubet, Version=0.15.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\1.3\Assemblies\Ubet.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
