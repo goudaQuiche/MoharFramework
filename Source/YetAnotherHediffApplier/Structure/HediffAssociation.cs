@@ -34,19 +34,34 @@ namespace YAHA
 
         
         public bool HasLimit => applyNumLimit > 0;
+        public bool HasDiscard => discard != null;
+        public bool HasGrace => grace != null;
     }
 
     public class Grace
     {
+        public GraceSettings uponApply;
+        public GraceSettings uponRemove;
+
+        public bool HasUponApplyGrace => uponApply != null;
+        public bool HasUponRemoveGrace => uponRemove != null;
+    }
+    public class GraceSettings
+    {
         public FloatRange chance = new FloatRange(1, 1);
-        public IntRange uponApply = new IntRange(0, 0);
-        public IntRange uponRemove = new IntRange(0, 0);
+        public IntRange tickAmount = new IntRange(0, 0);
     }
     public class Discard
     {
+        public DiscardSettings uponApply;
+        public DiscardSettings uponRemove;
+
+        public bool HasUponApplyDiscard => uponApply != null;
+        public bool HasUponRemoveDiscard => uponRemove != null;
+    }
+    public class DiscardSettings
+    {
         public FloatRange chance = new FloatRange(1, 1);
-        public FloatRange uponApply = new FloatRange(0, 0);
-        public FloatRange uponRemove = new FloatRange(0, 0);
     }
 
     public class RandomHediffItem : HediffItem

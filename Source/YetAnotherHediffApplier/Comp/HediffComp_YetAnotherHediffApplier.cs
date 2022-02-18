@@ -13,10 +13,6 @@ namespace YAHA
      * method to check a triggered condition
      * wear/drop patch
      * draft/undraft patch
-     * grace
-     * grace per hediff ??
-     * discard
-     * discard per hediff ??
      */
     public class HediffComp_YetAnotherHediffApplier : HediffComp
     {
@@ -50,6 +46,17 @@ namespace YAHA
 
             if (CurHA.specifics.HasLimit)
                 CurAHH.appliedNum++;
+
+            // destroy parent hediff if discard upon remove setting and random is satisfied
+            if (CurHA.specifics.HasDiscard && CurHA.specifics.discard.HasUponApplyDiscard && Rand.Chance(CurHA.specifics.discard.uponApply.chance.RandomInRange))
+            {
+                Pawn.health.RemoveHediff(parent);
+            }
+            // add grace destroy if grace setting upon remove and random is satisfied
+            if (CurHA.specifics.HasGrace && CurHA.specifics.grace.HasUponApplyGrace && Rand.Chance(CurHA.specifics.grace.uponApply.chance.RandomInRange))
+            {
+                CurAHH.grace += CurHA.specifics.grace.uponApply.tickAmount.RandomInRange;
+            }
         }
 
         public void ApplyHediffAndRegisterWithBodyPartList(HediffItem hi, HediffAssociation CurHA, AssociatedHediffHistory CurAHH, List<BodyPartRecord> BPRL, bool debug = false)
@@ -76,8 +83,24 @@ namespace YAHA
             {
                 Hediff h = CurAHH.appliedHediffs[j];
                 // enough to remove the applied hediff ?? or need to retrieve it from pawn with bpr
-                h.Severity = 0; h.PostRemoved();
+                Pawn.health.RemoveHediff(h);
+
+                // destroy parent hediff if discard upon remove setting and random is satisfied
+                if(CurHA.specifics.HasDiscard && CurHA.specifics.discard.HasUponRemoveDiscard && Rand.Chance(CurHA.specifics.discard.uponRemove.chance.RandomInRange))
+                {
+                    Pawn.health.RemoveHediff(parent);
+                }
+                // add grace destroy if grace setting upon remove and random is satisfied
+                if (CurHA.specifics.HasGrace && CurHA.specifics.grace.HasUponRemoveGrace && Rand.Chance(CurHA.specifics.grace.uponRemove.chance.RandomInRange))
+                {
+                    CurAHH.grace += CurHA.specifics.grace.uponRemove.tickAmount.RandomInRange;
+                }
+                    
+
+                // Deregister
+                //h.Severity = 0; h.PostRemoved();
                 CurAHH.appliedHediffs.RemoveAt(j);
+                
             }
 
             return false;
@@ -98,9 +121,18 @@ namespace YAHA
                 // triggered by harmony patch; no need to check it
                 if (CurHA.specifics.triggered) continue;
 
+                if (CurAHH.HasGraceTime)
+                {
+                    CurAHH.grace--;
+                    continue;
+                }
+
                 // pawn does not fulfil conditions : remove already applied hediffs and/or go for next hediff
                 if (!RemoveHediffAndDeregister(CurHA, CurAHH, debug))
+                {
                     continue;
+                }
+                    
 
                 List<BodyPartRecord> bodyPartRecords = null;
                 // Hediff association has body parts specifications 
@@ -150,6 +182,12 @@ namespace YAHA
                
             }
         }
+        /*
+        public override void Notify_PawnPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
+        {
+            base.Notify_PawnPostApplyDamage(dinfo, totalDamageDealt);
+        }
+        */
 
         public override void CompPostTick(ref float severityAdjustment)
         {

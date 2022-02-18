@@ -8,12 +8,17 @@ namespace YAHA
     {
         public int appliedNum;
         public bool done;
+        public int grace;
         public List<Hediff> appliedHediffs;
+
+        public bool HasGraceTime => grace > 0;
 
         public AssociatedHediffHistory()
         {
             appliedNum = 0;
             done = false;
+            grace = 0;
+
             appliedHediffs = new List<Hediff>();
         }
 
@@ -21,6 +26,7 @@ namespace YAHA
         {
             Scribe_Values.Look(ref appliedNum, "appliedNum");
             Scribe_Values.Look(ref done, "done");
+            Scribe_Values.Look(ref grace, "grace");
 
             Scribe_Collections.Look(ref appliedHediffs, "appliedHediffs");
             if (Scribe.mode == LoadSaveMode.PostLoadInit && appliedHediffs == null)
