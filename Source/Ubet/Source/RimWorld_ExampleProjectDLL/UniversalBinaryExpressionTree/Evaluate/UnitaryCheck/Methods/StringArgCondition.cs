@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Ubet
 {
-    public static class ParameterConditions
+    public static class StringArgConditionMethods
     {
 
         //
@@ -122,6 +122,14 @@ namespace Ubet
 
             }
             return false;
+        }
+
+        public static bool PawnHasBackstory(this Pawn p, List<string> parameters)
+        {
+            if (p.story == null)
+                return false;
+
+            return p.story.AllBackstories.Any(b => parameters.Contains(b.identifier));
         }
 
         public static bool PawnHasRelation(this Pawn p, List<string> parameters, bool alive)

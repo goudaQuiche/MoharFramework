@@ -21,15 +21,15 @@ namespace Ubet
                 if (debug) Log.Warning("RecursiveNodeComputation - trunk detected");
 
                 if (branch.HasInitialCondition) {
-                    if (!t.ConditionCheck(branch.initialCondition))
+                    if (!t.MainCheck(branch.initialCondition))
                     {
                         if (debug)
-                            Log.Warning("RecursiveNodeComputation - initial condition false");
+                            Log.Warning("Initial condition " + branch.initialCondition.Description + ", result=false");
                         return false;
-                    }else if(branch.leaf == null)
+                    } else if (branch.leaf == null)
                     {
                         if (debug)
-                            Log.Warning("RecursiveNodeComputation - initial condition true");
+                            Log.Warning("Initial condition " + branch.initialCondition.Description + ", result=true");
                         return true;
                     }
                 }
@@ -51,7 +51,7 @@ namespace Ubet
                 {
                     string debugStr = "Browsing leaves; depth=" + depth;
                     debugStr += "; operand:" + branch.operand.DescriptionAttr();
-                    debugStr += (branch.condition == null) ? ("; no condition") : ("; condition:" + branch.condition.type.DescriptionAttr());
+                    debugStr += (branch.condition == null) ? ("; no condition") : ("; condition:" + branch.condition.Description);
 
                     Log.Warning(debugStr);
                 }
@@ -59,7 +59,7 @@ namespace Ubet
 
                 if (leaf.leaf.NullOrEmpty() && leaf.condition != null)
                 {
-                    leafValue = t.ConditionCheck(leaf.condition, debug);
+                    leafValue = t.MainCheck(leaf.condition, debug);
                 }
                 else
                 {

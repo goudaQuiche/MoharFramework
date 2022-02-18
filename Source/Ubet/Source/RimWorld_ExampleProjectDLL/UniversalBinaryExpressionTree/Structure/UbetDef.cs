@@ -30,6 +30,12 @@ namespace Ubet
     public class Condition
     {
         public ConditionType type = ConditionType.empty;
-        public List<string> parameter;
+        public List<string> stringArg;
+        public List<IntRange> intArg;
+
+        public bool HasStringArg => !stringArg.NullOrEmpty();
+        public bool HasIntArg => !intArg.NullOrEmpty();
+        public bool HasNoArg => stringArg.NullOrEmpty() && intArg.NullOrEmpty();
+        public string Description => type.DescriptionAttr();
     }
 }

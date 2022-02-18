@@ -62,19 +62,15 @@ namespace YAHA
 
         public bool RemoveHediffAndDeregister(HediffAssociation CurHA, AssociatedHediffHistory CurAHH, bool debug = false)
         {
-            if (debug) Log.Warning("0");
             if (Pawn.TrunkNodeComputation(CurHA.condition.trunk, debug))
                 return true;
 
-            if (debug) Log.Warning("1");
             if ( (CurHA.specifics != null) && (!CurHA.specifics.removeIfFalse))
                 return false;
 
-            if (debug) Log.Warning("2");
             if (CurAHH == null || CurAHH.appliedHediffs.NullOrEmpty())
                 return false;
 
-            if (debug) Log.Warning("3");
             //foreach(Hediff h in CurAHH.appliedHediffs)
             for (int j = CurAHH.appliedHediffs.Count - 1; j >= 0; j--)
             {
