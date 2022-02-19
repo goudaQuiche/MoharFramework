@@ -30,7 +30,9 @@ namespace YAHA
 
         public Grace grace;
         public Discard discard;
-        public bool triggered = false;
+        public List<TriggerEvent> triggerEvent;
+
+        public bool triggered => !triggerEvent.NullOrEmpty();
 
         
         public bool HasLimit => applyNumLimit > 0;

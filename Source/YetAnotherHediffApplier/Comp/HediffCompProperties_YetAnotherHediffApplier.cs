@@ -9,6 +9,8 @@ namespace YAHA
         public List<HediffAssociation> associations;
 
         public int checkFrequency = 1800;
+        public int UnspawnedGrace = 3000;
+
         public bool debug = false;
 
         public bool PeriodicCheck => checkFrequency > 0;

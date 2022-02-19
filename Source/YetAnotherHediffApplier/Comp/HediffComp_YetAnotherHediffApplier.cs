@@ -21,10 +21,11 @@ namespace YAHA
 
         public List<AssociatedHediffHistory> Registry = new List<AssociatedHediffHistory>();
 
-        bool shouldSkip = false;
+        bool ShouldSkip = false;
         bool MyDebug => Props.debug;
 
         bool TriggeredOnlyHediffs = false;
+        int UnspawnedGrace = 0;
 
         public override void CompPostMake()
         {
@@ -69,8 +70,14 @@ namespace YAHA
 
         public bool RemoveHediffAndDeregister(HediffAssociation CurHA, AssociatedHediffHistory CurAHH, bool debug = false)
         {
+            if (debug) Log.Warning("Entering RemoveHediffAndDeregister");
+
             if (Pawn.TrunkNodeComputation(CurHA.condition.trunk, debug))
+            {
+                if (debug) Log.Warning("Exting RemoveHediffAndDeregister : condition was true");
                 return true;
+            }
+                
 
             if ( (CurHA.specifics != null) && (!CurHA.specifics.removeIfFalse))
                 return false;
@@ -83,11 +90,13 @@ namespace YAHA
             {
                 Hediff h = CurAHH.appliedHediffs[j];
                 // enough to remove the applied hediff ?? or need to retrieve it from pawn with bpr
-                Pawn.health.RemoveHediff(h);
-
+                //Pawn.health.RemoveHediff(h);
+                h.Severity = 0; h.PostRemoved();
+                
                 // destroy parent hediff if discard upon remove setting and random is satisfied
                 if(CurHA.specifics.HasDiscard && CurHA.specifics.discard.HasUponRemoveDiscard && Rand.Chance(CurHA.specifics.discard.uponRemove.chance.RandomInRange))
                 {
+                    // will it blend ?
                     Pawn.health.RemoveHediff(parent);
                 }
                 // add grace destroy if grace setting upon remove and random is satisfied
@@ -95,8 +104,7 @@ namespace YAHA
                 {
                     CurAHH.grace += CurHA.specifics.grace.uponRemove.tickAmount.RandomInRange;
                 }
-                    
-
+                
                 // Deregister
                 //h.Severity = 0; h.PostRemoved();
                 CurAHH.appliedHediffs.RemoveAt(j);
@@ -107,6 +115,85 @@ namespace YAHA
 
         }
 
+        public IEnumerable<int> GetTriggeredHediffAssociationIndex(TriggerEvent te)
+        {
+            for(int i = 0; i<Props.associations.Count; i++)
+            {
+                if (Props.associations[i].specifics.triggered && Props.associations[i].specifics.triggerEvent.Contains(te))
+                    yield return i;
+            }
+            yield break;
+        }
+
+        public void UpdateHediffDependingOnConditionsItem(HediffAssociation CurHA, AssociatedHediffHistory CurAHH, bool ContinueIfTriggered = true, bool debug = false)
+        {
+            // association has already applied needed hediffs in the past, skipping
+            if (CurAHH.done) return;
+
+            // triggered by harmony patch; no need to check it
+            if (ContinueIfTriggered && CurHA.specifics.triggered) return;
+
+            if (CurAHH.HasGraceTime)
+            {
+                CurAHH.grace--;
+                return;
+            }
+
+            // pawn does not fulfil conditions : remove already applied hediffs and/or go for next hediff
+            if (!RemoveHediffAndDeregister(CurHA, CurAHH, debug))
+            {
+                return;
+            }
+
+
+            List<BodyPartRecord> bodyPartRecords = null;
+            // Hediff association has body parts specifications 
+            if (CurHA.HasBodyPartToApplyHediff)
+            {
+                bodyPartRecords = Pawn.GetBP(CurHA.bodyPart, debug);
+
+                //but pawn does not have any legit body part
+                if (bodyPartRecords.NullOrEmpty()) return;
+            }
+
+            // target is full body
+            if (bodyPartRecords.NullOrEmpty())
+            {
+                if (CurHA.HasHediffPool)
+                {
+                    foreach (HediffItem hi in CurHA.hediffPool)
+                    {
+                        ApplyHediffAndRegisterSingleBodyPart(hi, CurHA, CurAHH, null, debug);
+
+                    }
+                }
+                else if (CurHA.HasRandomHediffPool)
+                {
+                    //Multiple random hediffs ????
+                    ApplyHediffAndRegisterSingleBodyPart(CurHA.randomHediffPool.PickRandomWeightedItem(), CurHA, CurAHH, null, debug);
+                }
+            }
+            // target has multiple bodypart records as target
+            else
+            {
+                if (CurHA.HasHediffPool)
+                {
+                    foreach (HediffItem hi in CurHA.hediffPool)
+                    {
+                        ApplyHediffAndRegisterWithBodyPartList(hi, CurHA, CurAHH, bodyPartRecords, debug);
+                    }
+                }
+                else if (CurHA.HasRandomHediffPool)
+                {
+                    ApplyHediffAndRegisterWithBodyPartList(CurHA.randomHediffPool.PickRandomWeightedItem(debug), CurHA, CurAHH, bodyPartRecords, debug);
+                }
+
+            }
+            if (CurHA.specifics.HasLimit && CurAHH.appliedNum > CurHA.specifics.applyNumLimit)
+                CurAHH.done = true;
+        }
+        
+
         public void UpdateHediffDependingOnConditions(bool debug = false)
         {
             for (int i = 0; i < Props.associations.Count; i++)
@@ -115,71 +202,7 @@ namespace YAHA
                 HediffAssociation CurHA = Props.associations[i];
                 AssociatedHediffHistory CurAHH = Registry[i];
 
-                // association has already applied needed hediffs in the past, skipping
-                if (CurAHH.done) continue;
-
-                // triggered by harmony patch; no need to check it
-                if (CurHA.specifics.triggered) continue;
-
-                if (CurAHH.HasGraceTime)
-                {
-                    CurAHH.grace--;
-                    continue;
-                }
-
-                // pawn does not fulfil conditions : remove already applied hediffs and/or go for next hediff
-                if (!RemoveHediffAndDeregister(CurHA, CurAHH, debug))
-                {
-                    continue;
-                }
-                    
-
-                List<BodyPartRecord> bodyPartRecords = null;
-                // Hediff association has body parts specifications 
-                if (CurHA.HasBodyPartToApplyHediff) {
-                    bodyPartRecords = Pawn.GetBP(CurHA.bodyPart, debug);
-
-                    //but pawn does not have any legit body part
-                    if (bodyPartRecords.NullOrEmpty()) continue;
-                }
-
-                // target is full body
-                if (bodyPartRecords.NullOrEmpty())
-                {
-                    if (CurHA.HasHediffPool)
-                    {
-                        foreach (HediffItem hi in CurHA.hediffPool)
-                        {
-                            ApplyHediffAndRegisterSingleBodyPart(hi, CurHA, CurAHH, null, debug);
-
-                        }
-                    }
-                    else if (CurHA.HasRandomHediffPool)
-                    {
-                        //Multiple random hediffs ????
-                        ApplyHediffAndRegisterSingleBodyPart(CurHA.randomHediffPool.PickRandomWeightedItem(), CurHA, CurAHH, null, debug);
-                    }
-                }
-                // target has multiple bodypart records as target
-                else
-                {
-                    if (CurHA.HasHediffPool)
-                    {
-                        foreach (HediffItem hi in CurHA.hediffPool)
-                        {
-                            ApplyHediffAndRegisterWithBodyPartList(hi, CurHA, CurAHH, bodyPartRecords, debug);
-                        }
-                    }
-                    else if (CurHA.HasRandomHediffPool)
-                    {
-                        ApplyHediffAndRegisterWithBodyPartList(CurHA.randomHediffPool.PickRandomWeightedItem(debug), CurHA, CurAHH, bodyPartRecords, debug);
-                    }
-
-                }
-                if (CurHA.specifics.HasLimit && CurAHH.appliedNum > CurHA.specifics.applyNumLimit)
-                    CurAHH.done = true;
-
-               
+                UpdateHediffDependingOnConditionsItem(CurHA, CurAHH, true, debug);
             }
         }
         /*
@@ -191,20 +214,35 @@ namespace YAHA
 
         public override void CompPostTick(ref float severityAdjustment)
         {
-            if (myMap == null)
+            if (UnspawnedGrace > 0)
             {
-                Init();
+                UnspawnedGrace--;
+                if (UnspawnedGrace == 0)
+                    ShouldSkip = false;
+            }
+
+            if (ShouldSkip)
+                return;
+
+            if (Pawn.Spawned)
+            {
+                    if (myMap == null)
+                    {
+                        Init();
+                        return;
+                    }
+            }
+            else
+            {
+                if (MyDebug) Log.Warning(Pawn.Name + " : pawn unspawned - Entering grace");
+                UnspawnedGrace = Props.UnspawnedGrace;
+                ShouldSkip = true;
                 return;
             }
 
-            if (shouldSkip)
+            // no need to periodic check, since associations are event triggered
+            if (TriggeredOnlyHediffs)
                 return;
-
-            if (!Pawn.Spawned)
-            {
-                if (MyDebug) Log.Warning("pawn unspawned");
-                return;
-            }
 
             if (Props.PeriodicCheck && Pawn.IsHashIntervalTick(Props.checkFrequency))
                 UpdateHediffDependingOnConditions(MyDebug);
@@ -220,8 +258,7 @@ namespace YAHA
             if (!Pawn.Spawned)
             {
                 if (MyDebug) Log.Warning("Null map");
-                //parent.Severity = 0;
-                shouldSkip = true;
+                //shouldSkip = true;
                 return;
             }
 
@@ -234,9 +271,12 @@ namespace YAHA
                 Registry.Add(new AssociatedHediffHistory());
             }
 
-            TriggeredOnlyHediffs = Props.associations.All(a => a.specifics.triggered == true);
+            TriggeredOnlyHediffs = Props.associations.All(a => a.specifics.triggered);
             if (MyDebug)
                 Log.Warning("TriggeredOnlyHediffs:" + TriggeredOnlyHediffs);
+
+            if (TriggeredOnlyHediffs)
+                return;
 
             UpdateHediffDependingOnConditions(MyDebug);
         }
@@ -263,7 +303,9 @@ namespace YAHA
                 if (Props.debug)
                 {
                     result +=
-                        Pawn.PawnResumeString() 
+                        Pawn.PawnResumeString() +
+                        (Props.associations.NullOrEmpty() ? "empty association" : Props.associations.Count + " hediff associations") +
+                        (Registry.NullOrEmpty()?"empty registry":Registry.Count + " registered hediff associations")
                         //+ "; hasAssociationHediffMaster: " + myPawn.Has_OHPLS()
                        ;
                 }

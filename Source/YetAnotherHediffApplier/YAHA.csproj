@@ -58,6 +58,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="HarmonyPatch\DraftTriggeredPatch.cs" />
+    <Compile Include="HarmonyPatch\0PatchAll.cs" />
     <Compile Include="HarmonyPatch\WearTriggeredPatch.cs" />
     <Compile Include="Structure\AssociatedHediffHistory.cs" />
     <Compile Include="Structure\HediffAssociation.cs" />
@@ -67,8 +68,13 @@
     <Compile Include="Structure\RandomHediff.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="ToolsPawn.cs" />
+    <Compile Include="TriggerEvent\Enum.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.3\Assemblies\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>

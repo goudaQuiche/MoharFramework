@@ -28,7 +28,7 @@ namespace YAHA
             Scribe_Values.Look(ref done, "done");
             Scribe_Values.Look(ref grace, "grace");
 
-            Scribe_Collections.Look(ref appliedHediffs, "appliedHediffs");
+            Scribe_Collections.Look(ref appliedHediffs, "appliedHediffs", LookMode.Reference);
             if (Scribe.mode == LoadSaveMode.PostLoadInit && appliedHediffs == null)
             {
                 appliedHediffs = new List<Hediff>();
