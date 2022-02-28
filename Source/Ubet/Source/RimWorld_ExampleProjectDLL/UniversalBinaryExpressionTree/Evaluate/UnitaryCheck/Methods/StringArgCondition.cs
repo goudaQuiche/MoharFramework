@@ -32,6 +32,11 @@ namespace Ubet
             return false;
         }
 
+        public static bool PawnIsFromRace(this Pawn p, List<string> parameters)
+        {
+            return parameters.Contains(p.def.defName);
+        }
+
         public static bool PawnHasTrait(this Pawn p, List<string> parameters)
         {
             foreach (string s in parameters)
@@ -178,12 +183,10 @@ namespace Ubet
             if (p.apparel == null || p.apparel.WornApparelCount == 0)
                 return false;
 
-            IEnumerable<Apparel> apparel = p.apparel.WornApparel.Where(a =>
+            return p.apparel.WornApparel.Any(a =>
                a.ThingIsMadeOfStuff(parameters) ||
                a.ThingHasIngredient(parameters)
             );
-
-            return !apparel.EnumerableNullOrEmpty();
         }
 
         public static bool PawnUsesWeaponMadeOf(this Pawn p, List<string> parameters)
@@ -195,5 +198,35 @@ namespace Ubet
 
             return w.ThingIsMadeOfStuff(parameters) || w.ThingHasIngredient(parameters);
         }
+
+        public static bool PawnUsesWeapon(this Pawn p, List<string> parameters)
+        {
+            if (p.equipment == null || p.equipment.Primary.DestroyedOrNull())
+                return false;
+
+            ThingWithComps w = p.equipment.Primary;
+
+            return parameters.Contains( w.def.defName );
+        }
+
+        public static bool PawnUsesApparel(this Pawn p, List<string> parameters)
+        {
+            if (p.apparel == null || p.apparel.WornApparelCount == 0)
+                return false;
+
+            return p.apparel.WornApparel.Any(a =>
+               parameters.Contains(a.def.defName)
+            );
+        }
+
+        public static bool PawnIsInSpecificMentalState(this Pawn p, List<string> MentalStateDefName)
+        {
+            if (p.MentalState == null)
+                return false;
+
+            return MentalStateDefName.Contains(p.MentalStateDef.defName);
+        }
+
+        
     }
 }

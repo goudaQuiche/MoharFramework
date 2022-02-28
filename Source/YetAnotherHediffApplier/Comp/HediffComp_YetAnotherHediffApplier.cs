@@ -9,10 +9,7 @@ namespace YAHA
 {
     /*
      * Todo: 
-     * 
-     * method to check a triggered condition
-     * wear/drop patch
-     * draft/undraft patch
+     * takeDamage trigger ; override postpostdamage
      */
     public class HediffComp_YetAnotherHediffApplier : HediffComp
     {
@@ -74,10 +71,9 @@ namespace YAHA
 
             if (Pawn.TrunkNodeComputation(CurHA.condition.trunk, debug))
             {
-                if (debug) Log.Warning("Exting RemoveHediffAndDeregister : condition was true");
+                if (debug) Log.Warning("Exiting RemoveHediffAndDeregister : condition was true");
                 return true;
             }
-                
 
             if ( (CurHA.specifics != null) && (!CurHA.specifics.removeIfFalse))
                 return false;
@@ -115,11 +111,14 @@ namespace YAHA
 
         }
 
-        public IEnumerable<int> GetTriggeredHediffAssociationIndex(TriggerEvent te)
+        public IEnumerable<int> GetTriggeredHediffAssociationIndex(TriggerEvent te, bool debug = false)
         {
-            for(int i = 0; i<Props.associations.Count; i++)
+            for (int i = 0; i < Props.associations.Count; i++)
             {
-                if (Props.associations[i].specifics.triggered && Props.associations[i].specifics.triggerEvent.Contains(te))
+                if (debug)
+                    Log.Warning("i:" + i);
+
+                if (Props.associations[i].specifics.IsTriggered && Props.associations[i].specifics.triggerEvent.Contains(te))
                     yield return i;
             }
             yield break;
@@ -131,7 +130,7 @@ namespace YAHA
             if (CurAHH.done) return;
 
             // triggered by harmony patch; no need to check it
-            if (ContinueIfTriggered && CurHA.specifics.triggered) return;
+            if (ContinueIfTriggered && CurHA.specifics.IsTriggered) return;
 
             if (CurAHH.HasGraceTime)
             {
@@ -271,12 +270,14 @@ namespace YAHA
                 Registry.Add(new AssociatedHediffHistory());
             }
 
-            TriggeredOnlyHediffs = Props.associations.All(a => a.specifics.triggered);
+            TriggeredOnlyHediffs = Props.associations.All(a => a.specifics.IsTriggered);
             if (MyDebug)
                 Log.Warning("TriggeredOnlyHediffs:" + TriggeredOnlyHediffs);
 
-            if (TriggeredOnlyHediffs)
+            /*
+             * if (TriggeredOnlyHediffs)
                 return;
+                */
 
             UpdateHediffDependingOnConditions(MyDebug);
         }

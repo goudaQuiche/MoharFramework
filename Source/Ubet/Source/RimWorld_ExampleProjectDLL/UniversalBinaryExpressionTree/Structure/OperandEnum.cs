@@ -4,11 +4,11 @@ namespace Ubet
 {
     public enum Operand
     {
-        [Description("AND operand")]
+        [Description("logical AND")]
         and,
-        [Description("OR operand")]
+        [Description("logical OR")]
         or,
-        [Description("NOT operand")]
+        [Description("logical NOT")]
         not,
 
         [Description("empty operand")]

@@ -1,6 +1,7 @@
 ﻿using Verse;
 using HarmonyLib;
-using System.Reflection;
+using System.Collections.Generic;
+using System;
 
 namespace YAHA
 {
@@ -11,11 +12,38 @@ namespace YAHA
         {
             
             Harmony YAHA_HarmonyPatch = new Harmony("goudaQuiche.MoharFramework.YAHA");
-            if (DraftPatch.TryPatch_ClearQueuedJobs(YAHA_HarmonyPatch)) Log.Message("MoharFW YAHA - ClearWorkPatch applied");
+            List<string> successStr = new List<string>();
+            List<string> failureStr = new List<string>();
 
-            //if (DraftPatch.TryDraftPatch(YAHA_HarmonyPatch)) Log.Message("MoharFW YAHA - DraftPatch applied");
+            foreach(KeyValuePair<string, Func<Harmony, bool>> entry in PatchDictionary.harmonyDict)
+            {
+                if (entry.Value(YAHA_HarmonyPatch))
+                    successStr.Add(entry.Key);
+                else
+                    failureStr.Add(entry.Key);
+            }
 
-            //YAHA_HarmonyPatch.PatchAll();
+            string PatchReport = "MoharFW YAHA - ";
+            if (!successStr.NullOrEmpty())
+            {
+                PatchReport += "Patch success:";
+                for (int i = 0; i < successStr.Count; i ++)
+                {
+                    PatchReport += ((i == 0) ? "" : "/") + successStr[i];
+                }
+                PatchReport += "; ";
+            }
+            if (!failureStr.NullOrEmpty())
+            {
+                PatchReport += "Patch failure:";
+                for (int i = 0; i < failureStr.Count; i++)
+                {
+                    PatchReport += failureStr[i] + ((i == 0) ? "" : "/");
+                }
+                PatchReport += ";";
+            }
+
+            Log.Message(PatchReport);
         }
     }
     

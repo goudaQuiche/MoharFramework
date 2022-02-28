@@ -32,7 +32,7 @@ namespace YAHA
         public Discard discard;
         public List<TriggerEvent> triggerEvent;
 
-        public bool triggered => !triggerEvent.NullOrEmpty();
+        public bool IsTriggered => !triggerEvent.NullOrEmpty();
 
         
         public bool HasLimit => applyNumLimit > 0;

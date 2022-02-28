@@ -9,50 +9,71 @@ namespace Ubet
         public static bool MainCheck(this Thing t, Condition c, bool debug = false)
         {
             if (debug)
-            {
-                string str = "MainCheck - " + c.Description;
-                if (!c.stringArg.NullOrEmpty())
-                {
-                    str += ". Parameters:";
-                    foreach (string s in c.stringArg)
-                        str += s + "; ";
-                }
+                ParametersDump(c);
 
-                Log.Warning(str);
+            if (!(((Pawn)t) is Pawn p))
+            {
+                if (debug) Log.Warning("MainCheck - thing was not pawn, returning false");
+                return false;
             }
+                
 
             if (c.HasNoArg)
             {
                 Func<Pawn, bool> myCall = ConditionDictionnary.noArgconditions.TryGetValue(c.type);
-                if (myCall == null)
-                {
-                    if (debug)
-                        Log.Warning("could not find no arg function for " + c.type.ToString() + "(" + c.Description + ")");
+                if (MethodIsNullAndDebug(c, "no arg method", myCall == null, debug))
                     return false;
-                }
-                return myCall((Pawn)t);
+                
+                return myCall(p);
             }
-            else if (c.HasStringArg)
+            else if (c.Has1StringArg)
             {
                 Func<Pawn, List<string>, bool> myCall = ConditionDictionnary.StringArgconditions.TryGetValue(c.type);
-                if (myCall == null)
-                {
-                    if (debug)
-                        Log.Warning("could not find string arg function for " + c.type.ToString() + "(" + c.Description + ")");
+                if (MethodIsNullAndDebug(c, "1 string arg method", myCall == null, debug))
                     return false;
-                }
-                return myCall((Pawn)t, c.stringArg);
+                
+                return myCall(p, c.stringArg[0]);
+            }
+            else if (c.Has2StringArg)
+            {
+                Func<Pawn, List<string>, List<string>, bool> myCall = ConditionDictionnary.TwoStringArgconditions.TryGetValue(c.type);
+                if (MethodIsNullAndDebug(c, "2 string arg method", myCall == null, debug))
+                    return false;
+                
+                return myCall(p, c.stringArg[0], c.stringArg[1]);
+            }
+            else if (c.HasStringFloatArg)
+            {
+                Func<Pawn, List<string>, List<FloatRange>, bool> myCall = ConditionDictionnary.StringFloatArgconditions.TryGetValue(c.type);
+                if (MethodIsNullAndDebug(c, "strind and float range arg method", myCall == null, debug))
+                    return false;
+
+                return myCall(p, c.stringArg[0], c.floatArg);
+
             }
             else if (c.HasIntArg)
             {
-                Func<Pawn, List<IntRange>, bool> myCall = ConditionDictionnary.IntRangeArgconditions.TryGetValue(c.type);
-                if (myCall == null)
-                {
-                    if (debug)
-                        Log.Warning("could not find intrange arg function for " + c.type.ToString() + "(" + c.type.DescriptionAttr() + ")");
+                Func<Pawn, List<IntRange>, bool> myCall = ConditionDictionnary.IntRangeListArgconditions.TryGetValue(c.type);
+                if (MethodIsNullAndDebug(c, "int range arg method", myCall == null, debug))
                     return false;
-                }
-                return myCall((Pawn)t, c.intArg);
+ 
+                return myCall(p, c.intArg);
+            }
+            else if (c.HasFloatArg)
+            {
+                Func<FloatRange, bool> myCall = ConditionDictionnary.FloatRangeArgconditions.TryGetValue(c.type);
+                if (MethodIsNullAndDebug(c, "float range arg method", myCall == null, debug))
+                    return false;
+                
+                return myCall(c.floatArg[0]);
+            }else if (c.HasCurve)
+            {
+                Func<Pawn, SimpleCurve, bool> myCall = ConditionDictionnary.CurveArgconditions.TryGetValue(c.type);
+
+                if (MethodIsNullAndDebug(c, "curve arg method", myCall == null, debug))
+                    return false;
+
+                return myCall(p, c.curve);
             }
 
             if (debug)
@@ -61,81 +82,68 @@ namespace Ubet
             return false;
         }
 
-        //
-        public static bool OldMainCheck(this Thing t, Condition c, bool debug = false)
+        public static void ParametersDump(Condition c)
         {
-            if (debug)
+            string str = "MainCheck - " + c.Description;
+            if (c.HasNoArg)
             {
-                string str = "MainCheck - " + c.type.DescriptionAttr();
-                if (!c.stringArg.NullOrEmpty())
+
+            }
+            else
+            {
+                if (c.Has2StringArg || c.Has1StringArg)
                 {
-                    str += ". Parameters:";
-                    foreach (string s in c.stringArg)
-                        str += s + "; ";
+                    str += ". string Parameters:";
+                    foreach (List<string> sl in c.stringArg)
+                    {
+
+                        foreach (string s in sl)
+                            str += s + "; ";
+                    }
                 }
-                    
-                Log.Warning(str);
+                if (c.HasIntArg)
+                {
+                    str += ". int range Parameters:";
+                    foreach (IntRange i in c.intArg)
+                    {
+                        str += i.ToString() + "; ";
+                    }
+                }
+                if (c.HasFloatArg)
+                {
+                    str += ". float range Parameters:";
+                    foreach (FloatRange f in c.floatArg)
+                    {
+                        str += f.ToString() + "; ";
+                    }
+                }
+                if (c.HasCurve)
+                {
+                    str += ".curve param:";
+                    foreach(var cp in c.curve.Points)
+                    {
+                        str += cp.ToString() + "; ";
+                    }
+                }
             }
-            //Log.Warning(((Ubet.Condition)c).GetEnumDescription());
-            //Ubet.Condition.GetEnumDescription(c))
+            
 
-            switch (c.type) {
-                case ConditionType.isPawn:
-                    return t.ThingIsPawn();
+            Log.Warning(str);
+        }
 
-                case ConditionType.isHuman:
-                    return ((Pawn)t).PawnIsHuman();
-
-                //Gender
-                case ConditionType.isMale:
-                    return ((Pawn)t).PawnIsMale();
-                case ConditionType.isFemale:
-                    return ((Pawn)t).PawnIsFemale();
-
-                //Activity
-                case ConditionType.isDrafted:
-                    return ((Pawn)t).PawnIsDrafted();
-                case ConditionType.isUndrafted:
-                    return ((Pawn)t).PawnIsUndrafted();
-                case ConditionType.isPerformingJob:
-                    return ((Pawn)t).PawnIsPerformingJob(c.stringArg);
-
-                // Pawn nature
-                case ConditionType.belongsToLifeStage:
-                    return ((Pawn)t).PawnBelongsToLifeStage(c.stringArg);
-                case ConditionType.isPawnKind:
-                    return ((Pawn)t).PawnIsPawnKind(c.stringArg);
-                case ConditionType.hasTrait:
-                    return ((Pawn)t).PawnHasTrait(c.stringArg);
-                case ConditionType.hasBackstory:
-                    return ((Pawn)t).PawnHasBackstory(c.stringArg);
-
-
-                //Environment
-                case ConditionType.isOnMapWithWeather:
-                    return ((Pawn)t).PawnMapWeather(c.stringArg);
-                case ConditionType.isOnMapWithSeason:
-                    return ((Pawn)t).PawnMapSeason(c.stringArg);
-
-                //Relations
-                case ConditionType.hasDeadRelation:
-                    return ((Pawn)t).PawnHasDeadRelation(c.stringArg);
-                case ConditionType.hasAliveRelation:
-                    return ((Pawn)t).PawnHasAliveRelation(c.stringArg);
-
-                //Condition
-                case ConditionType.hasBodyPart:
-                    return ((Pawn)t).PawnHasBodyPart(c.stringArg);
-
-                //Equipment
-                case ConditionType.wearsApparelMadeOf:
-                    return ((Pawn)t).PawnWearsApparelMadeOf(c.stringArg);
-                case ConditionType.usesWeaponMadeOf:
-                    return ((Pawn)t).PawnUsesWeaponMadeOf(c.stringArg);
-
-                default:
-                    return false;
+        public static void FoundMethodDebug(Condition c, string MethodType)
+        {
+            Log.Warning("could not find " + MethodType + " function for " + c.type.ToString() + "(" + c.Description + ")");
+        }
+        public static bool MethodIsNullAndDebug(Condition c, string debugStr, bool MethodIsNull, bool debug)
+        {
+            if (MethodIsNull)
+            {
+                if (debug)
+                    FoundMethodDebug(c, debugStr);
+                return true;
             }
+            return false;
         }
 
     }

@@ -5,10 +5,18 @@ namespace YAHA
 {
     public enum TriggerEvent
     {
-        [Description("draft event triggered")]
+        [Description("draft toggle event")]
         draft,
+
+        [Description("apparel changed event")]
+        equipWeapon,
+
+        [Description("apparel changed event")]
+        wearApparel,
 
         [Description("empty event")]
         empty
     }
+
+
 }

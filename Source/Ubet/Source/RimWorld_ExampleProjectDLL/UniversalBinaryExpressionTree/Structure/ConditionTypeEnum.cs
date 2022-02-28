@@ -27,16 +27,30 @@ namespace Ubet
         isUndrafted,
         [Description("is performing job")]
         isPerformingJob,
-
+        [Description("is doing bill job")]
+        isDoingBill,
+        [Description("is in mental state")]
+        isInMentalState,
+        [Description("is in specific mental state")]
+        isInSpecificMentalState,
+        
         //Nature
-        [Description("belongs to life stage")]
-        belongsToLifeStage,
+        [Description("belongs to race")]
+        belongsToRace,
         [Description("belongs to pawn kind")]
         isPawnKind,
+        [Description("belongs to life stage")]
+        belongsToLifeStage,
+        [Description("belongs to player faction")]
+        belongsToPlayerFaction,
         [Description("has trait")]
         hasTrait,
         [Description("has backstory")]
         hasBackstory,
+
+        // Need
+        [Description("has need in range")]
+        hasNeedInRange,
 
         //Environment - map
         [Description("is on a map with weather")]
@@ -46,19 +60,25 @@ namespace Ubet
 
         //Environment - time
         [Description("is within day of year range")]
-        IsWithinDayOfYearRange,
+        isWithinDayOfYearRange,
         [Description("is within day of season range")]
-        IsWithinDayOfSeasonRange,
+        isWithinDayOfSeasonRange,
         [Description("is within day of quadrum range")]
-        IsWithinDayOfQuadrumRange,
+        isWithinDayOfQuadrumRange,
         [Description("is within day of twelfth range")]
-        IsWithinDayOfTwelfthRange,
+        isWithinDayOfTwelfthRange,
         [Description("is within hour of day range")]
-        IsWithinHourOfDayRange,
+        isWithinHourOfDayRange,
         [Description("is within twelfth range")]
-        IsWithinTwelfthRange,
+        isWithinTwelfthRange,
 
-
+        //Environment - Position building
+        [Description("is lying in a bed")]
+        lyingInBed,
+        [Description("is lying in a love bed")]
+        lyingInLoveBed,
+        [Description("is lying in a medical bed")]
+        lyingInMedicalBed,
 
 
         //Relations
@@ -72,10 +92,27 @@ namespace Ubet
         hasBodyPart,
 
         //Equipment
-        [Description("wears apparel made of")]
+        [Description("wears any apparel made of")]
         wearsApparelMadeOf,
-        [Description("uses weapon made of")]
+        [Description("uses any weapon made of")]
         usesWeaponMadeOf,
+        [Description("wears specific apparel")]
+        wearsApparel,
+        [Description("uses specific weapon")]
+        usesWeapon,
+        [Description("wears specific apparel made of")]
+        wearsSpecificApparelMadeOf,
+        [Description("uses specific weapon made of")]
+        usesSpecificWeaponMadeOf,
+
+
+        //Random
+        [Description("random dice roll")]
+        floatRangeRandom,
+        [Description("random dice based on age curve roll")]
+        ageCurveRandom,
+        [Description("random dice based on health curve roll")]
+        healthCurveRandom,
 
         [Description("empty condition")]
         empty
