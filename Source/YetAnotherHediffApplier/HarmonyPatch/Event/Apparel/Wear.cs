@@ -12,7 +12,7 @@ namespace YAHA
     [StaticConstructorOnStartup]
     public class WearPatch
     {
-        public static bool TryPatch_ApparelAdded(Harmony myPatch)
+        public static bool TryPatch_ApparelWorn(Harmony myPatch)
         {
             //MethodInfo methodInfo = AccessTools.Method(typeof(Pawn_ApparelTracker), "ApparelChanged", null, null);
 
@@ -41,7 +41,7 @@ namespace YAHA
                 
                 Log.Warning("This is Notify_ApparelAdded; p=" + p.Name );
 
-                YahaUtility.UpdateDependingOnTriggerEvent(p, TriggerEvent.wearApparel);
+                YahaUtility.UpdateDependingOnTriggerEvent(p, TriggerEvent.apparel);
             }
         }
     }

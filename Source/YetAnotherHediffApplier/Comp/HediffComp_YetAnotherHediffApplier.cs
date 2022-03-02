@@ -24,6 +24,8 @@ namespace YAHA
         bool TriggeredOnlyHediffs = false;
         int UnspawnedGrace = 0;
 
+        int UpdateNumthisTick = 0;
+
         public override void CompPostMake()
         {
             Init();
@@ -55,6 +57,8 @@ namespace YAHA
             {
                 CurAHH.grace += CurHA.specifics.grace.uponApply.tickAmount.RandomInRange;
             }
+
+            CurAHH.DidSomethingThisTick = true;
         }
 
         public void ApplyHediffAndRegisterWithBodyPartList(HediffItem hi, HediffAssociation CurHA, AssociatedHediffHistory CurAHH, List<BodyPartRecord> BPRL, bool debug = false)
@@ -87,13 +91,14 @@ namespace YAHA
                 Hediff h = CurAHH.appliedHediffs[j];
                 // enough to remove the applied hediff ?? or need to retrieve it from pawn with bpr
                 //Pawn.health.RemoveHediff(h);
-                h.Severity = 0; h.PostRemoved();
+                h.Severity = 0; //h.PostRemoved();
                 
                 // destroy parent hediff if discard upon remove setting and random is satisfied
                 if(CurHA.specifics.HasDiscard && CurHA.specifics.discard.HasUponRemoveDiscard && Rand.Chance(CurHA.specifics.discard.uponRemove.chance.RandomInRange))
                 {
                     // will it blend ?
                     Pawn.health.RemoveHediff(parent);
+                    
                 }
                 // add grace destroy if grace setting upon remove and random is satisfied
                 if (CurHA.specifics.HasGrace && CurHA.specifics.grace.HasUponRemoveGrace && Rand.Chance(CurHA.specifics.grace.uponRemove.chance.RandomInRange))
@@ -104,7 +109,9 @@ namespace YAHA
                 // Deregister
                 //h.Severity = 0; h.PostRemoved();
                 CurAHH.appliedHediffs.RemoveAt(j);
-                
+
+                CurAHH.DidSomethingThisTick = true;
+
             }
 
             return false;
@@ -126,6 +133,19 @@ namespace YAHA
 
         public void UpdateHediffDependingOnConditionsItem(HediffAssociation CurHA, AssociatedHediffHistory CurAHH, bool ContinueIfTriggered = true, bool debug = false)
         {
+            if (++UpdateNumthisTick > Props.UpdateNumthisTickLimit)
+            {
+                Log.Warning("Yaha has tried to update " + UpdateNumthisTick + " times during this tick. Limit is : "+ Props.UpdateNumthisTickLimit + ". Is there a recursion problem ?");
+                //return;
+            }
+
+            if (CurAHH.DidSomethingThisTick)
+            {
+                if(debug)
+                    Log.Warning("Yaha registry says something has already been done this tick; exiting");
+                return;
+            }
+
             // association has already applied needed hediffs in the past, skipping
             if (CurAHH.done) return;
 
@@ -143,7 +163,6 @@ namespace YAHA
             {
                 return;
             }
-
 
             List<BodyPartRecord> bodyPartRecords = null;
             // Hediff association has body parts specifications 
@@ -163,7 +182,6 @@ namespace YAHA
                     foreach (HediffItem hi in CurHA.hediffPool)
                     {
                         ApplyHediffAndRegisterSingleBodyPart(hi, CurHA, CurAHH, null, debug);
-
                     }
                 }
                 else if (CurHA.HasRandomHediffPool)
@@ -186,7 +204,6 @@ namespace YAHA
                 {
                     ApplyHediffAndRegisterWithBodyPartList(CurHA.randomHediffPool.PickRandomWeightedItem(debug), CurHA, CurAHH, bodyPartRecords, debug);
                 }
-
             }
             if (CurHA.specifics.HasLimit && CurAHH.appliedNum > CurHA.specifics.applyNumLimit)
                 CurAHH.done = true;
@@ -201,6 +218,9 @@ namespace YAHA
                 HediffAssociation CurHA = Props.associations[i];
                 AssociatedHediffHistory CurAHH = Registry[i];
 
+                // To make a difference when update is called with either the frequency loop or the triggered event
+                //CurAHH.DidSomethingThisTick = false;
+
                 UpdateHediffDependingOnConditionsItem(CurHA, CurAHH, true, debug);
             }
         }
@@ -213,6 +233,8 @@ namespace YAHA
 
         public override void CompPostTick(ref float severityAdjustment)
         {
+            UpdateNumthisTick = 0;
+
             if (UnspawnedGrace > 0)
             {
                 UnspawnedGrace--;
@@ -239,12 +261,21 @@ namespace YAHA
                 return;
             }
 
+            DidNothing();
+
             // no need to periodic check, since associations are event triggered
             if (TriggeredOnlyHediffs)
                 return;
 
             if (Props.PeriodicCheck && Pawn.IsHashIntervalTick(Props.checkFrequency))
                 UpdateHediffDependingOnConditions(MyDebug);
+        }
+        public void DidNothing()
+        {
+            foreach (AssociatedHediffHistory curAHH in Registry)
+            {
+                curAHH.DidSomethingThisTick = false;
+            }
         }
 
         public void Init()

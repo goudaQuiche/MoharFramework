@@ -10,6 +10,7 @@ namespace YAHA
         public bool done;
         public int grace;
         public List<Hediff> appliedHediffs;
+        public bool DidSomethingThisTick = false;
 
         public bool HasGraceTime => grace > 0;
 

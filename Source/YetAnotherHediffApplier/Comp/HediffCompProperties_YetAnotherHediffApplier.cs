@@ -14,6 +14,7 @@ namespace YAHA
         public bool debug = false;
 
         public bool PeriodicCheck => checkFrequency > 0;
+        public int UpdateNumthisTickLimit = 10;
 
         public HediffCompProperties_YetAnotherHediffApplier()
         {

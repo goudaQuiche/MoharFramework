@@ -23,16 +23,41 @@ namespace YAHA
                     failureStr.Add(entry.Key);
             }
 
+            //string PatchReport = ReportDump(successStr, failureStr);
+            string PatchReport = SmallReport(successStr, failureStr);
+
+            Log.Message(PatchReport);
+        }
+
+        static string SmallReport(List<string> successStr, List<string> failureStr)
+        {
             string PatchReport = "MoharFW YAHA - ";
+
+            if (!successStr.NullOrEmpty())
+            {
+                PatchReport += "successfuly completed "+successStr.Count+" harmony patches. ";
+            }
+            if (!failureStr.NullOrEmpty())
+            {
+                PatchReport += "Patch failures:" + failureStr.Count + ".";
+            }
+            return PatchReport;
+        }
+
+        static string ReportDump(List<string> successStr, List<string> failureStr)
+        {
+            string PatchReport = "MoharFW YAHA - ";
+
             if (!successStr.NullOrEmpty())
             {
                 PatchReport += "Patch success:";
-                for (int i = 0; i < successStr.Count; i ++)
+                for (int i = 0; i < successStr.Count; i++)
                 {
                     PatchReport += ((i == 0) ? "" : "/") + successStr[i];
                 }
                 PatchReport += "; ";
             }
+
             if (!failureStr.NullOrEmpty())
             {
                 PatchReport += "Patch failure:";
@@ -43,24 +68,7 @@ namespace YAHA
                 PatchReport += ";";
             }
 
-            Log.Message(PatchReport);
+            return PatchReport;
         }
     }
-    
-    /*
-    [StaticConstructorOnStartup]
-    public class YAHA_Patch
-    {
-        public static bool TryPatchAll(Harmony myPatch)
-        {
-
-            string LogName = "Yet another hediff applier - YAHA - harmony patch ";
-            bool MyDebug = true;
-
-            DraftPatch.DraftedPostfix();
-
-            return true;
-        }
-    }
-    */
 }

@@ -14,7 +14,7 @@ namespace YAHA
 
         public static void CheckTriggeredAssociations(IEnumerable<Hediff> YahaHediffs, TriggerEvent triggerEvent)
         {
-            foreach (Hediff h in YahaHediffs)
+            foreach (Hediff h in YahaHediffs.ToList())
             {
                 HediffComp_YetAnotherHediffApplier YahaComp = h.TryGetComp<HediffComp_YetAnotherHediffApplier>();
                 bool MyDebug = YahaComp.Props.debug;
@@ -46,9 +46,7 @@ namespace YAHA
 
         public static void UpdateDependingOnTriggerEvent(Pawn p, TriggerEvent te, bool debug=false)
         {
-            IEnumerable<Hediff> allYahaHediffs = p.health.hediffSet.hediffs.Where(hi => hi.TryGetComp<HediffComp_YetAnotherHediffApplier>() != null);
-
-            if (allYahaHediffs.EnumerableNullOrEmpty())
+            if (!(p.health.hediffSet.hediffs.Where(hi => hi.TryGetComp<HediffComp_YetAnotherHediffApplier>() != null) is IEnumerable<Hediff> allYahaHediffs))
                 return;
 
             CheckTriggeredAssociations(allYahaHediffs, te);

@@ -80,7 +80,6 @@ namespace Ubet
         [Description("is lying in a medical bed")]
         lyingInMedicalBed,
 
-
         //Relations
         [Description("has alive relation")]
         hasAliveRelation,
@@ -90,6 +89,8 @@ namespace Ubet
         //Body
         [Description("has body part")]
         hasBodyPart,
+        [Description("has hediff")]
+        hasHediff,
 
         //Equipment
         [Description("wears any apparel made of")]

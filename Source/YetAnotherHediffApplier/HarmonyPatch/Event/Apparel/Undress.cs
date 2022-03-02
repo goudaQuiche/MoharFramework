@@ -12,7 +12,7 @@ namespace YAHA
     [StaticConstructorOnStartup]
     public class UndressPatch
     {
-        public static bool TryPatch_ApparelRemoved(Harmony myPatch)
+        public static bool TryPatch_ApparelUndressed(Harmony myPatch)
         {
             //MethodInfo methodInfo = AccessTools.Method(typeof(Pawn_ApparelTracker), "ApparelChanged", null, null);
 
@@ -34,14 +34,14 @@ namespace YAHA
 
         static class ApplyPatch_ApparelRemoved
         {
-            static void Postfix_Notify_ApparelAdded(Pawn_ApparelTracker __instance)
+            static void Postfix_Notify_ApparelRemoved(Pawn_ApparelTracker __instance)
             {
                 if (!(__instance.pawn is Pawn p))
                     return;
                 
                 Log.Warning("This is Notify_ApparelRemoved; p=" + p.Name );
 
-                YahaUtility.UpdateDependingOnTriggerEvent(p, TriggerEvent.wearApparel);
+                YahaUtility.UpdateDependingOnTriggerEvent(p, TriggerEvent.apparel);
             }
         }
     }

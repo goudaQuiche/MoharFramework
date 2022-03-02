@@ -39,7 +39,9 @@ namespace Ubet
             { ConditionType.belongsToRace,  new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnIsFromRace) },
             { ConditionType.hasTrait, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnHasTrait) },
             { ConditionType.hasBackstory, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnHasBackstory) },
+
             { ConditionType.hasBodyPart, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnHasBodyPart) },
+            { ConditionType.hasHediff, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnHasHediff) },
 
             { ConditionType.isOnMapWithWeather, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnMapWeather) },
             { ConditionType.isOnMapWithSeason, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnMapSeason) },

@@ -57,11 +57,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="HarmonyPatch\Event\Apparel\ApparelRemoved.cs" />
-    <Compile Include="HarmonyPatch\Event\Weapon\PrimaryWeaponChanged.cs" />
+    <Compile Include="HarmonyPatch\Event\Apparel\Undress.cs" />
+    <Compile Include="HarmonyPatch\Event\Hediff\Add.cs" />
+    <Compile Include="HarmonyPatch\Event\Hediff\Remove.cs" />
+    <Compile Include="HarmonyPatch\Event\Weapon\Remove.cs" />
+    <Compile Include="HarmonyPatch\Event\Weapon\Equip.cs" />
     <Compile Include="HarmonyPatch\Event\DraftToggle.cs" />
     <Compile Include="HarmonyPatch\0PatchAll.cs" />
-    <Compile Include="HarmonyPatch\Event\Apparel\ApparelAdded.cs" />
+    <Compile Include="HarmonyPatch\Event\Apparel\Wear.cs" />
     <Compile Include="HarmonyPatch\PatchDictionary.cs" />
     <Compile Include="HarmonyPatch\Utility.cs" />
     <Compile Include="Structure\AssociatedHediffHistory.cs" />

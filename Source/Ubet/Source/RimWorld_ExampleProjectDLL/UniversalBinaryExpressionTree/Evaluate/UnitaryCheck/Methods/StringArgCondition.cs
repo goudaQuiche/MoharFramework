@@ -227,6 +227,16 @@ namespace Ubet
             return MentalStateDefName.Contains(p.MentalStateDef.defName);
         }
 
-        
+        public static bool PawnHasHediff(this Pawn p, List<string> Hediff)
+        {
+            if (p.health.hediffSet.hediffs.NullOrEmpty())
+                return false;
+
+            return p.health.hediffSet.hediffs.Any(h =>
+               Hediff.Contains(h.def.defName)
+            );
+        }
+
+
     }
 }
