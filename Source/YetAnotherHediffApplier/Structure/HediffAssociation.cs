@@ -18,6 +18,8 @@ namespace YAHA
         public bool HasRandomHediffPool => !randomHediffPool.NullOrEmpty();
 
         public bool HasBodyPartToApplyHediff => !bodyPart.NullOrEmpty();
+
+        public bool HasSpecifics => specifics != null;
     }
 
     public class ApplySpecifics

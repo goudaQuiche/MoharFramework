@@ -62,5 +62,38 @@ namespace Ubet
             return true;
 
         }
+
+        public static bool PawnIsPerformingTouchJob(Pawn p, List<string> JobDef, List<string> BuildingDef)
+        {
+            // no job
+            if (p.CurJob == null)
+                return false;
+
+            // not good job
+            if (!JobDef.Contains( p.CurJob.def.defName ))
+                return false;
+
+            if (p.CurJob.targetA == null)
+                return false;
+
+            // targetA is billGiver
+            if (!(p.CurJob.targetA.Thing is Thing t))
+                return false;
+
+            // found building
+            if (!((Building)t is Building b))
+                return false;
+
+            // correct building depending on def
+            if (!BuildingDef.Contains(b.def.defName))
+                return false;
+
+            // performing right recipe
+            if (p.Position.DistanceTo(b.Position) >= 1.5f) 
+                return false;
+
+            return true;
+
+        }
     }
 }

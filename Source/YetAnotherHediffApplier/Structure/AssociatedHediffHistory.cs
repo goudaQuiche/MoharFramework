@@ -14,6 +14,8 @@ namespace YAHA
 
         public bool HasGraceTime => grace > 0;
 
+        public bool HasAppliedHediffs => !appliedHediffs.NullOrEmpty();
+
         public AssociatedHediffHistory()
         {
             appliedNum = 0;

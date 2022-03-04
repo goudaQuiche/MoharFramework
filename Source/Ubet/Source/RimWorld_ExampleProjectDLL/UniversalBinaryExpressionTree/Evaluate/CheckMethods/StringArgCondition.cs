@@ -227,7 +227,7 @@ namespace Ubet
             return MentalStateDefName.Contains(p.MentalStateDef.defName);
         }
 
-        public static bool PawnHasHediff(this Pawn p, List<string> Hediff)
+        public static bool PawnHasAnyHediff(this Pawn p, List<string> Hediff)
         {
             if (p.health.hediffSet.hediffs.NullOrEmpty())
                 return false;
@@ -237,6 +237,55 @@ namespace Ubet
             );
         }
 
+        public static bool PawnHasAllHediffs(this Pawn p, List<string> Hediff)
+        {
+            if (p.health.hediffSet.hediffs.NullOrEmpty())
+                return false;
+
+            bool okResult = true;
+            foreach(string hStr in Hediff)
+            {
+                okResult &= p.health.hediffSet.hediffs.Any(
+                    h => hStr == h.def.defName
+                );
+                if (!okResult) return false;
+            }
+            return okResult;
+        }
+
+        public static bool PawnHasAllHediffsOnBodyParts(this Pawn p, List<string> Hediff, List<string> BodyPart)
+        {
+            if (p.health.hediffSet.hediffs.NullOrEmpty())
+                return false;
+
+            if (Hediff.NullOrEmpty() || BodyPart.NullOrEmpty())
+                return false;
+
+            if (Hediff.Count != BodyPart.Count)
+                return false;
+
+            bool okResult = true;
+
+            for(int i = 0; i<Hediff.Count; i++)
+            {
+                string hStr = Hediff[i];
+                string bpStr = BodyPart[i];
+
+                okResult &= p.health.hediffSet.hediffs.Any(
+                    h => 
+                        hStr == h.def.defName &&
+                        (
+                        bpStr.NullOrEmpty() ? 
+                        h.Part == null :
+                        ( h.Part.untranslatedCustomLabel == bpStr || h.Part.def.defName == bpStr )
+                        )
+                );
+
+                if (!okResult) return false;
+            }
+
+            return okResult;
+        }
 
     }
 }

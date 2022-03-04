@@ -9,9 +9,6 @@ namespace YAHA
 {
     public static class YahaUtility
     {
-        //public static readonly MethodInfo ParentHolder = AccessTools.Method(type: typeof(IThingHolder), name: "ParentHolder");
-        //shortHashGiver.Invoke(obj: null, parameters: new object[] {yourDef, typeof(yourDefType)});
-
         public static void CheckTriggeredAssociations(IEnumerable<Hediff> YahaHediffs, TriggerEvent triggerEvent)
         {
             foreach (Hediff h in YahaHediffs.ToList())
@@ -39,7 +36,7 @@ namespace YAHA
                         Log.Warning("CheckTriggeredAssociations - Found " + triggerEvent.GetDesc() + " ; i=" + i);
                     }
 
-                    YahaComp.UpdateHediffDependingOnConditionsItem(CurHA, CurAHH, false, MyDebug);
+                    YahaComp.CheckSingleHediffAssociation(CurHA, CurAHH, false);
                 }
             }
         }

@@ -7,16 +7,9 @@ namespace DUDOD
     public class HediffComp_DestroyUponDeathOrDowned : HediffComp
     {
         Thing RememberWeapon = null;
-
         private bool myDebug = false;
 
-        public HediffCompProperties_DestroyUponDeathOrDowned Props
-        {
-            get
-            {
-                return (HediffCompProperties_DestroyUponDeathOrDowned)this.props;
-            }
-        }
+        public HediffCompProperties_DestroyUponDeathOrDowned Props => (HediffCompProperties_DestroyUponDeathOrDowned)props;
 
         public override void CompPostMake()
         {
@@ -32,10 +25,10 @@ namespace DUDOD
         {
             if (Pawn.Dead)
             {
-                Tools.Warn(Pawn.LabelShort + " is dead and will get destroyed", myDebug);
+                if (myDebug) Log.Warning(Pawn.LabelShort + " is dead and will get destroyed");
                 if (Pawn.Corpse == null)
                 {
-                    Tools.Warn("found no corpse to work with, wont do anything", myDebug);
+                    if (myDebug) Log.Warning(Pawn.LabelShort + " found no corpse to work with, wont do anything");
                     return false;
                 }
                 Corpse corpse = Pawn.Corpse;
@@ -47,7 +40,7 @@ namespace DUDOD
             }
             else if(Pawn.Downed)
             {
-                Tools.Warn(Pawn.LabelShort + " is downed and will get destroyed", myDebug);
+                if (myDebug) Log.Warning(Pawn.LabelShort + " is downed and will get destroyed");
                 if (Props.StripBeforeDeath && Pawn.AnythingToStrip())
                     Pawn.Strip();
 
@@ -55,7 +48,7 @@ namespace DUDOD
             }
             else
             {
-                Tools.Warn("How?", myDebug);
+                if (myDebug) Log.Warning(Pawn.LabelShort + " How?");
             }
 
             if (Props.DestroyWeapon && RememberWeapon != null && RememberWeapon.Spawned)

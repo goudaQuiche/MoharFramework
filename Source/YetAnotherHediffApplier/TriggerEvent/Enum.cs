@@ -17,6 +17,14 @@ namespace YAHA
         [Description("weapon changed")]
         weapon,
 
+        [Description("got wounded")]
+        anyWound,
+        [Description("got wounded by enemy")]
+        enemyWound,
+        [Description("got wounded by ally")]
+        friendlyFire,
+
+
         [Description("empty event")]
         empty
     }

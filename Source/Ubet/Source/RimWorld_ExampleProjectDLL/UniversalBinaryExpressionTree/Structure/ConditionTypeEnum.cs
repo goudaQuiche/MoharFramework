@@ -27,6 +27,8 @@ namespace Ubet
         isUndrafted,
         [Description("is performing job")]
         isPerformingJob,
+        [Description("is performing job with PathEndMode.Touch")]
+        isPerformingTouchJob,
         [Description("is doing bill job")]
         isDoingBill,
         [Description("is in mental state")]
@@ -90,7 +92,13 @@ namespace Ubet
         [Description("has body part")]
         hasBodyPart,
         [Description("has hediff")]
-        hasHediff,
+        hasAnyHediff,
+        [Description("has all hediffs")]
+        hasAllHediff,
+        [Description("has all hediffs on bodyparts")]
+        hasAllHediffOnBodyPart,
+        [Description("got hurt")]
+        gotHurt,
 
         //Equipment
         [Description("wears any apparel made of")]

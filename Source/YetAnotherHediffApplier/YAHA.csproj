@@ -57,6 +57,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Comp\CompCheckUtility.cs" />
+    <Compile Include="Comp\CompUtility.cs" />
     <Compile Include="HarmonyPatch\Event\Apparel\Undress.cs" />
     <Compile Include="HarmonyPatch\Event\Hediff\Add.cs" />
     <Compile Include="HarmonyPatch\Event\Hediff\Remove.cs" />

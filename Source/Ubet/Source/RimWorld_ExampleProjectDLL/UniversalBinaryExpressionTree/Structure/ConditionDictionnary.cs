@@ -41,7 +41,8 @@ namespace Ubet
             { ConditionType.hasBackstory, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnHasBackstory) },
 
             { ConditionType.hasBodyPart, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnHasBodyPart) },
-            { ConditionType.hasHediff, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnHasHediff) },
+            { ConditionType.hasAnyHediff, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnHasAnyHediff) },
+            { ConditionType.hasAllHediff, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnHasAllHediffs) },
 
             { ConditionType.isOnMapWithWeather, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnMapWeather) },
             { ConditionType.isOnMapWithSeason, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnMapSeason) },
@@ -61,6 +62,8 @@ namespace Ubet
             { ConditionType.wearsSpecificApparelMadeOf, new Func<Pawn, List<string>, List<string>, bool> (TwoStringArgConditionMethods.PawnWearsSpecificApparelMadeOf) },
             { ConditionType.usesSpecificWeaponMadeOf, new Func<Pawn, List<string>, List<string>, bool> (TwoStringArgConditionMethods.PawnUsesSpecificWeaponMadeOf) },
             { ConditionType.isDoingBill, new Func<Pawn, List<string>, List<string>, bool> (TwoStringArgConditionMethods.PawnDoingBill) },
+            { ConditionType.isPerformingTouchJob, new Func<Pawn, List<string>, List<string>, bool> (TwoStringArgConditionMethods.PawnIsPerformingTouchJob) },
+            { ConditionType.hasAllHediffOnBodyPart, new Func<Pawn, List<string>,  List<string>, bool> (StringArgConditionMethods.PawnHasAllHediffsOnBodyParts) },
         };
 
         // StringFloatArgconditions

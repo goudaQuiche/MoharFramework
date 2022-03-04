@@ -54,10 +54,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="GfxEffects.cs" />
     <Compile Include="HediffCompProperties_DestroyUponDeathOrDowned.cs" />
     <Compile Include="HediffComp_DestroyUponDeathOrDowned.cs" />
-    <Compile Include="MyGfx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools.cs" />
   </ItemGroup>

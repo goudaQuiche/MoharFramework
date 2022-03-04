@@ -37,15 +37,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ModCompatibilityCheck.cs" />
-    <Compile Include="UniversalBinaryExpressionTree\Evaluate\UnitaryCheck\Methods\CurveArgCondition.cs" />
-    <Compile Include="UniversalBinaryExpressionTree\Evaluate\UnitaryCheck\Methods\NoArgCondition.cs" />
-    <Compile Include="UniversalBinaryExpressionTree\Evaluate\UnitaryCheck\Methods\IntRangeArgCondition.cs" />
-    <Compile Include="UniversalBinaryExpressionTree\Evaluate\UnitaryCheck\Methods\FloatRangeArgCondition.cs" />
-    <Compile Include="UniversalBinaryExpressionTree\Evaluate\UnitaryCheck\Methods\StringFloatArgCondition.cs" />
-    <Compile Include="UniversalBinaryExpressionTree\Evaluate\UnitaryCheck\Methods\TwoStringArgCondition.cs" />
-    <Compile Include="UniversalBinaryExpressionTree\Evaluate\UnitaryCheck\Methods\StringArgCondition.cs" />
+    <Compile Include="UniversalBinaryExpressionTree\Evaluate\CheckMethods\CurveArgCondition.cs" />
+    <Compile Include="UniversalBinaryExpressionTree\Evaluate\CheckMethods\NoArgCondition.cs" />
+    <Compile Include="UniversalBinaryExpressionTree\Evaluate\CheckMethods\IntRangeArgCondition.cs" />
+    <Compile Include="UniversalBinaryExpressionTree\Evaluate\CheckMethods\FloatRangeArgCondition.cs" />
+    <Compile Include="UniversalBinaryExpressionTree\Evaluate\CheckMethods\StringFloatArgCondition.cs" />
+    <Compile Include="UniversalBinaryExpressionTree\Evaluate\CheckMethods\TwoStringArgCondition.cs" />
+    <Compile Include="UniversalBinaryExpressionTree\Evaluate\CheckMethods\StringArgCondition.cs" />
     <Compile Include="UniversalBinaryExpressionTree\Evaluate\NodeCompute.cs" />
     <Compile Include="UniversalBinaryExpressionTree\Evaluate\MainCheck.cs" />
+    <Compile Include="UniversalBinaryExpressionTree\Evaluate\SpecialCase\Damage.cs" />
     <Compile Include="UniversalBinaryExpressionTree\Structure\ConditionDictionnary.cs" />
     <Compile Include="UniversalBinaryExpressionTree\Structure\OperandEnum.cs" />
     <Compile Include="UniversalBinaryExpressionTree\Structure\ConditionTypeEnum.cs" />
