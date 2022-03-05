@@ -26,7 +26,8 @@ namespace YAHA
         {
             if (++c.UpdateNumthisTick > c.Props.UpdateNumthisTickLimit)
             {
-                Log.Warning("Yaha has tried to update " + c.UpdateNumthisTick + " times during this tick. Limit is : " + c.Props.UpdateNumthisTickLimit + ". Is there a recursion problem ?");
+                if (c.MyDebug)
+                    Log.Warning("Yaha has tried to update " + c.UpdateNumthisTick + " times during this tick. Limit is : " + c.Props.UpdateNumthisTickLimit + ". Is there a recursion problem ?");
                 //return;
             }
 

@@ -33,12 +33,9 @@ namespace YAHA
         {
             static void Postfix_ClearQueuedJobs(bool canReturnToPool, Pawn ___pawn)
             {
-
                 if (!canReturnToPool)
                     return;
-
-
-                Log.Warning("This is ClearQueuedJobs; p=" + ___pawn.Name + "; Drafted:" + ___pawn.Drafted);
+                //Log.Warning("This is ClearQueuedJobs; p=" + ___pawn.Name + "; Drafted:" + ___pawn.Drafted);
 
                 YahaUtility.UpdateDependingOnTriggerEvent(___pawn, TriggerEvent.draft);
             }

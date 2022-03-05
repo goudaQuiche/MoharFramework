@@ -5,12 +5,12 @@ namespace Ubet
     public enum ConditionType
     {
         isNegligible,
-
+        /*
         [Description("is Pawn")]
         isPawn,
         [Description("is Building")]
         isBuilding,
-
+        */
         [Description("is Human")]
         isHuman,
 
@@ -99,8 +99,6 @@ namespace Ubet
         hasAllHediff,
         [Description("has all hediffs on bodyparts")]
         hasAllHediffOnBodyPart,
-        [Description("got hurt")]
-        gotHurt,
 
         //Equipment
         [Description("wears any apparel made of")]

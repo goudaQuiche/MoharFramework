@@ -35,8 +35,7 @@ namespace YAHA
         {
             static void Postfix_PostAdd(Pawn ___pawn)
             {
-                Log.Warning("This is PostAdd(Hediff); p=" + ___pawn.Name );
-
+                //Log.Warning("This is PostAdd(Hediff); p=" + ___pawn.Name );
                 YahaUtility.UpdateDependingOnTriggerEvent(___pawn, TriggerEvent.hediff);
             }
         }

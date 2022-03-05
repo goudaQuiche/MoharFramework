@@ -36,8 +36,7 @@ namespace YAHA
         {
             static void Postfix_PrimaryWeaponChanged(Pawn ___pawn, ThingWithComps eq)
             {
-                Log.Warning("This is Notify_PrimaryWeaponChanged; p=" + ___pawn.Name );
-
+                //Log.Warning("This is Notify_PrimaryWeaponChanged; p=" + ___pawn.Name );
                 if (eq.def.equipmentType != EquipmentType.Primary)
                     return;
 

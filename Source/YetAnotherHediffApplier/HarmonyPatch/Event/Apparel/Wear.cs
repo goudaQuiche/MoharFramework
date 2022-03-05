@@ -38,8 +38,7 @@ namespace YAHA
             {
                 if (!(__instance.pawn is Pawn p))
                     return;
-                
-                Log.Warning("This is Notify_ApparelAdded; p=" + p.Name );
+                //Log.Warning("This is Notify_ApparelAdded; p=" + p.Name );
 
                 YahaUtility.UpdateDependingOnTriggerEvent(p, TriggerEvent.apparel);
             }

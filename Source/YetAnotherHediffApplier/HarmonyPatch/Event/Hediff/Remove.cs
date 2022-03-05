@@ -34,8 +34,7 @@ namespace YAHA
         {
             static void Postfix_PostRemoved(Pawn ___pawn)
             {
-                Log.Warning("This is PostRemoved; p=" + ___pawn.Name );
-
+                //Log.Warning("This is PostRemoved; p=" + ___pawn.Name );
                 YahaUtility.UpdateDependingOnTriggerEvent(___pawn, TriggerEvent.hediff);
             }
         }
