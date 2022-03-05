@@ -86,9 +86,9 @@ namespace Ubet
 
                     branchValue |= leafValue;
                 }
-                else
+                else 
                 {
-                    if (debug) Log.Warning("depth=" + depth + " - NOT");
+                    if (debug && branch.operand == Operand.not) Log.Warning("depth=" + depth + " - NOT");
 
                     return (leaf.operand == Operand.not) ? !leafValue : leafValue;
                 }

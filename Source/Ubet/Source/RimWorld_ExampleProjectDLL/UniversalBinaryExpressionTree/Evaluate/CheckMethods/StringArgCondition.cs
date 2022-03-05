@@ -21,6 +21,24 @@ namespace Ubet
             return false;
         }
 
+        public static bool RacePawnBelongsToLifeStage(this Pawn p, List<string> parameters)
+        {
+            if (p.def.race.lifeStageAges == null)
+                return false;
+
+            LifeStageAge pawnLS = null;
+
+            foreach (LifeStageAge LSA in p.def.race.lifeStageAges)
+            {
+                if (p.ageTracker.AgeBiologicalYears >= LSA.minAge)
+                    pawnLS = LSA;
+            }
+
+            if (pawnLS == null) return false;
+
+            return parameters.Contains(pawnLS.def.defName);
+        }
+
         public static bool PawnIsPawnKind(this Pawn p, List<string> parameters)
         {
             foreach (string s in parameters)

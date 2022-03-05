@@ -43,6 +43,8 @@ namespace Ubet
         isPawnKind,
         [Description("belongs to life stage")]
         belongsToLifeStage,
+        [Description("biological age is within race def life stages")]
+        biologicalAgeWithinLifeStage,
         [Description("belongs to player faction")]
         belongsToPlayerFaction,
         [Description("has trait")]

@@ -35,6 +35,7 @@ namespace Ubet
             { ConditionType.isInSpecificMentalState, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnIsInSpecificMentalState) },
 
             { ConditionType.belongsToLifeStage,  new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnBelongsToLifeStage) },
+            { ConditionType.biologicalAgeWithinLifeStage,  new Func<Pawn, List<string>, bool> (StringArgConditionMethods.RacePawnBelongsToLifeStage) },
             { ConditionType.isPawnKind,  new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnIsPawnKind) },
             { ConditionType.belongsToRace,  new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnIsFromRace) },
             { ConditionType.hasTrait, new Func<Pawn, List<string>, bool> (StringArgConditionMethods.PawnHasTrait) },
