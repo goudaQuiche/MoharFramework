@@ -25,7 +25,7 @@ namespace Ubet
             { ConditionType.lyingInLoveBed, new Func<Pawn, bool> (NoArgConditionMethods.PawnIsInLoveBed) } ,
             { ConditionType.lyingInMedicalBed, new Func<Pawn, bool> (NoArgConditionMethods.PawnIsInMedicalBed) } ,
 
-            
+            { ConditionType.usesNoWeapon,  new Func<Pawn, bool> (NoArgConditionMethods.PawnUsesNoWeapon) } ,
         };
 
         // StringArgconditions

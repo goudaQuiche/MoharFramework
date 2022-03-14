@@ -113,6 +113,8 @@ namespace Ubet
         wearsSpecificApparelMadeOf,
         [Description("uses specific weapon made of")]
         usesSpecificWeaponMadeOf,
+        [Description("uses no weapon")]
+        usesNoWeapon,
 
 
         //Random

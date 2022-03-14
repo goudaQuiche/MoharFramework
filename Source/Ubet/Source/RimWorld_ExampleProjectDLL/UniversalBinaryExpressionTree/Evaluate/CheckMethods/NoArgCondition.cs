@@ -80,5 +80,13 @@ namespace Ubet
         {
             return p.MentalState != null;
         }
+
+        public static bool PawnUsesNoWeapon(this Pawn p)
+        {
+            if (p.equipment == null )
+                return false;
+
+            return p.equipment.Primary.DestroyedOrNull();
+        }
     }
 }
