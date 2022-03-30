@@ -93,10 +93,14 @@ namespace MoHarRegeneration
                 }
             }
 
-            if (DidIt)
-                Tools.Warn(p.LabelShort + " had " + curHT.DescriptionAttr() + " performed", MyDebug);
-            if (DoneWithIt)
-                Tools.Warn(p.LabelShort + " had " + curHT.DescriptionAttr() + " fully cured/healed/regen", MyDebug);
+            if (MyDebug)
+            {
+                if (DidIt)
+                    Log.Warning(p.LabelShort + " had " + curHT.DescriptionAttr() + " performed");
+                if (DoneWithIt)
+                    Log.Warning(p.LabelShort + " had " + curHT.DescriptionAttr() + " fully cured/healed/regen");
+            }
+            
 
             if (NextHediffIfDidIt && DidIt || NextHediffIfDoneWithIt && DoneWithIt)
             {
@@ -112,23 +116,37 @@ namespace MoHarRegeneration
                 else
                     comp.NextHediffWithoutTickReset();
 
-                Tools.Warn(p.LabelShort +
+                if (MyDebug)
+                {
+                    Log.Warning(p.LabelShort +
                     " ResetHealingTick:" + ResetHealingTick + "; HealingTicks:" + comp.HealingTickCounter +
                     "; new HT: " + curHT.DescriptionAttr() +
-                    "; BP:" + comp.currentHediff?.Part?.def?.defName, MyDebug);
+                    "; BP:" + comp.currentHediff?.Part?.def?.defName);
+                }
             }
             else if (Impossible)
             {
                 comp.NextHediff();
-                Tools.Warn(p.LabelShort + " Impossible to heal hediff found - new HT: " + curHT.DescriptionAttr(), MyDebug);
+                if (MyDebug)
+                {
+                    Log.Warning(p.LabelShort + " Impossible to heal hediff found - new HT: " + curHT.DescriptionAttr());
+                }
             }
 
             if (comp.HasNoPendingTreatment)
             {
-                Tools.Warn(
+                if (MyDebug)
+                {
+                    Log.Warning(
                     p.LabelShort +
-                    "no pending treatment, InitCheckCounter", MyDebug);
+                    "no pending treatment, InitCheckCounter");
+                }
+
                 comp.InitCheckCounter();
+                if (comp.Props.removeRegenWhenNoPendingTreatment)
+                {
+                    comp.parent.Severity = 0;
+                }
             }
         }
     }

@@ -6,7 +6,7 @@ namespace MoHarRegeneration
 {
     public class HediffComp_Regeneration : HediffComp
     {
-        public HediffCompProperties_Regeneration Props => (HediffCompProperties_Regeneration)this.props;
+        public HediffCompProperties_Regeneration Props => (HediffCompProperties_Regeneration)props;
         public bool MyDebug => Props.debug;
 
         public bool Effect_TendBleeding => Props.BloodLossTendingParams != null;
@@ -55,7 +55,8 @@ namespace MoHarRegeneration
 
         public override void CompPostMake()
         {
-            Tools.Warn("HediffComp_Regeneration - CompPostMake", MyDebug);
+            if (MyDebug)
+                Log.Warning("HediffComp_Regeneration - CompPostMake");
 
             InitCheckCounter();
             InitBodyPartsHP();
@@ -96,6 +97,7 @@ namespace MoHarRegeneration
                 if(HealingTickCounter-- <= 0)
                 {
                     this.Dispatcher();
+                    HealingTickCounter = this.ResetHealingTicks();
                 }
             }
             else
@@ -116,6 +118,15 @@ namespace MoHarRegeneration
         public void InitCheckCounter()
         {
             CheckingTickCounter = Props.CheckingTicksPeriod;
+        }
+
+        public void InitRegenBPRegrowHediff()
+        {
+            if (Props.BodyPartRegenParams == null)
+                return;
+
+            if (Props.BodyPartRegenParams.regrownHediff == null)
+                Props.BodyPartRegenParams.regrownHediff = HediffDefOf.SurgicalCut;
         }
 
         public void NextHediff()

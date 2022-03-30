@@ -1,10 +1,7 @@
-# LTF_CloneBay
-Mod to dead colonist reviving opportunity through cloning
+# UBET
+Universal Binary expression tree
 
-> # Clone Bay
+> # UBET
 > 
-> ## Meat masher
-> 
-> ## Casket
->
-> ## Scanner
+> ## Used by YAHA (Yet another Hediff applier)
+

@@ -23,11 +23,13 @@ namespace MoHarRegeneration
 
         public TreatmentLimit Limit = null;
 
+        public bool removeRegenWhenNoPendingTreatment = false;
+
         public bool debug = false;
 
         public HediffCompProperties_Regeneration()
         {
-            this.compClass = typeof(HediffComp_Regeneration);
+            compClass = typeof(HediffComp_Regeneration);
         }
     }
 }

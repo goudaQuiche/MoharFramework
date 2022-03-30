@@ -10,19 +10,70 @@ namespace MoHarRegeneration
     {
         public static int ResetHealingTicks(this HediffComp_Regeneration comp)
         {
-            Tools.Warn(comp.Pawn.LabelShort + " - Entering ResetHealingTicks - cutHT=" + comp.currentHT.DescriptionAttr(), comp.MyDebug);
+            if (comp.MyDebug)
+                Log.Warning(comp.Pawn.LabelShort + " - Entering ResetHealingTicks - cutHT=" + comp.currentHT.DescriptionAttr() );
 
             MyDefs.HealingTask curHT = comp.currentHT;
             HealingParams HP = comp.GetParams();
+
             if (HP == null)
             {
-                Tools.Warn(comp.Pawn.LabelShort + " - ResetHealingTicks - Found not params for task=" + curHT.DescriptionAttr(), comp.MyDebug);
+                if (comp.MyDebug)
+                    Log.Warning(comp.Pawn.LabelShort + " - ResetHealingTicks - Found no params for task=" + curHT.DescriptionAttr());
                 return 600;
             }
 
             return HP.PeriodBase.RandomInRange;
         }
+        /*
+        public static int TickTaskInit(this HediffComp_Regeneration comp)
+        {
+            MyDefs.HealingTask curHT = comp.currentHT;
 
+            // 00 Tending - Blood loss
+            if (curHT.IsBloodLossTending())
+            {
+                return comp.Props.BloodLossTendingParams.PeriodBase.RandomInRange;
+            }
+            // 01 Tending - Chronic disease
+            else if (curHT.IsChronicDiseaseTending())
+            {
+                return comp.Props.ChronicHediffTendingParams.PeriodBase.RandomInRange;
+            }
+            // 02 Tending - Regular disease
+            else if (curHT.IsRegularDiseaseTending())
+            {
+                return comp.Props.RegularDiseaseTendingParams.PeriodBase.RandomInRange;
+            }
+            // 03 Regeneration - Injury 
+            else if (curHT.IsDiseaseHealing())
+            {
+                return comp.Props.DiseaseHediffRegenParams.PeriodBase.RandomInRange;
+            }
+            // 04 Regeneration - Injury 
+            else if (curHT.IsInjuryRegeneration())
+            {
+                return comp.Props.PhysicalInjuryRegenParams.PeriodBase.RandomInRange;
+            }
+            // 05 Regeneration - Chemical 
+            else if (curHT.IsChemicalRemoval())
+            {
+                return comp.Props.ChemicalHediffRegenParams.PeriodBase.RandomInRange;
+            }
+            // 06 Regeneration - Permanent injury
+            else if (curHT.IsPermanentInjuryRegeneration())
+            {
+                return comp.Props.PermanentInjuryRegenParams.PeriodBase.RandomInRange;
+            }
+            // 07 Regeneration -Bodypart
+            else if (curHT.IsBodyPartRegeneration())
+            {
+                return comp.Props.BodyPartRegenParams.PeriodBase.RandomInRange;
+            }
+
+            return 5;
+        }
+        */
         public static MyDefs.HealingTask InitHealingTask(this HediffComp_Regeneration comp, out Hediff hediffToTreat, out int InitTicks)
         {
             //Tools.Warn(comp.Pawn.LabelShort + " - Entering InitHealingTask", comp.MyDebug);
@@ -30,32 +81,24 @@ namespace MoHarRegeneration
             for (int i = 0; i < MyDefs.DefaultPriority.Count; i++)
             {
                 //MyDefs.HealingTask curHealingTask = comp.regenerationPriority.DefaultPriority[i];
-                
+
                 MyDefs.HealingTask curHealingTask = MyDefs.DefaultPriority[i];
 
                 //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask task[" + i + "]: " + curHealingTask.DescriptionAttr(), comp.MyDebug);
 
+                InitTicks = comp.ResetHealingTicks();
+
                 // 00 bloodloss tending
-                if (comp.Effect_TendBleeding && curHealingTask.IsBloodLossTending())
+                if (comp.Effect_TendBleeding && curHealingTask.IsBloodLossTending() && comp.GetBleedingHediff(out hediffToTreat))
                 {
-                    //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_TendBleeding", comp.MyDebug);
-                    if (comp.GetBleedingHediff(out hediffToTreat))
-                    {
-                        InitTicks = comp.Props.BloodLossTendingParams.PeriodBase.RandomInRange;
-                        return curHealingTask;
-                    }
-                        
+                    return curHealingTask;
                 }
                 // 01 chronic disease tending
-                else if (comp.Effect_TendChronicDisease && curHealingTask.IsChronicDiseaseTending())
+                else if (comp.Effect_TendChronicDisease && curHealingTask.IsChronicDiseaseTending() && comp.Pawn.GetTendableChronicDisease(out hediffToTreat))
                 {
                     //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_TendChronicDisease", comp.MyDebug);
 
-                    if (comp.Pawn.GetTendableChronicDisease(out hediffToTreat))
-                    {
-                        InitTicks = comp.Props.ChronicHediffTendingParams.PeriodBase.RandomInRange;
-                        return curHealingTask;
-                    }
+                    return curHealingTask;
                 }
                 // 02 regular disease tending
                 else if (comp.Effect_TendRegularDisease && curHealingTask.IsRegularDiseaseTending())
@@ -66,74 +109,51 @@ namespace MoHarRegeneration
                     {
                         if (comp.Pawn.GetTendableRegularDisease(out hediffToTreat, comp.Props.RegularDiseaseTendingParams.TargetedHediffDefs, comp.MyDebug))
                         {
-                            InitTicks = comp.Props.RegularDiseaseTendingParams.PeriodBase.RandomInRange;
                             return curHealingTask;
                         }
                     }
                     else if (comp.Pawn.GetTendableRegularDisease(out hediffToTreat, null, comp.MyDebug))
                     {
-                        InitTicks = comp.Props.RegularDiseaseTendingParams.PeriodBase.RandomInRange;
                         return curHealingTask;
                     }
                 }
 
                 // 03 regular injury
-                else if (comp.Effect_RegeneratePhysicalInjuries && curHealingTask.IsInjuryRegeneration())
+                else if (comp.Effect_RegeneratePhysicalInjuries && curHealingTask.IsInjuryRegeneration() && comp.GetPhysicalHediff(out hediffToTreat))
                 {
                     //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_RegeneratePhysicalInjuries", comp.MyDebug);
 
-                    if (comp.GetPhysicalHediff(out hediffToTreat))
-                    {
-                        InitTicks = comp.Props.PhysicalInjuryRegenParams.PeriodBase.RandomInRange;
-                        return curHealingTask;
-                    }
-                        
-                }
+                          return curHealingTask;
+                  }
                 // 04 regular disease
-                else if(comp.Effect_HealDiseases && curHealingTask.IsDiseaseHealing())
+                else if (comp.Effect_HealDiseases && curHealingTask.IsDiseaseHealing() && comp.GetDiseaseHediff(out hediffToTreat))
                 {
                     //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_HealDiseases", comp.MyDebug);
 
-                    if (comp.GetDiseaseHediff(out hediffToTreat))
-                    {
-                        InitTicks = comp.Props.DiseaseHediffRegenParams.PeriodBase.RandomInRange;
                         return curHealingTask;
-                    }
                 }
                 // 05 chemicals
-                else if(comp.Effect_RemoveChemicals && curHealingTask.IsChemicalRemoval())
+                else if (comp.Effect_RemoveChemicals && curHealingTask.IsChemicalRemoval() && comp.GetChemicalHediff(out hediffToTreat))
                 {
                     //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_RemoveChemicals", comp.MyDebug);
 
-                    if (comp.GetChemicalHediff(out hediffToTreat))
-                    {
-                        InitTicks = comp.Props.ChemicalHediffRegenParams.PeriodBase.RandomInRange;
                         return curHealingTask;
-                    }
-                        
+
                 }
                 // 06 permanent
-                else if(comp.Effect_RemoveScares && curHealingTask.IsPermanentInjuryRegeneration())
+                else if (comp.Effect_RemoveScares && curHealingTask.IsPermanentInjuryRegeneration() && comp.Pawn.GetPermanentHediff(out hediffToTreat))
                 {
                     //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_RemoveScares", comp.MyDebug);
-                    if (comp.Pawn.GetPermanentHediff(out hediffToTreat))
-                    {
-                        InitTicks = comp.Props.PermanentInjuryRegenParams.PeriodBase.RandomInRange;
+
                         return curHealingTask;
-                    }
-                        
+
                 }
 
                 // 07 Bodypart regen
-                else if(comp.Effect_RegenerateBodyParts && curHealingTask.IsBodyPartRegeneration())
+                else if (comp.Effect_RegenerateBodyParts && curHealingTask.IsBodyPartRegeneration() && comp.Pawn.GetMissingBodyPart(out hediffToTreat))
                 {
                     //Tools.Warn(comp.Pawn.LabelShort + " InitHealingTask Effect_RegenerateBodyParts", comp.MyDebug);
-                    if (comp.Pawn.GetMissingBodyPart(out hediffToTreat))
-                    {
-                        InitTicks = comp.Props.BodyPartRegenParams.PeriodBase.RandomInRange;
                         return curHealingTask;
-                    }
-                        
                 }
             }
 

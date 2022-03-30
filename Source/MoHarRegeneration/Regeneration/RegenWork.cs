@@ -11,8 +11,8 @@ namespace MoHarRegeneration
     {
         public static bool TryTendBleeding(this HediffComp_Regeneration comp, out bool Impossible)
         {
-            if( comp.currentHediff == null ||
-                !comp.currentHT.IsBloodLossTending() || 
+            if (comp.currentHediff == null ||
+                !comp.currentHT.IsBloodLossTending() ||
                 !comp.Pawn.health.hediffSet.HasHediff(comp.currentHediff.def, comp.currentHediff.Part) ||
                 comp.currentHediff.IsTended()
                 )
@@ -21,20 +21,22 @@ namespace MoHarRegeneration
                 return false;
             }
             Impossible = false;
-            Tools.Warn(comp.Pawn.LabelShort + " - TryTendBleeding calling HungerAndRestTransaction", comp.MyDebug);
+            if (comp.MyDebug)
+                Log.Warning(comp.Pawn.LabelShort + " - TryTendBleeding calling HungerAndRestTransaction");
 
             float TendingQuality = comp.Props.BloodLossTendingParams.HealingQuality.RandomInRange;
             if (!comp.Pawn.HungerAndRestTransaction(
-                    comp.Props.BloodLossTendingParams.HungerCost, 
-                    comp.Props.BloodLossTendingParams.RestCost, 
-                    TendingQuality/2,
+                    comp.Props.BloodLossTendingParams.HungerCost,
+                    comp.Props.BloodLossTendingParams.RestCost,
+                    TendingQuality / 2,
                     comp.MyDebug)
                 )
             {
                 return false;
             }
 
-            Tools.Warn("TryTendBleeding OK", comp.MyDebug);
+            if (comp.MyDebug)
+                Log.Warning("TryTendBleeding OK");
             //comp.currentHediff.Tended_NewTemp(TendingQuality, 2f);
             comp.currentHediff.Tended(TendingQuality, 2f);
 
@@ -47,7 +49,7 @@ namespace MoHarRegeneration
 
         public static bool TryTendRegularDisease(this HediffComp_Regeneration comp, out bool Impossible)
         {
-            if (comp.currentHediff == null || !comp.currentHT.IsRegularDiseaseTending() || 
+            if (comp.currentHediff == null || !comp.currentHT.IsRegularDiseaseTending() ||
                 !comp.Pawn.health.hediffSet.HasHediff(comp.currentHediff.def, comp.currentHediff.Part) ||
                 comp.currentHediff.IsTended())
             {
@@ -55,20 +57,22 @@ namespace MoHarRegeneration
                 return false;
             }
             Impossible = false;
-            Tools.Warn(comp.Pawn.LabelShort + " - TryTendRegularDisease calling HungerAndRestTransaction", comp.MyDebug);
+            if (comp.MyDebug)
+                Log.Warning(comp.Pawn.LabelShort + " - TryTendRegularDisease calling HungerAndRestTransaction");
 
             float TendingQuality = comp.Props.RegularDiseaseTendingParams.HealingQuality.RandomInRange;
             if (!comp.Pawn.HungerAndRestTransaction(
-                    comp.Props.RegularDiseaseTendingParams.HungerCost, 
-                    comp.Props.RegularDiseaseTendingParams.RestCost, 
-                    TendingQuality/2,
+                    comp.Props.RegularDiseaseTendingParams.HungerCost,
+                    comp.Props.RegularDiseaseTendingParams.RestCost,
+                    TendingQuality / 2,
                     comp.MyDebug)
                 )
             {
                 return false;
             }
-                
-            Tools.Warn("TryTendRegularDisease OK", comp.MyDebug);
+
+            if (comp.MyDebug)
+                Log.Warning("TryTendRegularDisease OK");
             //comp.currentHediff.Tended_NewTemp(TendingQuality, 2f);
             comp.currentHediff.Tended(TendingQuality, 2f);
 
@@ -90,19 +94,21 @@ namespace MoHarRegeneration
                 return false;
             }
             Impossible = false;
-            Tools.Warn(comp.Pawn.LabelShort + " - TryTendChronic calling HungerAndRestTransaction", comp.MyDebug);
+            if (comp.MyDebug)
+                Log.Warning(comp.Pawn.LabelShort + " - TryTendChronic calling HungerAndRestTransaction");
             float TendingQuality = comp.Props.ChronicHediffTendingParams.HealingQuality.RandomInRange;
             if (!comp.Pawn.HungerAndRestTransaction(
                     comp.Props.ChronicHediffTendingParams.HungerCost,
                     comp.Props.ChronicHediffTendingParams.RestCost,
-                    TendingQuality/2,
+                    TendingQuality / 2,
                     comp.MyDebug)
                 )
             {
                 return false;
             }
 
-            Tools.Warn("TryTendChronic OK", comp.MyDebug);
+            if (comp.MyDebug)
+                Log.Warning("TryTendChronic OK");
             //comp.currentHediff.Tended_NewTemp(TendingQuality, 2f);
             comp.currentHediff.Tended(TendingQuality, 2f);
 
@@ -126,18 +132,19 @@ namespace MoHarRegeneration
             Impossible = false;
             if (comp.currentHediff.Severity > 0)
             {
-                Tools.Warn(comp.Pawn.LabelShort + " - TryRegenInjury calling HungerAndRestTransaction", comp.MyDebug);
+                if (comp.MyDebug)
+                    Log.Warning(comp.Pawn.LabelShort + " - TryRegenInjury calling HungerAndRestTransaction");
 
                 float BPRMaxHealth = comp.currentHediff.Part.def.GetMaxHealth(comp.Pawn);
                 float RegenQuantity = comp.Props.PhysicalInjuryRegenParams.HealingQuality.RandomInRange * BPRMaxHealth;
                 float PawnBodyPartRatio = RegenQuantity / (float)comp.Pawn.MaxHitPoints;
 
-                Tools.Warn(
-                    comp.Pawn.LabelShort + " - TryBodyPartRegeneration " +
+                if (comp.MyDebug)
+                    Log.Warning(
+                        comp.Pawn.LabelShort + " - TryBodyPartRegeneration " +
                     "BPRMaxHealth: " + BPRMaxHealth + "; " +
                     "RegenQuantity: " + RegenQuantity + "; " +
                     "PawnBodyPartRatio: " + PawnBodyPartRatio + "; "
-                    , comp.MyDebug
                 );
 
                 if (!comp.Pawn.HungerAndRestTransaction(
@@ -151,7 +158,8 @@ namespace MoHarRegeneration
                     return false;
                 }
 
-                Tools.Warn("TryRegenInjury OK", comp.MyDebug);
+                if (comp.MyDebug)
+                    Log.Warning("TryRegenInjury OK");
                 comp.currentHediff.Severity -= RegenQuantity;
                 DoneWithIt = (comp.currentHediff.Severity <= 0) ? true : false;
 
@@ -179,7 +187,8 @@ namespace MoHarRegeneration
             Impossible = false;
             if (comp.currentHediff.Severity > 0)
             {
-                Tools.Warn(comp.Pawn.LabelShort + " - TryCureDisease calling HungerAndRestTransaction", comp.MyDebug);
+                if (comp.MyDebug)
+                    Log.Warning(comp.Pawn.LabelShort + " - TryCureDisease calling HungerAndRestTransaction");
 
                 float RegenQuantity = comp.Props.DiseaseHediffRegenParams.HealingQuality.RandomInRange;
                 if (!comp.Pawn.HungerAndRestTransaction(
@@ -222,7 +231,8 @@ namespace MoHarRegeneration
             Impossible = false;
             if (comp.currentHediff.Severity > 0)
             {
-                Tools.Warn(comp.Pawn.LabelShort + " - TryChemicalRemoval calling HungerAndRestTransaction", comp.MyDebug);
+                if (comp.MyDebug)
+                    Log.Warning(comp.Pawn.LabelShort + " - TryChemicalRemoval calling HungerAndRestTransaction");
 
                 float RegenQuantity = comp.Props.ChemicalHediffRegenParams.HealingQuality.RandomInRange;
                 if (!comp.Pawn.HungerAndRestTransaction(
@@ -236,7 +246,9 @@ namespace MoHarRegeneration
                     return false;
                 }
 
-                Tools.Warn("TryChemicalRemoval OK", comp.MyDebug);
+                if (comp.MyDebug)
+                    Log.Warning("TryChemicalRemoval OK");
+
                 comp.currentHediff.Severity -= RegenQuantity;
                 DoneWithIt = (comp.currentHediff.Severity <= 0) ? true : false;
 
@@ -264,7 +276,8 @@ namespace MoHarRegeneration
             Impossible = false;
             if (comp.currentHediff.Severity > 0)
             {
-                Tools.Warn(comp.Pawn.LabelShort + " - TryRemovePermanentInjury calling HungerAndRestTransaction", comp.MyDebug);
+                if (comp.MyDebug)
+                    Log.Warning(comp.Pawn.LabelShort + " - TryRemovePermanentInjury calling HungerAndRestTransaction");
 
                 float BPRMaxHealth = comp.currentHediff.Part.def.GetMaxHealth(comp.Pawn);
 
@@ -272,13 +285,13 @@ namespace MoHarRegeneration
                 RegenQuantity = Math.Min(RegenQuantity, comp.currentHediff.Severity);
                 float PawnBodyPartRatio = RegenQuantity / (float)comp.Pawn.MaxHitPoints;
 
-                Tools.Warn(
+                if (comp.MyDebug)
+                    Log.Warning(
                 comp.Pawn.LabelShort + " - TryBodyPartRegeneration " +
                     "BPRMaxHealth: " + BPRMaxHealth + "; " +
-                    "Pawn maxHP: " + comp.Pawn.MaxHitPoints +"; "+
+                    "Pawn maxHP: " + comp.Pawn.MaxHitPoints + "; " +
                     "RegenQuantity: " + RegenQuantity + "; " +
                     "PawnBodyPartRatio: " + PawnBodyPartRatio + "; "
-                    , comp.MyDebug
                 );
 
                 if (!comp.Pawn.HungerAndRestTransaction(
@@ -292,7 +305,9 @@ namespace MoHarRegeneration
                     return false;
                 }
 
-                Tools.Warn("TryRemovePermanentInjury OK", comp.MyDebug);
+                if (comp.MyDebug)
+                    Log.Warning("TryRemovePermanentInjury OK");
+
                 comp.currentHediff.Severity -= RegenQuantity;
                 DoneWithIt = (comp.currentHediff.Severity <= 0) ? true : false;
 
@@ -306,14 +321,34 @@ namespace MoHarRegeneration
             return true;
         }
 
+        public static bool ParentBPHealthNeededCheck(this HediffComp_Regeneration comp)
+        {
+            return comp.Props.BodyPartRegenParams.NeededParentHealthCheck; 
+        }
+
+        public static bool ParentBPHealthCheck(this HediffComp_Regeneration comp)
+        {
+            if (comp.currentHediff.Part.parent == null)
+                return false;
+
+            float maxH = comp.currentHediff.Part.parent.def.GetMaxHealth(comp.Pawn);
+            float curH = comp.Pawn.health.hediffSet.GetPartHealth(comp.currentHediff.Part);
+
+            if (maxH == 0)
+                return false;
+
+            return (curH / maxH) > comp.Props.BodyPartRegenParams.parentMinHealthRequirement;
+        }
+
         public static bool TryBodyPartRegeneration(this HediffComp_Regeneration comp, out bool Impossible)
         {
             if (
-                comp.currentHediff == null || 
-                comp.currentHediff.def != HediffDefOf.MissingBodyPart ||
-                comp.currentHediff.Part == null ||
-                comp.currentHT != MyDefs.HealingTask.BodyPartRegeneration ||
-                !comp.Pawn.health.hediffSet.HasHediff(comp.currentHediff.def, comp.currentHediff.Part) 
+                comp.currentHediff == null
+                || comp.currentHediff.def != HediffDefOf.MissingBodyPart
+                || comp.currentHediff.Part == null
+                || comp.currentHT != MyDefs.HealingTask.BodyPartRegeneration
+                || !comp.Pawn.health.hediffSet.HasHediff(comp.currentHediff.def, comp.currentHediff.Part)
+                || comp.ParentBPHealthNeededCheck() && comp.ParentBPHealthCheck()
                 )
             {
                 Impossible = true;
@@ -321,7 +356,8 @@ namespace MoHarRegeneration
             }
 
             Impossible = false;
-            Tools.Warn(comp.Pawn.LabelShort + " - TryBodyPartRegeneration calling HungerAndRestTransaction", comp.MyDebug);
+            if (comp.MyDebug)
+                Log.Warning(comp.Pawn.LabelShort + " - TryBodyPartRegeneration calling HungerAndRestTransaction");
 
             BodyPartRecord BPR = comp.currentHediff.Part;
             float BPRMaxHealth = BPR.def.GetMaxHealth(comp.Pawn);
@@ -329,12 +365,12 @@ namespace MoHarRegeneration
 
             float PawnBodyPartRatio = BPRMaxHealth * comp.Props.BodyPartRegenParams.BPMaxHealth / comp.BodyPartsHealthSum;
 
-            Tools.Warn(
+            if (comp.MyDebug)
+                Log.Warning(
                 comp.Pawn.LabelShort + " - TryBodyPartRegeneration " +
                 "BPRMH: " + BPRMaxHealth + "+; " +
                 "TheoricSeverity: " + TheoricSeverity + "+; " +
                 "PawnBodyPartRatio: " + PawnBodyPartRatio + "+; "
-                , comp.MyDebug
             );
 
             if (!comp.Pawn.HungerAndRestTransaction(
@@ -347,17 +383,26 @@ namespace MoHarRegeneration
                 return false;
             }
 
-            Tools.Warn("TryBodyPartRegeneration OK", comp.MyDebug);
+            if (comp.MyDebug)
+                Log.Warning("TryBodyPartRegeneration OK");
+
             comp.Pawn.health.RemoveHediff(comp.currentHediff);
 
             // artificial, needs parameter ?
-            if(comp.HasLimits)
+            if (comp.HasLimits)
                 comp.TreatmentPerformedQuality += PawnBodyPartRatio * 10;
 
             if (comp.Effect_PartialHealthUponRegrow && !comp.Effect_RegenBodyPartChildrenAtOnce)
             {
-                Hediff BarelyAliveBP = HediffMaker.MakeHediff(HediffDefOf.SurgicalCut, comp.Pawn, BPR);
+
+                //Hediff BarelyAliveBP = HediffMaker.MakeHediff(HediffDefOf.SurgicalCut, comp.Pawn, BPR);
+                HediffDef HD = comp.Props.BodyPartRegenParams.regrownHediff == null ? HediffDefOf.SurgicalCut : comp.Props.BodyPartRegenParams.regrownHediff;
+                Hediff BarelyAliveBP = HediffMaker.MakeHediff(HD, comp.Pawn, BPR);
                 BarelyAliveBP.Severity = TheoricSeverity;
+                if (BarelyAliveBP.def.tendable)
+                {
+                    BarelyAliveBP.Tended(new FloatRange(.2f, 1f).RandomInRange, 2f);
+                }
 
                 comp.Pawn.health.AddHediff(BarelyAliveBP, BPR);
             }

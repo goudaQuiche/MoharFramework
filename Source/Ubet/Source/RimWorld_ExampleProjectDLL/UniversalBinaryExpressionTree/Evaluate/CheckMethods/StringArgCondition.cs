@@ -3,6 +3,7 @@ using System;
 using RimWorld;
 using System.Collections.Generic;
 using System.Linq;
+//using System.Text.RegularExpressions;
 
 namespace Ubet
 {
@@ -236,6 +237,21 @@ namespace Ubet
                parameters.Contains(a.def.defName)
             );
         }
+        
+        public static bool PawnUsesWeaponContains(this Pawn p, List<string> parameters)
+        {
+            if (p.equipment == null || p.equipment.Primary.DestroyedOrNull())
+                return false;
+
+            foreach(string pattern in parameters)
+            {
+                if (p.equipment.Primary.def.defName.Contains(pattern))
+                    return true;
+            }
+
+            return false;
+        }
+        
 
         public static bool PawnIsInSpecificMentalState(this Pawn p, List<string> MentalStateDefName)
         {
