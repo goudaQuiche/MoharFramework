@@ -25,19 +25,19 @@ namespace OLB
 
         public static bool CoexistingValidation(this CompDecorate comp)
         {
-            if (comp.CurItem.allowsCoexistWithAny)
+            if (comp.CurItem.AllowedCoexistWithAny)
             {
                 Tools.Warn(comp.CurItem.label + " coexists with all motes; ok", comp.CurItem.debug);
                 return true;
             }
 
-            if (comp.CurItem.forbidsCoexistWithOther && comp.DifferentMoteExists())
+            if (comp.CurItem.ForbiddenCoexistWithOther  && comp.DifferentMoteExists())
             {
                 Tools.Warn(comp.CurItem.label + " forbids other motes and some exist; ko", comp.CurItem.debug);
                 return false;
             }
 
-            if (comp.CurItem.forbidsCoexistWithSame && comp.SameMoteAlreadyExists())
+            if (comp.CurItem.ForbiddenCoexistWithSame  && comp.SameMoteAlreadyExists())
             {
                 Tools.Warn(comp.CurItem.label + " forbids same motes and some exist; ko", comp.CurItem.debug);
                 return false;

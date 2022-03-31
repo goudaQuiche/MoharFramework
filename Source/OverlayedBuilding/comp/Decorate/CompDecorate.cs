@@ -88,52 +88,78 @@ namespace OLB
             if (DoNothing)
                 return;
 
-            base.CompTick();
-
             string debugStr = MyDebug ? parent.Label + " CompTick - " : "";
 
             this.MaybeUpdateReservations();
 
-            //Tools.Warn(debugStr + "LivingMotes Loop", DebugOutsideLoop);
+            if (DebugOutsideLoop) Log.Warning(debugStr + "LivingMotes Loop");
+
             for (int i = LivingMotes.Count - 1; i >= 0; i--)
             {
                 MoteTracer MT = LivingMotes[i];
                 if (MT.MoteIsDead())
+                {
+                   if(DebugInsideLoop) Log.Warning("mote got removed");
+                    //Find.TickManager.TogglePaused();
                     LivingMotes.RemoveAt(i);
+                }
+
                 MT.DecreaseGraceTicks();
             }
 
-            //Tools.Warn(debugStr + "LivingMotes not coexisting", DebugOutsideLoop);
-            if (this.NonCoexistingMoteInTracer())
-                return;
+            if (DebugOutsideLoop) Log.Warning(debugStr + "LivingMotes not coexisting");
 
-            //Tools.Warn(debugStr + "Looping around " + MoteNum + " mote params", DebugOutsideLoop);
+            if (this.NonCoexistingMoteInTracer())
+            {
+                if (DebugOutsideLoop) Log.Warning(debugStr + "Found coexisting while not wanted");
+                return;
+            }
+
+
+            if (DebugOutsideLoop)
+                Log.Warning(debugStr + "Looping around " + MoteNum + " mote params");
+
             for (MoteIndex = 0; MoteIndex < MoteNum; MoteIndex++)
             {
-                string debugLoopStr = "[" + (MoteIndex+1) + "/" + MoteNum + "]";
+                string debugLoopStr = "[" + (MoteIndex + 1) + "/" + MoteNum + "]";
+
 
                 if (NullCurItem) {
-                    Tools.Warn(debugStr + debugLoopStr + " curItem is null, skipped", DebugInsideLoop);
+                    if (DebugInsideLoop)
+                        Log.Warning(debugStr + debugLoopStr + " curItem is null, skipped");
                     continue;
                 }
                 else
-                    Tools.Warn(debugStr + debugLoopStr + " curItem is real, going on ", DebugInsideLoop && CurItem.debug);
-                
+                {
+                    if (DebugInsideLoop && CurItem.debug)
+                        Log.Warning(debugStr + debugLoopStr + " curItem is real, going on ");
+                }
+
 
                 if (CurItem.IsInvalid)
                 {
-                    Tools.Warn(debugStr + debugLoopStr + " is invalid, skipped", DebugInsideLoop && CurItem.debug);
+                    if (DebugInsideLoop && CurItem.debug)
+                        Log.Warning(debugStr + debugLoopStr + " is invalid, skipped");
+
                     continue;
-                }else Tools.Warn(debugStr + debugLoopStr + " is valid, going on", DebugInsideLoop && CurItem.debug);
+                }
+                else
+                {
+                    if (DebugInsideLoop && CurItem.debug)
+                        Log.Warning(debugStr + debugLoopStr + " is valid, going on");
+                }
 
                 string moteName = MyDebug ? CurItem.moteDef.defName : ""; ;
 
-                Tools.Warn(debugStr + debugLoopStr + " condition validating: " + moteName , DebugInsideLoop && CurItem.debug);
+                if (DebugInsideLoop && CurItem.debug)
+                    Log.Warning(debugStr + debugLoopStr + " condition validating: " + moteName);
+
                 if (!this.AllConditionsValidation())
                     continue;
                 else
                 {
-                    Tools.Warn(debugStr + " should be displayed " + moteName, DebugInsideLoop && CurItem.debug);
+                    if (DebugInsideLoop && CurItem.debug)
+                        Log.Warning(debugStr + " should be displayed " + moteName);
                 }
 
                 LivingMotes.Add(
@@ -147,7 +173,7 @@ namespace OLB
                 );
             }
 
-            //Tools.Warn("motes end Loop", DebugOutsideLoop);
+            //Log.Warning("motes end Loop", DebugOutsideLoop);
 
         }
     }

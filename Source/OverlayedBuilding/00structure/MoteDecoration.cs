@@ -43,11 +43,11 @@ namespace OLB
 
         public bool HasGraceTicks => graceTicks > 0;
 
-        public bool forbidsCoexistWithSame => !coexistsWithSame;
-        public bool forbidsCoexistWithOther => !coexistsWithOther;
-        public bool allowsCoexistWithAny => coexistsWithSame && coexistsWithOther;
+        public bool ForbiddenCoexistWithSame => !coexistsWithSame;
+        public bool ForbiddenCoexistWithOther => !coexistsWithOther;
+        public bool AllowedCoexistWithAny => coexistsWithSame && coexistsWithOther;
 
-        public bool forbidsAnyCoexist => forbidsCoexistWithSame && forbidsCoexistWithOther;
-        public bool forbidsSomeCoexist => forbidsCoexistWithSame || forbidsCoexistWithOther;
+        public bool ForbiddenAnyCoexist => ForbiddenCoexistWithSame && ForbiddenCoexistWithOther;
+        public bool ForbiddenSomeCoexist => ForbiddenCoexistWithSame || ForbiddenCoexistWithOther;
     }
 }

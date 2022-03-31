@@ -30,10 +30,15 @@ namespace OLB
         {
             comp.LivingMotes.RemoveAll(MT => MT.MoteIsDead());
         }
-            
+        
+        public static bool OmaeWaMouShindeiru(this MoteTracer MT)
+        {
+            return ((Mote)MT.EmittedMote).AgeSecs >= MT.EmittedMote.def.mote.Lifespan;
+        }
+
         public static bool MoteIsDead(this MoteTracer MT)
         {
-            return MT.EmittedMote == null || !MT.EmittedMote.Spawned;
+            return MT.EmittedMote == null || !MT.EmittedMote.Spawned || MT.OmaeWaMouShindeiru();
         }
 
         public static bool SameMoteAlreadyExists(this CompDecorate comp)
@@ -51,7 +56,7 @@ namespace OLB
             if (comp.CurItem.HasNoCondition)
                 return true;
 
-            if ( (comp.CurItem.forbidsSomeCoexist || comp.CurItem.HasGraceTicks) && comp.HasEmptyTracer)
+            if ( (comp.CurItem.ForbiddenSomeCoexist || comp.CurItem.HasGraceTicks) && comp.HasEmptyTracer)
             {
                 Tools.Warn("Empty tracer -> ok", comp.CurItem.debug);
             }

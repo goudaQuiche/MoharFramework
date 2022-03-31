@@ -16,21 +16,46 @@ namespace OLB
                 );
         }
 
+        public static bool DyingMoteInTracer(this CompDecorate comp)
+        {
+            Log.Warning("DyingMoteInTracer");
+            return 
+                comp.LivingMotes.Any(
+                    LM =>
+                        LM.HasRemainingGraceTicks &&
+                        LM.LabelsMatch(comp.CurItem) &&
+                        ((Mote)LM.EmittedMote).AgeSecs >= LM.EmittedMote.def.mote.Lifespan -2
+                    )
+                ;
+        }
+
         public static bool GraceValidation(this CompDecorate comp)
         {
             if (!comp.CurItem.HasGraceTicks)
             {
-                Tools.Warn(comp.CurItem.label + " does not require gracetick check; ok", comp.CurItem.debug);
+                if(comp.CurItem.debug)
+                    Log.Warning(comp.CurItem.label + " does not require gracetick check; ok");
                 return true;
             }
 
+            if (comp.DyingMoteInTracer())
+            {
+                Log.Warning("found dying mote");
+                return true;
+            }
+                
+
+
             if (comp.SameMoteWithGraceInTracer())
             {
-                Tools.Warn(comp.CurItem.label + " found same item type with graceTicks; ko", comp.CurItem.debug);
+                if(comp.CurItem.debug)
+                    Log.Warning(comp.CurItem.label + " found same item type with graceTicks; ko");
                 return false;
             }
 
-            Tools.Warn(comp.CurItem.label + " grace check ok", comp.CurItem.debug);
+            if(comp.CurItem.debug)
+                Log.Warning(comp.CurItem.label + " grace check ok");
+
             return true;
         }
     }

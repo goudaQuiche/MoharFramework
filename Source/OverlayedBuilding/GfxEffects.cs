@@ -86,21 +86,29 @@ namespace OLB
 
             Map map = building.Map;
 
+            //Log.Warning("inside SpawnMote");
+
             // drawpos and actual position
             DisplayOrigin.GetDrawPos(Item.origin, building, worker, out IntVec3 cell, out Vector3 drawPos);
 
             if (drawPos.ImpossibleMote(map))
                 return null;
 
-            DisplayTransformation myItemData = Item.transformation;
-
             MoteThrown mote = (MoteThrown)ThingMaker.MakeThing(Item.moteDef, null);
+            mote.exactPosition = drawPos;
+            if(Item.moteDef.graphicData.drawOffset != null)
+            {
+                mote.exactPosition += Item.moteDef.graphicData.drawOffset;
+            }
+
+            if (Item.transformation == null)
+                return GenSpawn.Spawn(mote, cell, map, WipeMode.Vanish);
+
+            DisplayTransformation myItemData = Item.transformation;
 
             // more drawpos
             Vector3 randomV3 = new Vector3(myItemData.randomXOffset.RandomInRange, 0, myItemData.randomYOffset.RandomInRange);
             
-            mote.exactPosition = drawPos;
-
             if (myItemData.HasOffset)
             {
                 //Vector3 myOffset = new Vector3(Offset.GetOffset(building.Rotation).x + randomV3.x, 0, Offset.GetOffset(building.Rotation).y + randomV3.y);
@@ -118,6 +126,8 @@ namespace OLB
             mote.Scale = myItemData.scale.RandomInRange;
             // velocity
             mote.SetVelocity(myItemData.xVelocity.RandomInRange, myItemData.yVelocity.RandomInRange);
+
+            //Log.Warning("SpawnMote end");
 
             return GenSpawn.Spawn(mote, cell, map, WipeMode.Vanish);
         }

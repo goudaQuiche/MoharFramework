@@ -56,8 +56,8 @@
   <ItemGroup>
     <Compile Include="00structure\Conditions\Reservation.cs" />
     <Compile Include="00structure\Conditions\FuelAndPower.cs" />
-    <Compile Include="comp\CompProperties_Decorate.cs" />
-    <Compile Include="comp\CompDecorate.cs" />
+    <Compile Include="comp\Decorate\CompProperties_Decorate.cs" />
+    <Compile Include="comp\Decorate\CompDecorate.cs" />
     <Compile Include="comp\Utils\SetupCheck.cs" />
     <Compile Include="comp\Utils\ReservationUtils.cs" />
     <Compile Include="GfxEffects.cs" />
@@ -72,7 +72,6 @@
     <Compile Include="00structure\work structure\MoteTracer.cs" />
     <Compile Include="00structure\work structure\MoteTracerUtils.cs" />
     <Compile Include="Tools.cs" />
-    <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
