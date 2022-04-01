@@ -8,7 +8,7 @@ namespace MoHarRegeneration
 {
     public static class RegenBill
     {
-        public static bool CanPayHungerBill(this Pawn p, float cost, bool myDebug=false)
+        public static bool CanPayHungerBill(this Pawn p, float cost, bool myDebug = false)
         {
             if (!p.HasFoodNeed())
                 return true;
@@ -18,7 +18,8 @@ namespace MoHarRegeneration
 
             return true;
         }
-        public static void PayHungerBill(this Pawn p, float cost, bool myDebug= false)
+
+        public static void PayHungerBill(this Pawn p, float cost, bool myDebug = false)
         {
             if (!p.HasFoodNeed())
                 return;
@@ -26,7 +27,7 @@ namespace MoHarRegeneration
             p.needs.food.CurLevel -= cost;
         }
 
-        public static bool HungerTransaction(this Pawn p, float CostRatio, float WorkDone, bool myDebug= false)
+        public static bool HungerTransaction(this Pawn p, float CostRatio, float WorkDone, bool myDebug = false)
         {
             if (!p.HasFoodNeed())
                 return true;
@@ -85,26 +86,29 @@ namespace MoHarRegeneration
             float RestCost = WorkDone * RestCostRatio;
             float HungerCost = WorkDone * HungerCostRatio;
 
-            Tools.Warn(
+            if(myDebug)
+            Log.Warning(
                 p.LabelShort + " HungerAndRestTransaction " +
                 " Quality:" + WorkDone +
                 "; RestCost: " + RestCost +
                 "; p.rest: " + p.needs.rest?.CurLevel +
                 "; HungerCost: " + HungerCost +
-                "; p.hunger: " + p.needs.food?.CurLevel,
-                myDebug
+                "; p.hunger: " + p.needs.food?.CurLevel
             );
 
             if (HungerCostRatio > 0 && RestCostRatio > 0)
             {
                 if (!p.CanPayRestBill(RestCost) || !p.CanPayHungerBill(HungerCost))
                 {
-                    Tools.Warn(p.LabelShort + " cant pay either RestCost or HungerCost ", myDebug );
+                    if(myDebug)
+                        Log.Warning(p.LabelShort + " cant pay either RestCost or HungerCost ");
+
                     return false;
                 }
                 else
                 {
-                    Tools.Warn(p.LabelShort + " will pay both RestCost/HungerCost ", myDebug);
+                    if (myDebug)
+                        Log.Warning(p.LabelShort + " will pay both RestCost/HungerCost ");
 
                     if(p.needs.rest != null)
                         p.PayRestBill(RestCost);

@@ -8,24 +8,33 @@ namespace MoHarRegeneration
 {
     public static class BodyPartTechHediff
     {
-        public static bool TryRegrowProsthetic(this HediffComp_Regeneration RegenHComp, HediffDef ProstheticHediff)
+        public static bool TryRegrowProsthetic(this HediffComp_Regeneration comp, HediffDef ProstheticHediff)
         {
             if (ProstheticHediff == null)
                 return false;
 
-            Pawn p = RegenHComp.Pawn;
-            BodyPartRecord BPR = RegenHComp.currentHediff.Part;
+            Pawn p = comp.Pawn;
+            BodyPartRecord BPR = comp.currentHediff.Part;
 
-            Tools.Warn(p.LabelShort + " TryRegrowProsthetic - hediffdef: " + ProstheticHediff?.defName + "; BP: " + BPR?.Label);
+            if (comp.MyDebug)
+                Log.Warning(p.LabelShort + " TryRegrowProsthetic - hediffdef: " + ProstheticHediff?.defName + "; BP: " + BPR?.Label);
 
-            float BPRMaxHealth = BPR.def.GetMaxHealth(RegenHComp.Pawn);
-            float PawnBodyPartRatio = BPRMaxHealth / RegenHComp.BodyPartsHealthSum;
+            float BPRMaxHealth = BPR.def.GetMaxHealth(comp.Pawn);
+            float PawnBodyPartRatio = BPRMaxHealth / comp.BodyPartsHealthSum;
 
             MedicalRecipesUtility.RestorePartAndSpawnAllPreviousParts(p, BPR, p.Position, p.Map);
             p.health.AddHediff(ProstheticHediff, BPR);
 
-            if(RegenHComp.HasLimits)
-                RegenHComp.TreatmentPerformedQuality += PawnBodyPartRatio * 10;
+            if(comp.Props.BodyPartRegenParams.prostheticHediff != null)
+            {
+                float TheoricSeverity = BPRMaxHealth * (1 - comp.Props.BodyPartRegenParams.prostheticMaxHealth);
+                Hediff BarelyAliveBP = HediffMaker.MakeHediff(comp.Props.BodyPartRegenParams.prostheticHediff, comp.Pawn, BPR);
+                BarelyAliveBP.Severity = TheoricSeverity;
+                comp.Pawn.health.AddHediff(BarelyAliveBP, BPR);
+            }
+            
+            if(comp.HasLimits)
+                comp.TreatmentPerformedQuality += PawnBodyPartRatio * 10;
 
             return p.health.hediffSet.HasHediff(ProstheticHediff, BPR);
         }
@@ -38,7 +47,8 @@ namespace MoHarRegeneration
             string techHediffTag = RegenHComp.Props.BodyPartRegenParams.techHediffTag;
             BodyPartRecord BPR = RegenHComp.currentHediff.Part;
 
-            Tools.Warn("Looking for one recipe with techHediff=" + techHediffTag + " and BP=" + BPR?.Label, RegenHComp.MyDebug);
+            if(RegenHComp.MyDebug)
+                Log.Warning("Looking for one recipe with techHediff=" + techHediffTag + " and BP=" + BPR?.Label);
 
             IEnumerable<ThingDef> Prosthetics = DefDatabase<ThingDef>.AllDefs.Where(
                     TD => 
@@ -48,7 +58,8 @@ namespace MoHarRegeneration
 
             if (Prosthetics.EnumerableNullOrEmpty())
             {
-                Tools.Warn("TryFindBodyPartProsthetic - found no prosthetic with techHediff=" + techHediffTag, RegenHComp.MyDebug);
+                if (RegenHComp.MyDebug)
+                    Log.Warning("TryFindBodyPartProsthetic - found no prosthetic with techHediff=" + techHediffTag);
             }
 
             IEnumerable <RecipeDef> recipes = DefDatabase<RecipeDef>.AllDefs.Where(
@@ -62,21 +73,23 @@ namespace MoHarRegeneration
 
             if (recipes.EnumerableNullOrEmpty())
             {
-                Tools.Warn("TryFindBodyPartProsthetic - empty recipes ", RegenHComp.MyDebug);
+                if (RegenHComp.MyDebug)
+                    Log.Warning("TryFindBodyPartProsthetic - empty recipes ");
                 return null;
             }
                 
 
-            if(recipes.Count() > 1)
+            if(RegenHComp.MyDebug && recipes.Count() > 1)
             {
-                Tools.Warn("Found more than one recipe with techHediff=" + techHediffTag + " and BP=" + BPR.Label, RegenHComp.MyDebug);
-                foreach (RecipeDef RD in recipes)
-                    Tools.Warn(RD.defName, RegenHComp.MyDebug);
+                    Log.Warning("Found more than one recipe with techHediff=" + techHediffTag + " and BP=" + BPR.Label);
+                    foreach (RecipeDef RD in recipes)
+                        Log.Warning(RD.defName);
             }
 
             HediffDef answer = recipes.RandomElement().addsHediff;
 
-            Tools.Warn("TryFindBodyPartProsthetic - Found " + answer.defName, RegenHComp.MyDebug);
+            if (RegenHComp.MyDebug)
+                Log.Warning("TryFindBodyPartProsthetic - Found " + answer.defName);
 
             return answer;
         }
@@ -97,7 +110,8 @@ namespace MoHarRegeneration
             if(h !=null)
                 p.health.RemoveHediff(h);
 
-            Tools.Warn(p.LabelShort + " RecursiveHediffRemoval - Removing " + h.def.defName + " from " + BPR.Label, myDebug);
+            if (myDebug)
+                Log.Warning(p.LabelShort + " RecursiveHediffRemoval - Removing " + h.def.defName + " from " + BPR.Label);
 
             foreach (BodyPartRecord allChildren in BPR.parts)
             {

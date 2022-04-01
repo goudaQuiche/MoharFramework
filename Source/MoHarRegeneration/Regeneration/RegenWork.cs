@@ -201,8 +201,9 @@ namespace MoHarRegeneration
                     DoneWithIt = false;
                     return false;
                 }
+                if(comp.MyDebug)
+                    Tools.Warn("TryCureDisease OK");
 
-                Tools.Warn("TryCureDisease OK", comp.MyDebug);
                 comp.currentHediff.Severity -= RegenQuantity;
                 // Immunity ?
                 DoneWithIt = (comp.currentHediff.Severity <= 0) ? true : false;
@@ -401,7 +402,7 @@ namespace MoHarRegeneration
                 BarelyAliveBP.Severity = TheoricSeverity;
                 if (BarelyAliveBP.def.tendable)
                 {
-                    BarelyAliveBP.Tended(new FloatRange(.2f, 1f).RandomInRange, 2f);
+                    BarelyAliveBP.Tended(new FloatRange(.2f, 1f).RandomInRange, 1f);
                 }
 
                 comp.Pawn.health.AddHediff(BarelyAliveBP, BPR);

@@ -14,6 +14,9 @@ namespace MoHarRegeneration
         public float parentMinHealthRequirement = 0;
         public HediffDef regrownHediff;
 
+        public HediffDef prostheticHediff;
+        public float prostheticMaxHealth = 1f;
+
         public string techHediffTag = string.Empty;
 
         public bool NeededParentHealthCheck => parentMinHealthRequirement > 0;
