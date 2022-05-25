@@ -72,7 +72,7 @@ namespace OLB
         public bool DebugOutsideLoop => MyDebug && Props.verboseLevel >= 2;
         public bool DebugInsideLoop => MyDebug && Props.verboseLevel >= 3;
 
-        public bool DoNothing = false;
+        //public bool DoNothing = false;
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
@@ -85,8 +85,19 @@ namespace OLB
 
         public override void CompTick()
         {
+            /*
             if (DoNothing)
                 return;
+            */
+
+            if (!parent.Spawned)
+            {
+                if (!HasEmptyTracer)
+                {
+                    LivingMotes.Clear();
+                }
+                return;
+            }
 
             string debugStr = MyDebug ? parent.Label + " CompTick - " : "";
 

@@ -18,7 +18,10 @@ namespace OLB
 
         public static bool DyingMoteInTracer(this CompDecorate comp)
         {
-            Log.Warning("DyingMoteInTracer");
+
+            if(comp.MyDebug)
+                Log.Warning("DyingMoteInTracer");
+
             return 
                 comp.LivingMotes.Any(
                     LM =>
@@ -40,11 +43,8 @@ namespace OLB
 
             if (comp.DyingMoteInTracer())
             {
-                Log.Warning("found dying mote");
                 return true;
             }
-                
-
 
             if (comp.SameMoteWithGraceInTracer())
             {
