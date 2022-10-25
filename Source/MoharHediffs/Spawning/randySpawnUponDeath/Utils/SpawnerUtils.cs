@@ -36,11 +36,17 @@ namespace MoharHediffs
 
             PawnKindDef PKD = comp.PawnOfChoice;
 
-            PawnGenerationRequest request = 
+            PawnGenerationRequest request = TS.newBorn ?
                 new PawnGenerationRequest(
                     kind: PKD, faction: comp.RandomFaction, context: PawnGenerationContext.NonPlayer, tile: -1, forceGenerateNewPawn: false,
-                    newborn: TS.newBorn, colonistRelationChanceFactor: 0, allowAddictions: false, allowFood: false, relationWithExtraPawnChanceFactor:0
-                );
+                    fixedBiologicalAge:0, fixedChronologicalAge:0, colonistRelationChanceFactor: 0, allowAddictions: false, allowFood: false, relationWithExtraPawnChanceFactor: 0
+                )
+                :
+                new PawnGenerationRequest(
+                    kind: PKD, faction: comp.RandomFaction, context: PawnGenerationContext.NonPlayer, tile: -1, forceGenerateNewPawn: false,
+                    colonistRelationChanceFactor: 0, allowAddictions: false, allowFood: false, relationWithExtraPawnChanceFactor: 0
+                )
+                ;
 
             for (int i = 0; i < randomQuantity; i++)
             {
@@ -62,7 +68,8 @@ namespace MoharHediffs
 
                     comp.SetHediff(NewPawn);
 
-                    PawnCopyUtils.InitRememberBackstories(out Backstory rememberChildBS, out Backstory rememberAdultBS);
+                    //PawnCopyUtils.InitRememberBackstories(out Backstory rememberChildBS, out Backstory rememberAdultBS);
+                    PawnCopyUtils.InitRememberBackstories(out BackstoryDef rememberChildBS, out BackstoryDef rememberAdultBS);
                     if (comp.ChosenItem.copyParent.passions || comp.ChosenItem.copyParent.traits)
                     {
                         comp.RememberBackstories(NewPawn, out rememberChildBS, out rememberAdultBS);

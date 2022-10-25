@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
-using AlienRace;
+//using AlienRace;
 
 namespace MoHarRegeneration
 {
@@ -164,6 +164,39 @@ namespace MoHarRegeneration
             return MyDefs.HealingTask.None;
         }
 
+        private static bool BleedingHediffPredicate(Hediff h)
+        {
+            return h.Bleeding &&
+                h.TendableNow() &&
+                !h.IsTended();
+        }
+		
+		private static bool PermanentHediffPredicate(Hediff h)
+        {
+            return h.def != HediffDefOf.MissingBodyPart && 
+                h.IsPermanent();
+        }
+		
+		private static bool TendableChronicDiseasePredicate(Hediff h)
+        {
+            return h.def.chronic &&
+                h.TendableNow() && 
+                !h.IsTended();
+        }
+
+		private static bool TendableRegularDiseasePredicate(Hediff h)
+        {
+            return !h.def.chronic &&
+                h.TendableNow() && 
+                !h.IsTended();
+        }		
+
+        private static bool HediffFromParamsPredicate(Hediff h, HealingWithHediffListParams HediffParams)
+        {
+            return HediffParams.TargetedHediffDefs.Contains(h.def) &&
+                   !h.IsPermanent();
+        }
+
         public static bool GetBleedingHediff(this HediffComp_Regeneration comp, out Hediff hediff)
         {
             //Tools.Warn(comp.Pawn.LabelShort + " GetBleedingHediff", comp.MyDebug);
@@ -177,19 +210,40 @@ namespace MoHarRegeneration
             }
             */
 
-            IEnumerable<Hediff> hediffs =
-            comp.Pawn.health.hediffSet.GetHediffs<Hediff>().Where(
+            List<Hediff> hediffsL = null;
+            IEnumerable<Hediff> hediffs = null;
+            System.Predicate<Hediff> predicate = BleedingHediffPredicate;
+                        
+            comp.Pawn.health.hediffSet.GetHediffs<Hediff>(ref hediffsL, predicate);
+
+            if (hediffsL.NullOrEmpty())
+            {
+                hediff = null;
+                return false;
+            }
+
+            hediffs = hediffsL;
+
+            /*
+            if (!hediffsL.NullOrEmpty())
+            {
+                hediffs = hediffsL;
+                if (hediffs.EnumerableNullOrEmpty())
+                {
+                    //Tools.Warn(comp.Pawn.LabelShort + " GetBleedingHediff - Found no bloodloss", comp.MyDebug);
+
+                }
+            }
+            */
+            /*
+             * comp.Pawn.health.hediffSet.GetHediffs<Hediff>().Where(
                 h => h.Bleeding &&
                 h.TendableNow() &&
                 !h.IsTended()
             );
+            */
 
-            if (hediffs.EnumerableNullOrEmpty())
-            {
-                //Tools.Warn(comp.Pawn.LabelShort + " GetBleedingHediff - Found no bloodloss", comp.MyDebug);
-                hediff = null;
-                return false;
-            }
+            
 
             hediff = hediffs.MostSeverityHediff();
 
@@ -219,19 +273,29 @@ namespace MoHarRegeneration
 
         public static bool GetHediffFromRegenParamsHediffArray(this Pawn p, HealingWithHediffListParams HP, out Hediff hediff)
         {
+
+
+            List<Hediff> hediffsL = null;
+            IEnumerable<Hediff> hediffs = null;
+
+            p.health.hediffSet.GetHediffs<Hediff>(ref hediffsL, h => HP.TargetedHediffDefs.Contains(h.def) && !h.IsPermanent());
+
+            /*
+            System.Predicate<Hediff> predicate = HediffFromParamsPredicate(h, HP);
+
             IEnumerable<Hediff> hediffs =
                 p.health.hediffSet.GetHediffs<Hediff>().Where(
                 h => 
                 HP.TargetedHediffDefs.Contains(h.def) &&
                 !h.IsPermanent()
             );
-
-            if (hediffs.EnumerableNullOrEmpty())
+            */
+            if (hediffsL.NullOrEmpty())
             {
                 hediff = null;
                 return false;
             }
-
+            hediffs = hediffsL;
             hediff = hediffs.MostSeverityHediff();
 
             return true;
@@ -239,6 +303,21 @@ namespace MoHarRegeneration
 
         public static bool GetPermanentHediff(this Pawn p, out Hediff hediff)
         {
+            List<Hediff> hediffsL = null;
+            IEnumerable<Hediff> hediffs = null;
+            System.Predicate<Hediff> predicate = PermanentHediffPredicate;
+
+            p.health.hediffSet.GetHediffs<Hediff>(ref hediffsL, predicate);
+
+            if (hediffsL.NullOrEmpty())
+            {
+                hediff = null;
+                return false;
+            }
+
+            hediffs = hediffsL;
+
+            /*
             IEnumerable<Hediff> hediffs =
                 p.health.hediffSet.GetHediffs<Hediff>().Where(
                 h =>
@@ -251,6 +330,7 @@ namespace MoHarRegeneration
                 hediff = null;
                 return false;
             }
+            */
 
             hediff = hediffs.MostSeverityHediff();
 
@@ -280,6 +360,20 @@ namespace MoHarRegeneration
                 return false;
             }
 
+            List<Hediff> hediffsL = null;
+            IEnumerable<Hediff> hediffs = null;
+            System.Predicate<Hediff> predicate = TendableChronicDiseasePredicate;
+
+            p.health.hediffSet.GetHediffs<Hediff>(ref hediffsL, predicate);
+
+            if (hediffsL.NullOrEmpty())
+            {
+                hediff = null;
+                return false;
+            }
+
+            hediffs = hediffsL;
+            /*
             IEnumerable<Hediff> hediffs =
                 p.health.hediffSet.GetHediffs<Hediff>().Where(
                 h =>
@@ -293,7 +387,7 @@ namespace MoHarRegeneration
                 hediff = null;
                 return false;
             }
-
+            */
             hediff = hediffs.MostSeverityHediff();
 
             return true;
@@ -309,6 +403,21 @@ namespace MoHarRegeneration
                 return false;
             }
 
+            List<Hediff> hediffsL = null;
+            IEnumerable<Hediff> hediffs = null;
+            System.Predicate<Hediff> predicate = TendableRegularDiseasePredicate;
+
+            p.health.hediffSet.GetHediffs<Hediff>(ref hediffsL, predicate);
+
+            if (hediffsL.NullOrEmpty())
+            {
+                hediff = null;
+                return false;
+            }
+
+            hediffs = hediffsL;
+
+            /*
             IEnumerable<Hediff> hediffs =
                 p.health.hediffSet.GetHediffs<Hediff>().Where(
                 h =>
@@ -316,6 +425,7 @@ namespace MoHarRegeneration
                 h.TendableNow() &&
                 !h.IsTended()
             );
+            */
             /*
             if (MyDebug)
             {
@@ -327,12 +437,13 @@ namespace MoHarRegeneration
                 }
             }
             */
-
+            /*
             if (hediffs.EnumerableNullOrEmpty())
             {
                 hediff = null;
                 return false;
             }
+            */
 
             if (!TargetedHediffs.NullOrEmpty())
             {
@@ -352,12 +463,13 @@ namespace MoHarRegeneration
                 }
                 */
             }
-
+            /*
             if (hediffs.EnumerableNullOrEmpty())
             {
                 hediff = null;
                 return false;
             }
+            */
 
             hediff = hediffs.MostSeverityHediff();
 

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using Verse;
-using AlienRace;
+//using AlienRace;
 
 namespace MoHarRegeneration
 {
@@ -19,7 +19,7 @@ namespace MoHarRegeneration
             if(debug)
                 Log.Warning(warning);
         }
-
+        /*
         public static AlienPartGenerator.AlienComp GetAlien(Pawn pawn = null)
         {
             AlienPartGenerator.AlienComp alienComp = null;
@@ -27,7 +27,7 @@ namespace MoHarRegeneration
 
             return alienComp;
         }
-
+        */
 
         public static string DescriptionAttr<T>(this T source)
         {

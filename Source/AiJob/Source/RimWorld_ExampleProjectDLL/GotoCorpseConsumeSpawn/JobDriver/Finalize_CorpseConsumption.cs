@@ -193,12 +193,19 @@ namespace MoharAiJob
             bool wantNewBorn = Rand.Chance(CP.newBornChance);
 
             float combatPowerMultiplier = wantNewBorn ? CP.newBornCombatPowerRatio : 1;
-
+            /*
             PawnGenerationRequest request =
                 new PawnGenerationRequest(
                     kind: PKD, faction: RandomFaction, context: PawnGenerationContext.NonPlayer, tile: -1, forceGenerateNewPawn: false,
                     newborn: wantNewBorn, colonistRelationChanceFactor: 0, allowAddictions: false, allowFood: false, relationWithExtraPawnChanceFactor: 0
                 );
+                */
+            PawnGenerationRequest request =
+            new PawnGenerationRequest(
+                kind: PKD, faction: RandomFaction, context: PawnGenerationContext.NonPlayer, tile: -1, forceGenerateNewPawn: false,
+                fixedBiologicalAge: 0, fixedChronologicalAge: 0, colonistRelationChanceFactor: 0, allowAddictions: false, allowFood: false, relationWithExtraPawnChanceFactor: 0
+            );
+
             Pawn NewPawn = PawnGenerator.GeneratePawn(request);
             GenSpawn.Spawn(NewPawn, SpawnPos, map, WipeMode.Vanish);
 

@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\1.3\Assemblies\</OutputPath>
+    <OutputPath>..\..\..\..\1.4\Assemblies\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -36,7 +36,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ModCompatibilityCheck.cs" />
     <Compile Include="UniversalBinaryExpressionTree\Evaluate\CheckMethods\CurveArgCondition.cs" />
     <Compile Include="UniversalBinaryExpressionTree\Evaluate\CheckMethods\NoArgCondition.cs" />
     <Compile Include="UniversalBinaryExpressionTree\Evaluate\CheckMethods\IntRangeArgCondition.cs" />
@@ -55,10 +54,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="AlienRace">
-      <HintPath>..\..\..\..\..\..\..\..\workshop\content\294100\839005762\1.3\Assemblies\AlienRace.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>

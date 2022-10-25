@@ -16,7 +16,7 @@ namespace ShieldApparel
 		//public MyGizmo_EnergyShieldStatus()
 		public MyGizmo_EnergyShieldStatus()
 		{
-			order = -100f;
+            Order = -100f;
 		}
 
 		public override float GetWidth(float maxWidth)

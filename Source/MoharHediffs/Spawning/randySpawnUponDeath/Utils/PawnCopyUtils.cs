@@ -53,7 +53,8 @@ namespace MoharHediffs
         public static void SetMelanin(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
         {
             if (comp.ChosenItem.copyParent.melanin)
-                newPawn.story.melanin = comp.Pawn.story.melanin;
+                //newPawn.story.melanin = comp.Pawn.story.melanin;
+                newPawn.story.SkinColorBase = comp.Pawn.story.SkinColorBase;
         }
         public static void SetAlienSkinColor(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
         {
@@ -84,7 +85,8 @@ namespace MoharHediffs
             if (templateAlien == null || copyAlien == null)
                 return;
 
-            copyAlien.crownType = templateAlien.crownType;
+            newPawn.story.headType = comp.Pawn.story.headType;
+            //copyAlien. = templateAlien.crownType;
         }
 
         public static void SetBodyType(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
@@ -98,7 +100,11 @@ namespace MoharHediffs
                 return;
 
             if (comp.Pawn.IsHuman())
-                newPawn.story.crownType = comp.Pawn.story.crownType;
+            {
+                newPawn.story.headType = comp.Pawn.story.headType;
+                //newPawn.story.crownType = comp.Pawn.story.crownType;
+            }
+
             else if (comp.Pawn.IsAlien())
                 comp.SetAlienCrownType(newPawn);
 
@@ -111,7 +117,8 @@ namespace MoharHediffs
         public static void SetHairColor(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
         {
             if (comp.ChosenItem.copyParent.hairColor)
-                newPawn.story.hairColor = comp.Pawn.story.hairColor;
+                //newPawn.story.hairColor = comp.Pawn.story.hairColor;
+                newPawn.story.HairColor= comp.Pawn.story.HairColor;
         }
         public static void SetHediff(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
         {
@@ -232,35 +239,40 @@ namespace MoharHediffs
                 newPawn.skills.skills[i].passion = comp.Pawn.skills.skills[i].passion;
         }
 
-        public static void InitRememberBackstories(out Backstory childBS, out Backstory adultBS)
+        //public static void InitRememberBackstories(out Backstory childBS, out Backstory adultBS)
+        public static void InitRememberBackstories(out BackstoryDef childBS, out BackstoryDef adultBS)
         {
             childBS = adultBS = null;
         }
 
         public static void ResetBackstories(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
         {
+            /*
             newPawn.story.childhood = null;
             newPawn.story.adulthood = null;
+            */
+            newPawn.story.Childhood = null;
+            newPawn.story.Adulthood = null;
         }
 
-        public static void RememberBackstories(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn, out Backstory childBS, out Backstory adultBS)
+        public static void RememberBackstories(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn, out BackstoryDef childBS, out BackstoryDef adultBS)
         {
-            childBS = newPawn.story.childhood;
-            adultBS = newPawn.story.adulthood;
+            childBS = newPawn.story.Childhood;
+            adultBS = newPawn.story.Adulthood;
         }
 
-        public static void ReinjectBackstories(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn, Backstory childBS, Backstory adultBS)
+        public static void ReinjectBackstories(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn, BackstoryDef childBS, BackstoryDef adultBS)
         {
-            newPawn.story.childhood = childBS;
-            newPawn.story.adulthood = adultBS;
+            newPawn.story.Childhood = childBS;
+            newPawn.story.Adulthood = adultBS;
         }
 
         public static void SetBackstories(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
         {
             if(comp.ChosenItem.copyParent.childBS)
-                newPawn.story.childhood = comp.Pawn.story.childhood;
+                newPawn.story.Childhood = comp.Pawn.story.Childhood;
             if (comp.ChosenItem.copyParent.adultBS)
-                newPawn.story.adulthood = comp.Pawn.story.adulthood;
+                newPawn.story.Adulthood = comp.Pawn.story.Adulthood;
         }
 
         public static void SetTraits(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)

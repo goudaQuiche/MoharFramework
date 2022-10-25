@@ -48,7 +48,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <Prefer32Bit>false</Prefer32Bit>
-    <OutputPath>..\..\1.3\Assemblies\</OutputPath>
+    <OutputPath>..\..\1.4\Assemblies\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <Optimize>true</Optimize>
@@ -71,8 +71,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Ubet, Version=0.15.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\1.3\Assemblies\Ubet.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\1.4\Assemblies\Ubet.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>

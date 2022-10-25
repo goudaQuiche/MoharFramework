@@ -30,7 +30,7 @@ namespace DisplayITab
 			Thing thing = this.SelectedThing;
 			if (thing == null)
 			{
-				Log.Error("display tab found no selected pawn to display.", false);
+				Log.Error("display tab found no selected pawn to display.");
 				return;
 			}
 			Rect rect = new Rect(17, 17, DisplayITabUtility.WindowWidth, DisplayITabUtility.WindowHeight);

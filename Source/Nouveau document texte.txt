@@ -1,4 +1,3 @@
-lifespan
-moharhediff
-regen
-shieldApparel
+MoharCustomHAR
+MoHarRegeneration
+MoharHediffs

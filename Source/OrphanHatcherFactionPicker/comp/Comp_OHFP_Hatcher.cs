@@ -189,10 +189,27 @@ namespace OHFP
                     else
                     {
                         */
+
+                    /*
                     request = new PawnGenerationRequest(
                     kind: hatcheePawnKind, faction: hatcheeFaction, context: pGenContext, tile: -1,
                     forceGenerateNewPawn: false, newborn: newBorn
                     );
+                    */
+                    if (newBorn)
+                    {
+                        request = new PawnGenerationRequest(
+                            kind: hatcheePawnKind, faction: hatcheeFaction, context: pGenContext, tile: -1,
+                            forceGenerateNewPawn: false, fixedBiologicalAge: 0, fixedChronologicalAge: 0
+                        );
+                    }
+                    else
+                    {
+                        request = new PawnGenerationRequest(
+                            kind: hatcheePawnKind, faction: hatcheeFaction, context: pGenContext, tile: -1,
+                            forceGenerateNewPawn: false
+                        );
+                    }
 
                     Pawn pawn = PawnGenerator.GeneratePawn(request);
                     if (parent.MyTrySpawnHatchedOrBornPawn(pawn))
