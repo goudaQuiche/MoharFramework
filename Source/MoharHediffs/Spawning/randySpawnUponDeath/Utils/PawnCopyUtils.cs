@@ -74,6 +74,30 @@ namespace MoharHediffs
             copyAlien.GetChannel("skin").first = skinColor1;
             copyAlien.GetChannel("skin").second = skinColor2;
         }
+
+        public static void SetAlienBodyAndHeadType(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
+        {
+            if (!(comp.Pawn.IsAlien() && newPawn.IsAlien()))
+                return;
+
+            AlienPartGenerator.AlienComp templateAlien = comp.Pawn.TryGetComp<AlienPartGenerator.AlienComp>();
+            AlienPartGenerator.AlienComp copyAlien = newPawn?.TryGetComp<AlienPartGenerator.AlienComp>();
+
+            if (templateAlien == null || copyAlien == null)
+                return;
+
+            newPawn.story.headType = comp.Pawn.story.headType;
+
+            copyAlien.headMaskVariant = templateAlien.headMaskVariant;
+            copyAlien.headVariant = templateAlien.headVariant;
+
+            newPawn.story.bodyType = comp.Pawn.story.bodyType;
+
+            copyAlien.bodyMaskVariant = templateAlien.bodyMaskVariant;
+            copyAlien.bodyVariant = templateAlien.bodyVariant;
+        }
+
+        /*
         public static void SetAlienCrownType(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
         {
             if (!(comp.Pawn.IsAlien() && newPawn.IsAlien()))
@@ -86,13 +110,20 @@ namespace MoharHediffs
                 return;
 
             newPawn.story.headType = comp.Pawn.story.headType;
+
+            copyAlien.headMaskVariant = templateAlien.headMaskVariant;
+            copyAlien.headVariant = templateAlien.headVariant;
             //copyAlien. = templateAlien.crownType;
         }
 
         public static void SetBodyType(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
         {
             if (comp.ChosenItem.copyParent.bodyType)
+            {
                 newPawn.story.bodyType = comp.Pawn.story.bodyType;
+
+            }
+                
         }
         public static void SetCrownType(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
         {
@@ -109,6 +140,8 @@ namespace MoharHediffs
                 comp.SetAlienCrownType(newPawn);
 
         }
+        */
+
         public static void SetHair(this HediffComp_RandySpawnUponDeath comp, Pawn newPawn)
         {
             if (comp.ChosenItem.copyParent.hair)

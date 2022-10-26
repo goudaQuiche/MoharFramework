@@ -57,6 +57,7 @@ namespace MoharCustomHAR
             return false;
         }
 
+        /*
         public static bool BackstoryCondition(this MoharBodyAddon bodyAddon, Pawn pawn)
         {
             // no backstory requirement
@@ -91,12 +92,14 @@ namespace MoharCustomHAR
 
             return false;
         }
+        */
 
         public static bool GenderCondition(this MoharBodyAddon bodyAddon, Pawn pawn)
         {
             return pawn.gender == Gender.Female ? bodyAddon.drawForFemale : bodyAddon.drawForMale;
         }
 
+        /*
         public static bool BodyTypeCondition(this MoharBodyAddon bodyAddon, Pawn pawn)
         {
             if (bodyAddon.bodyTypeRequirement.NullOrEmpty())
@@ -107,5 +110,6 @@ namespace MoharCustomHAR
 
             return false;
         }
+        */
     }
 }

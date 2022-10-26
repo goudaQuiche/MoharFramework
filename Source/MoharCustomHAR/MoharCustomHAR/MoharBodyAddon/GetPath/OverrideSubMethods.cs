@@ -8,10 +8,16 @@ using UnityEngine;
 
 namespace MoharCustomHAR
 {
-    using BAP = AlienPartGenerator.BodyAddonPrioritization;
-    using BAHG = AlienPartGenerator.BodyAddonHediffGraphic;
-    using BAHSG = AlienPartGenerator.BodyAddonHediffSeverityGraphic;
-    using BABSG = AlienPartGenerator.BodyAddonBackstoryGraphic;
+    
+    //using BAP = AlienPartGenerator.BodyAddonPrioritization;
+    using BAP = AlienPartGenerator.ExtendedGraphicsPrioritization;
+    //using BAHG = AlienPartGenerator.BodyAddonHediffGraphic;
+    using BAHG = AlienPartGenerator.ExtendedHediffGraphic;
+    //using BAHSG = AlienPartGenerator.BodyAddonHediffSeverityGraphic;
+    using BAHSG = AlienPartGenerator.ExtendedHediffSeverityGraphic;
+    //using BABSG = AlienPartGenerator.BodyAddonBackstoryGraphic;
+    using BABSG = AlienPartGenerator.ExtendedBackstoryGraphic;
+    
     using AlienComp = AlienPartGenerator.AlienComp;
     using ExposableValueTuple = AlienPartGenerator.ExposableValueTuple<Color, Color>;
 
@@ -19,23 +25,35 @@ namespace MoharCustomHAR
     {
         public static BABSG PawnHasBackstoryGraphics(this List<BABSG> backstoryGraphics, Pawn pawn)
         {
-            return backstoryGraphics?.FirstOrDefault(babgs => pawn.story.AllBackstories.Any(bs => bs.identifier == babgs.backstory));
+            //return backstoryGraphics?.FirstOrDefault(babgs => pawn.story.AllBackstories.Any(bs => bs.identifier == babgs.backstory));
+            return backstoryGraphics?.FirstOrDefault(babgs => pawn.story.AllBackstories.Any(bs => bs == babgs.backstory));
         }
 
-        public static bool HediffPartIsNullOrBodyPartIsNullOrIsSearchedBodyPart(this Hediff h, string HarBodyPart)
+        public static bool HediffPartIsNullOrBodyPartIsNullOrIsSearchedBodyPart(this Hediff h, MoharBodyAddon MBA)
         {
+            
             if (h.Part == null)
                 return true;
-            if (HarBodyPart.NullOrEmpty())
+            if (MBA.bodyPart == null && MBA.bodyPartLabel.NullOrEmpty())
                 return true;
-            if (h.Part.IsSearchedBodyPart(HarBodyPart))
+
+            if (MBA.bodyPart != null && MBA.bodyPartLabel.NullOrEmpty() && h.Part.IsSearchedBodyPartBodyPartDef(MBA.bodyPart))
+                return true;
+
+            if (!MBA.bodyPartLabel.NullOrEmpty() && MBA.bodyPart == null && h.Part.IsSearchedBodyPartString(MBA.bodyPartLabel))
+                return true;
+
+            if (MBA.bodyPart != null && !MBA.bodyPartLabel.NullOrEmpty() && h.Part.IsSearchedBodyPartBodyPartDef(MBA.bodyPart) && h.Part.IsSearchedBodyPartString(MBA.bodyPartLabel))
                 return true;
 
             return false;
         }
-        public static bool IsRelevantHediff(this Hediff h, BAHG bahg, string HarBodyPart)
+        public static bool IsRelevantHediff(this Hediff h, BAHG bahg, MoharBodyAddon MBA)
         {
-            return h.def == bahg.hediff && h.HediffPartIsNullOrBodyPartIsNullOrIsSearchedBodyPart(HarBodyPart);
+            if(MBA.bodyPart != null)
+                return h.def == bahg.hediff && h.HediffPartIsNullOrBodyPartIsNullOrIsSearchedBodyPart(MBA);
+
+            return false;
         }
         
         public static Shader DetermineShaderType(this string path, Shader shaderParameter)
@@ -81,7 +99,8 @@ namespace MoharCustomHAR
             returnPath = "";
             variantCounting = 0;
 
-            foreach (BAP prio in MBA.Prioritization)
+            //foreach (BAP prio in MBA.Prioritization)
+            foreach (BAP prio in MBA.pr)
             {
                 switch (prio)
                 {
@@ -99,7 +118,7 @@ namespace MoharCustomHAR
 
                         foreach (BAHG bahg in MBA.hediffGraphics)
                         {
-                            foreach (Hediff h in pawn.health.hediffSet.hediffs.Where(h => h.IsRelevantHediff(bahg, MBA.bodyPart)))
+                            foreach (Hediff h in pawn.health.hediffSet.hediffs.Where(h => h.IsRelevantHediff(bahg, MBA)))
                             {
                                 returnPath = bahg.path;
                                 variantCounting = bahg.variantCount;

@@ -8,13 +8,16 @@ using UnityEngine;
 
 namespace MoharCustomHAR
 {
-    using BAP = AlienPartGenerator.BodyAddonPrioritization;
-    using BAHG = AlienPartGenerator.BodyAddonHediffGraphic;
-    using BAHSG = AlienPartGenerator.BodyAddonHediffSeverityGraphic;
-    using BABSG = AlienPartGenerator.BodyAddonBackstoryGraphic;
+    
+    using BAP = AlienPartGenerator.ExtendedGraphicsPrioritization;
+    using BAHG = AlienPartGenerator.ExtendedHediffGraphic;
+    using BAHSG = AlienPartGenerator.ExtendedHediffSeverityGraphic;
+    using BABSG = AlienPartGenerator.ExtendedBackstoryGraphic;
+
     using AlienComp = AlienPartGenerator.AlienComp;
     using ExposableValueTuple = AlienPartGenerator.ExposableValueTuple<Color, Color>;
     
+
     public class MoharBodyAddon : AlienPartGenerator.BodyAddon
     {
         public bool drawIfDirectMissingChild = true;
@@ -33,14 +36,16 @@ namespace MoharCustomHAR
         public override bool CanDrawAddon(Pawn pawn)
         {
             bool result =
-                this.ApparelCondition(pawn) && 
-                this.PostureCondition(pawn) &&
+                base.CanDrawAddon(pawn) &&
+
+                //this.ApparelCondition(pawn) && 
+                //this.PostureCondition(pawn) &&
                 this.BedCondition(pawn) && 
-                this.BackstoryCondition(pawn) &&
-                this.BodyPartCondition(pawn) &&
+                //this.BackstoryCondition(pawn) &&
+                //this.BodyPartCondition(pawn) &&
                 
-                this.GenderCondition(pawn) &&
-                this.BodyTypeCondition(pawn) &&
+                //this.GenderCondition(pawn) &&
+                //this.BodyTypeCondition(pawn) &&
 
                 this.BodyPartChildrenCondition(pawn) &&
                 this.DeadCondition(pawn) &&
@@ -59,6 +64,7 @@ namespace MoharCustomHAR
             return result;
         }
 
+        /*
         public override Graphic GetPath(Pawn pawn, ref int sharedIndex, int? savedIndex = new int?())
         {
             string returnPath = string.Empty;
@@ -115,6 +121,7 @@ namespace MoharCustomHAR
                         drawRotated = !drawRotated
                     });
         }
+        */
     }
 
     

@@ -14,7 +14,7 @@ namespace MoharCustomHAR
 
             return !pawn.RaceProps.body.AllParts.Any(
                 bpr =>
-                    bpr.IsSearchedBodyPart(bodyAddon.bodyPart) &&
+                    ( bpr.IsSearchedBodyPartString(bodyAddon.bodyPartLabel) || bpr.IsSearchedBodyPartBodyPartDef(bodyAddon.bodyPart)) &&
                     pawn.HasDirectMissingChildrenAndIsNotBionic(bpr)
                 );
         }

@@ -61,8 +61,9 @@ namespace MoharHediffs
 
                     comp.SetMelanin(NewPawn);
                     comp.SetAlienSkinColor(NewPawn);
-                    comp.SetBodyType(NewPawn);
-                    comp.SetCrownType(NewPawn);
+                    comp.SetAlienBodyAndHeadType(NewPawn);
+                    //comp.SetBodyType(NewPawn);
+                    //comp.SetCrownType(NewPawn);
                     comp.SetHair(NewPawn);
                     comp.SetHairColor(NewPawn);
 
