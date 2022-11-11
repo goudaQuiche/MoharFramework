@@ -36,12 +36,15 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CustomTransformation\IndexEngine.cs" />
-    <Compile Include="CustomTransformation\CustomTransformation_Mote.cs" />
-    <Compile Include="CustomTransformation\CustomTransformation_MoteDef.cs" />
-    <Compile Include="Main\HarmonyPatch_Mote.cs" />
+    <Compile Include="AnimatedMote\CustomTransformation\IndexEngine.cs" />
+    <Compile Include="AnimatedMote\CustomTransformation\CustomTransformation_Mote.cs" />
+    <Compile Include="AnimatedMote\CustomTransformation\CustomTransformation_MoteDef.cs" />
+    <Compile Include="AnimatedMote\Main\HarmonyPatch_Mote.cs" />
+    <Compile Include="CutoutRandom\Gfx_CutOutCollection.cs" />
+    <Compile Include="CutoutRandom\Gfx_CutOutRandom.cs" />
     <Compile Include="Tools\GfxTools.cs" />
-    <Compile Include="Main\Graphic_AnimatedMote.cs" />
+    <Compile Include="AnimatedMote\Main\Graphic_AnimatedMote.cs" />
+    <Compile Include="Tools\MoteTools.cs" />
     <Compile Include="Tools\Tools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
