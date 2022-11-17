@@ -13,7 +13,7 @@ namespace MoharGfx
         static HarmonyPatchAll()
         {
             Harmony MoharGfx_HarmonyPatch = new Harmony("MoharFW.MoharGfx");
-            //MoharGfx_HarmonyPatch.PatchAll(Assembly.GetExecutingAssembly());
+            
             if (HarmonyPatch_Mote.Try_MoteSpawnSetup_PostfixPatch(MoharGfx_HarmonyPatch))
                 Log.Message(MoharGfx_HarmonyPatch.Id + " patched Mote.SpawnSetup successfully.");
         }
@@ -29,13 +29,6 @@ namespace MoharGfx
                 HarmonyMethod Prefix = null;
                 HarmonyMethod Postfix = new HarmonyMethod(typeof(Mote_HarmonyPatch), "Mote_SpawnSetup_Postfix");
 
-                /*
-                 * Log.Warning(
-                    "oriMeth:" + (SOS2Method != null) + 
-                    "; postfix:" + (Postfix != null)
-                );
-                */
-
                 myPatch.Patch(Method, Prefix, Postfix);
             }
             catch (Exception e)
@@ -47,7 +40,6 @@ namespace MoharGfx
             return true;
         }
 
-        //[HarmonyPatch(typeof(Mote), "SpawnSetup")]
         static class Mote_HarmonyPatch
         {
             static void Mote_SpawnSetup_Postfix(Mote __instance)
@@ -77,6 +69,8 @@ namespace MoharGfx
                         GAM.PulsingScaleRange = CTMD.transformation.scale.pulsingScale.range;
                         GAM.PulsingScaleSpeed = CTMD.transformation.scale.pulsingScale.speed;
                     }
+
+                    //if(CTMD.alp)
                 }
             }
         }

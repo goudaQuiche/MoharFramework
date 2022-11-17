@@ -6,13 +6,13 @@ using Verse;
 
 namespace MoharGfx
 {
-    public class Gfx_CutOutCollection : Graphic
+    public class Graphic_ForceCutoutCollection : Graphic
     {
         protected Graphic[] subGraphics;
         //protected Material mat;
 
         // Token: 0x06001C19 RID: 7193 RVA: 0x000ABBE8 File Offset: 0x000A9DE8
-        
+
         public override void TryInsertIntoAtlas(TextureAtlasGroup groupKey)
         {
             Graphic[] array = this.subGraphics;
@@ -21,7 +21,7 @@ namespace MoharGfx
                 array[i].TryInsertIntoAtlas(groupKey);
             }
         }
-   
+
         // Token: 0x06001C1A RID: 7194 RVA: 0x000ABC14 File Offset: 0x000A9E14
         public override void Init(GraphicRequest req)
         {
@@ -40,16 +40,16 @@ namespace MoharGfx
             this.color = req.color;
             this.colorTwo = req.colorTwo;
             this.drawSize = req.drawSize;
-            List<ValueTuple<Texture2D, string>> list = (from x in ContentFinder<Texture2D>.GetAllInFolder(req.path)
-                                                        where !x.name.EndsWith(Graphic_Single.MaskSuffix)
-                                                        orderby x.name
-                                                        select new ValueTuple<Texture2D, string>(x, x.name.Split(new char[]
-                                                        {
-                '_'
-                                                        })[0])).ToList<ValueTuple<Texture2D, string>>();
+            List<ValueTuple<Texture2D, string>> list = 
+                (from x in ContentFinder<Texture2D>.GetAllInFolder(req.path)
+                    where !x.name.EndsWith(Graphic_Single.MaskSuffix)
+                    orderby x.name
+                    select new ValueTuple<Texture2D, string>(x, x.name.Split(new char[] { '_' } )[0])
+                ).ToList<ValueTuple<Texture2D, string>>();
+
             if (list.NullOrEmpty<ValueTuple<Texture2D, string>>())
             {
-                Log.Error("Collection cannot init: No textures found at path " + req.path);
+                Log.Error("Gfx_ForceCutoutCollection - Collection cannot init: No textures found at path " + req.path);
                 this.subGraphics = new Graphic[]
                 {
                     BaseContent.BadGraphic
@@ -63,11 +63,11 @@ namespace MoharGfx
                 List<ValueTuple<Texture2D, string>> list3 = grouping.ToList<ValueTuple<Texture2D, string>>();
                 string singlePath = req.path + "/" + grouping.Key;
                 string singleMaskPath = singlePath + Graphic_Single.MaskSuffix;
-                //Log.Warning("singlePath:" + singlePath + "; singleMaskPath:" + singleMaskPath);
+                Log.Warning("singlePath:" + singlePath + "; singleMaskPath:" + singleMaskPath);
 
                 MaterialRequest req2 = default(MaterialRequest);
                 //req2.mainTex = (req.texture ?? ContentFinder<Texture2D>.Get(req.path, true));
-                
+
                 req2.mainTex = req.texture ?? ContentFinder<Texture2D>.Get(singlePath, true);
 
                 //Log.Warning("req2.mainTex:" + (req2.mainTex==null).ToString() + " => singlePath"+ singlePath);
@@ -77,12 +77,11 @@ namespace MoharGfx
                 req2.renderQueue = req.renderQueue;
                 req2.shaderParameters = req.shaderParameters;
                 //Log.Warning("req.shader.name => " + req.shader.name + " - req.shader.SupportsMaskTex()" + req.shader.SupportsMaskTex());
-                if (req.shader.SupportsMaskTex())
-                {
-                    //req2.maskTex = ContentFinder<Texture2D>.Get(this.maskPath.NullOrEmpty() ? (this.path + Graphic_Single.MaskSuffix) : this.maskPath, false);
-                    req2.maskTex = ContentFinder<Texture2D>.Get(singleMaskPath, true);
-                    //Log.Warning("SupportMaskTex");
-                }
+
+                //req2.maskTex = ContentFinder<Texture2D>.Get(this.maskPath.NullOrEmpty() ? (this.path + Graphic_Single.MaskSuffix) : this.maskPath, false);
+                req2.maskTex = ContentFinder<Texture2D>.Get(singleMaskPath, true);
+                //Log.Warning("SupportMaskTex");
+
                 //this.mat = MaterialPool.MatFrom(req2);
 
                 if (list3.Count > 0)

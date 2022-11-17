@@ -9,17 +9,27 @@ namespace MoharGfx
         public CustomTransformation transformation;
         public bool HasTransformation => transformation != null;
 
+        // animation
         public bool HasAnimatedMote => HasTransformation && transformation.HasAnimatedMote;
 
+        // color
+        public bool HasColor => HasTransformation && transformation.HasColor;
+        public bool HasAlpha => HasColor && transformation.color.HasArbitraryAlpha;
+
+        // misc - flipped
+        public bool HasMisc => HasTransformation && transformation.HasMisc;
+
+        //rotation
         public bool HasRotation => HasTransformation && transformation.HasRotation;
         public bool HasPeriodicRandomRotation => HasRotation && transformation.rotation.HasPeriodicRandRot;
         public bool HasRandomRotationRate => HasRotation && transformation.rotation.HasRandRotRate;
         public bool HasStraightenUp => HasRotation && transformation.rotation.HasStraightenUp;
 
+        //scale
         public bool HasScale => HasTransformation && transformation.HasScale;
         public bool HasPulsingScale => HasScale && transformation.scale.HasPulsingScale;
 
-        public bool HasMisc => HasTransformation && transformation.HasMisc;
+
 
         public bool debug = false;
 
@@ -31,12 +41,22 @@ namespace MoharGfx
         public Rotation rotation;
         public AnimatedMote animatedMote;
         public Scale scale;
+        public ColorAltering color;
         public Misc misc;
 
-        public bool HasRotation => rotation != null;
         public bool HasAnimatedMote => animatedMote != null;
-        public bool HasScale => scale != null;
+        public bool HasColor => color != null;
         public bool HasMisc => misc != null;
+        public bool HasRotation => rotation != null;
+        public bool HasScale => scale != null;
+        
+    }
+
+    public class ColorAltering
+    {
+        public float arbitraryAlpha = 1f;
+
+        public bool HasArbitraryAlpha => arbitraryAlpha != 1;
     }
 
     public class Misc

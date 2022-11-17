@@ -15,6 +15,9 @@ namespace MoharGfx
         public bool MyDebug => Def.debug;
         public string MainDebugStr => MyDebug ? Def.defName + " CustomTransformation_Mote - " : string.Empty;
 
+        // Color Alpha
+        public bool HasAlpha => Def.HasAlpha;
+
         // periodic random rotation
         public int randRot_NextPeriod;
         public bool IsPeriodicRandomRotationTime => Def.HasPeriodicRandomRotation && this.IsHashIntervalTick(randRot_NextPeriod);
@@ -52,6 +55,8 @@ namespace MoharGfx
         {
             randRot_NextPeriod = Def.transformation.rotation.periodicRandRot.period.RandomInRange;
         }
+
+        public override float Alpha => HasAlpha ? Def.transformation.color.arbitraryAlpha * base.Alpha : base.Alpha;
 
         float GetSUExactRotation
         {

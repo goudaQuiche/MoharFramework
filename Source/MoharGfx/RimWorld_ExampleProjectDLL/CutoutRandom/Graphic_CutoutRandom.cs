@@ -4,7 +4,7 @@ using RimWorld;
 
 namespace MoharGfx
 {
-    public class Gfx_CutOutRandom : Gfx_CutOutCollection
+    public class Graphic_CutoutRandom : Graphic_CutoutCollection
     {
         
         public override Material MatSingle => this.subGraphics[Rand.Range(0, SubGraphicsCount)].MatSingle;
@@ -94,7 +94,7 @@ namespace MoharGfx
         {
             return string.Concat(new object[]
             {
-                "Random(path=",
+                "Graphic_CutoutRandom(path=",
                 this.path,
                 ", count=",
                 this.subGraphics.Length,

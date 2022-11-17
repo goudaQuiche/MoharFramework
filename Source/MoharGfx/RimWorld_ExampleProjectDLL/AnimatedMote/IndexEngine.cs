@@ -14,6 +14,8 @@ namespace MoharGfx
             moteLifespan = 1,
             [Description("relativeMoteLifespan")]
             relativeMoteLifespan = 2,
+            [Description("anotherLifespan")]
+            anotherLifespan = 3,
         }
     }
 }
