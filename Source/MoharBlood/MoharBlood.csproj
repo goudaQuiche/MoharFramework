@@ -57,22 +57,30 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Comp\HediffCompProperties_UbetTesterProperties.cs" />
-    <Compile Include="Comp\HediffCompProperties_UbetTester.cs" />
+    <Compile Include="BloodColorEnum.cs" />
+    <Compile Include="BodyWoundColor\FleshTypeBloodColor\FleshTypeBloodColorDef.cs" />
+    <Compile Include="BodyWoundColor\Harmony\PatchFleshType.cs" />
+    <Compile Include="Effecter\Harmony\PatchEffecter.cs" />
+    <Compile Include="Effecter\PawnColoredEffecterExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MyDefs.cs" />
     <Compile Include="ToolsPawn.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AlienRace">
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.4\Assemblies\AlienRace.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="Ubet, Version=0.15.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\1.4\Assemblies\Ubet.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -82,5 +90,6 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
