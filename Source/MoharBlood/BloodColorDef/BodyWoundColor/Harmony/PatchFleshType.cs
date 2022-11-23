@@ -9,24 +9,7 @@ using HarmonyLib;
 
 namespace MoharBlood
 {
-    [StaticConstructorOnStartup]
-    static class HarmonyPatchAll
-    {
-        static HarmonyPatchAll()
-        {
-            Harmony MoharBlood_HarmonyPatch = new Harmony("MoharFW.MoharBlood");
-
-            // Check if any def requiring patching
-            if (!MyDefs.FTBCD.EnumerableNullOrEmpty())
-            {
-                if (HarmonyPatch_FleshTypeDef_Trigger.Try_FleshTypeDef_ResolveWound_Patch(MoharBlood_HarmonyPatch))
-                    Log.Message(MoharBlood_HarmonyPatch.Id + " patched FleshTypeDef.ChooseWoundOverlay successfully.");
-            }
-
-        }
-    }
-
-    public class HarmonyPatch_FleshTypeDef_Trigger
+    public class Harmony_FleshTypeDef
     {
 
         // FleshTypeDef.ResolvedWound
@@ -51,20 +34,22 @@ namespace MoharBlood
 
         public static class FleshTypeDef_HarmonyPatch
         {
-            public static FleshTypeDef.ResolvedWound MyResolve(FleshTypeDef.Wound wound, Pawn pawn, FleshTypeWoundColor ftbc)
+            public static FleshTypeDef.ResolvedWound MyResolve(FleshTypeDef.Wound wound, Pawn pawn, FleshTypeWound woundData, Color defaultColor)
             {
                 Shader shader = wound.tintWithSkinColor ? ShaderDatabase.WoundSkin : ShaderDatabase.Wound;
                 if (wound.texture != null)
                 {
-                    BloodColor pickedColor = ftbc.fallbackColor;
+                    Color pickedColor = defaultColor;
+                    ColoringWay coloringWay = ColoringWay.Unset;
 
-                    if (ftbc.woundColor.Where(w => w.textures.Contains(wound.texture)).FirstOrFallback() is WoundColorAssociation wca)
+                    if (woundData.woundColorList.Where(w => w.textureList.Contains(wound.texture)).FirstOrFallback() is WoundColorAssociation wca)
                     {
-                        pickedColor = wca.color;
+                        if(wca.HasColorWay)
+                            coloringWay = wca.colorSet.colorWay;
                         //Log.Warning(pawn.LabelShort + " found WoundColorAssociation for " + wound.texture + " : " + pickedColor.DescriptionAttr());
                     }
 
-                    Color newColor = pawn.GetWoundColor(pickedColor, wound.color);
+                    Color newColor = coloringWay == ColoringWay.Unset ? defaultColor : pawn.GetPawnBloodColor(coloringWay);
                     //Log.Warning(pawn.LabelShort + " Color : " + newColor);
 
                     return new FleshTypeDef.ResolvedWound(wound, MaterialPool.MatFrom(wound.texture, shader, newColor));
@@ -80,35 +65,41 @@ namespace MoharBlood
 
             }
 
-            static FleshTypeWoundColor GetFleshTypeBloodColor(Hediff hediff)
+            /*
+            public static FleshTypeWound GetFleshTypeWoundData(this Hediff hediff)
             {
+                if(hediff.pawn.GetPawnFleshTypeWound(out FleshTypeWound ftwd, out Color defaultColor))
+                {
+
+                }
+
+                return hediff.paw
+
                 return
-                MyDefs.FTBCD.Where(
-                    f => f.fleshTypeWoundColor.Any(
+                MyDefs.FTBCD.SelectMany(
+                    f => f.fleshTypeWoundColor.Where(
                         x => x.fleshTypeDef == hediff.pawn.RaceProps.FleshType
                     )
                 )
-                .SelectMany(x => x.fleshTypeWoundColor)
                 .FirstOrFallback();
-
-                /*
-                foreach (FleshTypeBloodColorDef ftbcd in MyDefs.FTBCD)
-                    if (ftbcd.fleshTypeBloodColor.Where(x => x.fleshTypeDef == hediff.pawn.RaceProps.FleshType).FirstOrFallback() is FleshTypeBloodColor answer)
-                        return answer;
-                        */
-                /*
-                foreach (FleshTypeBloodColorDef ftbcd in MyDefs.FTBCD)
-                    foreach (FleshTypeBloodColor ftbc in ftbcd.fleshTypeBloodColor)
-                        if (ftbc.fleshTypeDef == hediff.pawn.RaceProps.FleshType)
-                            return ftbc;
                 */
-            }
+            /*
+            foreach (FleshTypeBloodColorDef ftbcd in MyDefs.FTBCD)
+                if (ftbcd.fleshTypeBloodColor.Where(x => x.fleshTypeDef == hediff.pawn.RaceProps.FleshType).FirstOrFallback() is FleshTypeBloodColor answer)
+                    return answer;
+                    */
+            /*
+            foreach (FleshTypeBloodColorDef ftbcd in MyDefs.FTBCD)
+                foreach (FleshTypeBloodColor ftbc in ftbcd.fleshTypeBloodColor)
+                    if (ftbc.fleshTypeDef == hediff.pawn.RaceProps.FleshType)
+                        return ftbc;
+            */
+            //}
 
             public static bool FleshTypeDef_ChooseWoundOverlay_Prefix(FleshTypeDef __instance, Hediff hediff, ref FleshTypeDef.ResolvedWound __result)
             {
-                FleshTypeWoundColor ChosenFtbc = GetFleshTypeBloodColor(hediff);
-
-                if (ChosenFtbc == null)
+                //if (!hediff.pawn.GetPawnFleshTypeWound(out FleshTypeWound ftwd, out Color defaultColor, true))
+                if (!hediff.pawn.GetPawnFleshTypeWound(out FleshTypeWound ftwd, out Color defaultColor))
                 {
                     // if we did not find a pawn with the fleshType we use regular method
                     return true;
@@ -159,7 +150,7 @@ namespace MoharBlood
                     myWoundsResolved = (
                             from wound in __instance.genericWounds
                                 // select wound.Resolve()
-                            select MyResolve(wound, hediff.pawn, ChosenFtbc)
+                            select MyResolve(wound, hediff.pawn, ftwd, defaultColor)
                         ).ToList<FleshTypeDef.ResolvedWound>();
                 }
                 __result = myWoundsResolved.RandomElement<FleshTypeDef.ResolvedWound>();

@@ -32,57 +32,7 @@ namespace MoharBlood
             else return source.ToString();
         }
 
-        public static Color GetSkinFirstColor(this Pawn pawn)
-        {
-            if (!(pawn.TryGetComp<AlienPartGenerator.AlienComp>() is AlienPartGenerator.AlienComp alienComp))
-            {
-                return Color.white;
-            }
-
-            return alienComp.GetChannel("skin").first;
-        }
-
-        public static Color GetSkinSecondColor(this Pawn pawn)
-        {
-            if (!(pawn.TryGetComp<AlienPartGenerator.AlienComp>() is AlienPartGenerator.AlienComp alienComp))
-            {
-                return Color.white;
-            }
-
-            return alienComp.GetChannel("skin").second;
-        }
-
-        public static Color GetBloodColor(this Pawn pawn)
-        {
-            return pawn.RaceProps.BloodDef?.graphicData.color ?? Color.white;
-        }
-
-        public static Color GetWoundColor(this Pawn pawn, BloodColor colorChoice, Color defaultColor)
-        {
-            switch (colorChoice)
-            {
-                case BloodColor.Human:
-                    return MyDefs.HumanBloodColor;
-
-                case BloodColor.Insect:
-                    return MyDefs.InsectBloodColor;
-
-                case BloodColor.SkinFirst:
-                    return pawn.GetSkinFirstColor();
-
-                case BloodColor.SkinSecond:
-                    return pawn.GetSkinSecondColor();
-
-                case BloodColor.Blood:
-                    return pawn.GetBloodColor();
-
-                case BloodColor.DefaultWoundColor:
-                    return defaultColor;
-
-                default:
-                    return Color.white;
-            }
-        }
+       
     }
 
 

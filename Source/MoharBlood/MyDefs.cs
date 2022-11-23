@@ -10,7 +10,10 @@ namespace MoharBlood
     public static class MyDefs
     {
 
-        public static IEnumerable<MoharBlood.FleshTypeWoundColorDef> FTBCD = DefDatabase<MoharBlood.FleshTypeWoundColorDef>.AllDefs;
+        public static IEnumerable<MoharBlood.BloodColorDef> AllBloodColorDefs = DefDatabase<MoharBlood.BloodColorDef>.AllDefs;
+        //public static IEnumerable<EffecterDef> e = DefDatabase<EffecterDef>.AllDefs.Where(e => e.GetModExtension<PawnColoredEffecterExtension>() != null);
+        //public static bool EffecterWithExtension = DefDatabase<EffecterDef>.AllDefs.Any(e => e.HasModExtension<PawnColoredEffecterExtension>());
+        //public static bool = 
         //public static Color 
         public static ThingDef HumanBlood = DefDatabase<ThingDef>.AllDefs.Where(t => t.defName == "Filth_Blood").FirstOrFallback();
 
