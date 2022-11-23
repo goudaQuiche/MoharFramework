@@ -11,10 +11,16 @@ namespace MoharBlood
     {
 
         public static IEnumerable<MoharBlood.BloodColorDef> AllBloodColorDefs = DefDatabase<MoharBlood.BloodColorDef>.AllDefs;
-        //public static IEnumerable<EffecterDef> e = DefDatabase<EffecterDef>.AllDefs.Where(e => e.GetModExtension<PawnColoredEffecterExtension>() != null);
-        //public static bool EffecterWithExtension = DefDatabase<EffecterDef>.AllDefs.Any(e => e.HasModExtension<PawnColoredEffecterExtension>());
-        //public static bool = 
-        //public static Color 
+        public static bool HasBloodColor => !AllBloodColorDefs.EnumerableNullOrEmpty();
+
+        public static bool HasDebug => HasBloodColor && AllBloodColorDefs.Any(x => x.debug);
+
+        public static bool HasBloodSet => HasBloodColor && AllBloodColorDefs.Any(x => !x.bloodSetList.EnumerableNullOrEmpty());
+
+        public static bool HasFleshTypeWound = !HasBloodSet ? false : AllBloodColorDefs.Any(x => x.bloodSetList.Any(y => y.HasFleshTypeWound));
+        public static bool HasDamageEffecter = !HasBloodSet ? false : AllBloodColorDefs.Any(x => x.bloodSetList.Any(y => y.HasDamageEffecter));
+        public static bool HasJobMote = !HasBloodSet ? false : AllBloodColorDefs.Any(x => x.bloodSetList.Any(y => y.HasJobMote));
+
         public static ThingDef HumanBlood = DefDatabase<ThingDef>.AllDefs.Where(t => t.defName == "Filth_Blood").FirstOrFallback();
 
         public static Color HumanBloodColor = DefDatabase<ThingDef>.AllDefs.Where(t => t.defName == "Filth_Blood").FirstOrFallback()?.graphicData.color ?? Color.white;

@@ -9,6 +9,7 @@ namespace MoharBlood
     public class BloodColorDef : Def
     {
         public List<BloodColorSet> bloodSetList;
+        public bool debug = false;
     }
 
     public class BloodColorSet
@@ -18,11 +19,20 @@ namespace MoharBlood
 
         public FleshTypeWound fleshTypeWound;
         public DamageEffecter damageEffecter;
-        public JobMote surgeryJobMote;
-        public JobMote butcherCorpseJobMote;
+        public JobMote surgeryJob;
+        public JobMote butcherCorpseJob;
         public HealthTabBleeding healthTabBleeding;
         public BloodFilth bloodFilth;
 
+        public bool HasFleshTypeWound => fleshTypeWound != null;
+        public bool HasDamageEffecter => damageEffecter != null;
+
+        public bool HasSurgeryJobMote => surgeryJob != null;
+        public bool HasButcherCorpseJobMote => butcherCorpseJob != null;
+        public bool HasJobMote => HasSurgeryJobMote || HasButcherCorpseJobMote;
+
+        public bool HasHealthTabBleeding => healthTabBleeding != null;
+        public bool HasBloodFilth => bloodFilth != null;
     }
 
     public class Restriction
@@ -57,6 +67,7 @@ namespace MoharBlood
     //FleshTypeDamageEffecter
     public class DamageEffecter
     {
+        public EffecterDef damageEffecterDef;
         public ColorSettings colorSet;
         public List<FleckMitigatedColor> affectedFleckList;
 
@@ -72,9 +83,16 @@ namespace MoharBlood
         public ColorMitigation mitigation;
 
         public bool HasColorWay => colorSet != null;
+        public bool HasColorMitigation => mitigation != null;
     }
 
-    public enum ColorMitigation
+    public class ColorMitigation
+    {
+        public ColorMitigationType type;
+        public Color customMitigation = Color.white;
+    }
+
+    public enum ColorMitigationType
     {
         [Description("AirPuff like")]
         AirPuff = 1,
@@ -85,15 +103,21 @@ namespace MoharBlood
         [Description("BodyImpact")]
         BodyImpact = 3,
 
+        [Description("Custom")]
+        Custom = 4,
+
         [Description("No mitigation")]
-        NoMitigation = 4
+        NoMitigation = 5
     }
 
     // surgeryJobMote butcherCorpseJobMote
     public class JobMote
     {
+        public EffecterDef effectWorking;
+        public ThingDef originMote;
+
         public ColorSettings colorSet;
-        public ThingDef mote;
+        public List<ThingDef> replacementMotePool;
 
         public bool HasColorWay => colorSet != null;
     }

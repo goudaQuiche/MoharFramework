@@ -17,16 +17,21 @@ namespace MoharBlood
             Harmony MoharBlood_HarmonyPatch = new Harmony("MoharFW.MoharBlood");
 
             // Check if any def requiring patching
-            if (MyDefs.AllBloodColorDefs.EnumerableNullOrEmpty())
+            if (!MyDefs.HasBloodSet)
+            {
+                //Log.Warning("No bloodset found");
                 return;
+            }
+                
 
-            if (MyDefs.AllBloodColorDefs.Any(x => x.bloodSetList.Any(y => y.fleshTypeWound != null)))
+            if (MyDefs.HasFleshTypeWound)
             {
                 if (Harmony_FleshTypeDef.Try_FleshTypeDef_ResolveWound_Patch(MoharBlood_HarmonyPatch))
                     Log.Message(MoharBlood_HarmonyPatch.Id + " patched FleshTypeDef.ChooseWoundOverlay successfully.");
             }
+            else if(MyDefs.HasDebug) Log.Warning("No fleshTypeWound found");
 
-            if (MyDefs.AllBloodColorDefs.Any(x => x.bloodSetList.Any(y => y.damageEffecter != null)))
+            if (MyDefs.HasDamageEffecter || MyDefs.HasJobMote)
             {
                 if (Harmony_Sprayer_MakeMote.Try_SubEffecter_Sprayer_Patch(MoharBlood_HarmonyPatch))
                     Log.Message(MoharBlood_HarmonyPatch.Id + " patched SubEffecter_Sprayer.MakeMote successfully.");
@@ -36,6 +41,7 @@ namespace MoharBlood
                     Log.Message(MoharBlood_HarmonyPatch.Id + " patched DamageWorker_AddInjury.ApplyToPawn successfully.");
                     */
             }
+            else if (MyDefs.HasDebug) Log.Warning("No DamageEffecter or JobMote found");
         }
     }
 }

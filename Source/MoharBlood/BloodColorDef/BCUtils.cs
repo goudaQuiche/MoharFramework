@@ -52,11 +52,13 @@ namespace MoharBlood
         }
 
         // returns DamageEffecter data and upper level default color
-        public static bool GetPawnDamageEffecter(this Pawn pawn, FleckDef fleckDef, out DamageEffecter damageEffecter, out Color defaultColor, bool debug = false)
+        public static bool GetPawnDamageEffecter(this Pawn pawn, SubEffecter subEffecter, out DamageEffecter damageEffecter, out Color defaultColor, bool debug = false)
         {
             if (debug) Log.Warning(pawn.LabelShort + " - Entering GetPawnDamageEffecter");
 
-            if (!(pawn.GetColorSet() is BloodColorSet bcs))
+            FleckDef fleckDef = subEffecter.def.fleckDef;
+
+            if (!(pawn.GetColorSet() is BloodColorSet bcs) || !bcs.HasDamageEffecter)
             {
                 if (debug) Log.Warning(pawn.LabelShort + " - GetPawnDamageEffecter - " + fleckDef?.defName + " found no blood color set - KO");
                 defaultColor = ColoringWayUtils.bugColor;
@@ -64,7 +66,7 @@ namespace MoharBlood
                 return false;
             }
 
-            if (bcs.damageEffecter.affectedFleckList.Any(x => x.fleckDef == fleckDef))
+            if (bcs.damageEffecter.damageEffecterDef == subEffecter.parent.def && bcs.damageEffecter.affectedFleckList.Any(x => x.fleckDef == fleckDef))
             {
                 defaultColor = pawn.GetPawnBloodColor(bcs.defaultValues.colorWay);
                 damageEffecter = bcs.damageEffecter;
