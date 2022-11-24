@@ -9,11 +9,14 @@ using HarmonyLib;
 
 namespace MoharBlood
 {
+
+
     [StaticConstructorOnStartup]
     static class HarmonyPatchAll
     {
         static HarmonyPatchAll()
         {
+            //Harmony.DEBUG = true;
             Harmony MoharBlood_HarmonyPatch = new Harmony("MoharFW.MoharBlood");
 
             // Check if any def requiring patching

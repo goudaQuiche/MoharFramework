@@ -44,6 +44,17 @@ namespace MoharBlood
 
         public static class Verse_SubEffecter_Sprayer_MakeMote_HarmonyPatch
         {
+            public static void LogAround(List<CodeInstruction> instructionList, int i, int iMinDiff, int iMaxDiff)
+            {
+                string ErrorLog = string.Empty;
+
+                for (int j = iMinDiff; j <= iMaxDiff; j++)
+                {
+                    ErrorLog += "[" + (j + i) + "][" + j + "]" + instructionList[j + i].ToString() + "\n";
+                }
+                Log.Error(ErrorLog);
+            }
+
             public static IEnumerable<CodeInstruction> MakeMote_Transpile(IEnumerable<CodeInstruction> instructions)
             {
                 MethodInfo callEffectiveColorInfo = AccessTools.Method(typeof(SubEffecter), "get_EffectiveColor");
@@ -67,47 +78,54 @@ namespace MoharBlood
                     // with SubEffecter_Sprayer_Utils.GetJobMote(A, this)
                     if (MyDefs.HasJobMote && instruction.IsLdarg(0) && instructionList[i - 1].IsLdarg(0)
                         && instructionList[i + 1].LoadsField(DefInfo) && instructionList[i + 2].LoadsField(moteDefInfo)
-                        && instructionList[i + 4].Calls(callMakeThingInfo) 
+                        && instructionList[i + 4].Calls(callMakeThingInfo)
                         && instructionList[i + 6].StoresField(MoteInfo)
                         )
                     {
-                        Log.Error(
-                            "found this.mote = (Mote) ThingMaker.MakeThing(this.def.moteDef) - " + i + "\n" +
-                            "[" + (i - 1) + "]" + instructionList[i - 1].ToString() + "\n" +
-                            "[" + i + "]" + instruction.ToString() + "\n" +
-                            "[" + (i + 1) + "]" + instructionList[i + 1].ToString() + "\n" +
-                            "[" + (i + 2) + "]" + instructionList[i + 2].ToString() + "\n" +
-                            "[" + (i + 4) + "]" + instructionList[i + 4].ToString() + "\n" +
-                            "[" + (i + 6) + "]" + instructionList[i + 6].ToString()
-                        );
+                        /*
+                        Log.Error("found this.mote = (Mote) ThingMaker.MakeThing(this.def.moteDef)");
+                        LogAround(instructionList, i, -1, 6);
+                        */
 
-                        //GetDamageEffecterColor( A, this)
+                        //GetJobMoteReplacement( B, this)
                         // B
                         yield return new CodeInstruction(OpCodes.Ldarg_2);
                         //this
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
                         // = GetJobMote ( ... )
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(patchUtilsType, nameof(SubEffecter_Sprayer_Utils.GetJobMote)));
+                        yield return CodeInstruction.Call(patchUtilsType, nameof(SubEffecter_Sprayer_Utils.GetJobMoteReplacement));
 
                         // skipping this.def.moteDef ; [i] = this ; [i+1] = def ; [i+2] = moteDef 
                         i += 2;
+                        /*
+                        Log.Error("patched this.def.moteDef for jobMote");
+                        LogAround(instructionList, i, -1, 6);
+                        */
                         //yield return instruction;
                     }
                     // effectWorking uses motes
                     // this.mote.instanceColor = this.EffectiveColor;
                     // replacing this.EffectiveColor
-                    else if (MyDefs.HasJobMote && instruction.StoresField(InstanceColorInfo) && instructionList[i - 1].Calls(callEffectiveColorInfo) && instructionList[i - 3].LoadsField(MoteInfo))
+                    //else if (MyDefs.HasJobMote && instruction.StoresField(InstanceColorInfo) && instructionList[i - 1].Calls(callEffectiveColorInfo) && instructionList[i - 3].LoadsField(MoteInfo))
+                    else if (MyDefs.HasJobMote 
+                        && instruction.IsLdarg(0) && instructionList[i + 1].Calls(callEffectiveColorInfo)
+                        && instructionList[i + 2].StoresField(InstanceColorInfo) && instructionList[i - 1].LoadsField(MoteInfo))
                     {
-                        Log.Error(
-                            "found this.mote.instanceColor = this.EffectiveColor - " + i + "\n" +
-                            "[" + (i - 3) + "]" + instructionList[i - 3].ToString() + "\n" +
-                            "[" + (i - 2) + "]" + instructionList[i - 2].ToString() + "\n" +
-                            "[" + (i - 1) + "]" + instructionList[i - 1].ToString() + "\n" +
-                            "[" + i + "]" + instruction.ToString() + "\n" +
-                            "[" + (i + 1) + "]" + instructionList[i + 1].ToString()
-                        );
+                        //Log.Error("found this.mote.instanceColor = this.EffectiveColor ");
+                        //LogAround(instructionList, i, -3, 3);
 
-                        yield return instruction;
+                        //GetJobMoteColor( B, this)
+                        // B
+                        yield return new CodeInstruction(OpCodes.Ldarg_2);
+                        //this
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        // = GetJobMoteColor ( ... )
+                        yield return CodeInstruction.Call(patchUtilsType, nameof(SubEffecter_Sprayer_Utils.GetJobMoteColor));
+
+                        // skipping this.EffectiveColor ; [i] = this ; [i+1] = EffectiveColor 
+                        i += 1;
+                        //Log.Error("patched this.EffectiveColor for jobMote");
+                        //yield return instruction;
                     }
                     // DamageEffecter uses flecks 
                     // instanceColor = new Color?(this.EffectiveColor),
@@ -120,94 +138,11 @@ namespace MoharBlood
                         //this
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
                         // = GetDamageEffecterColor (
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(patchUtilsType, nameof(SubEffecter_Sprayer_Utils.GetDamageEffecterColor)));
+                        //yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(patchUtilsType, nameof(SubEffecter_Sprayer_Utils.GetDamageEffecterColor)));
+                        yield return CodeInstruction.Call(patchUtilsType, nameof(SubEffecter_Sprayer_Utils.GetDamageEffecterColor));
 
                         // skipping this.EffectiveColor ; this = the line; EffectiveColor = next line
                         i += 1;
-                    }
-                    else
-                    {
-                        yield return instruction;
-                    }
-                }
-            }
-
-
-            public static IEnumerable<CodeInstruction> MakeMote_PileOfShit_Transpile(IEnumerable<CodeInstruction> instructions)
-            {
-                FieldInfo MoteInfo = AccessTools.Field(typeof(SubEffecter_Sprayer), "mote");
-                FieldInfo DefInfo = AccessTools.Field(typeof(SubEffecter_Sprayer), "def");
-                FieldInfo InstanceColorInfo = AccessTools.Field(typeof(Verse.Mote), nameof(Mote.instanceColor));
-
-                MethodInfo callEffectiveColorInfo = AccessTools.Method(typeof(SubEffecter), "get_EffectiveColor");
-
-                List<CodeInstruction> instructionList = instructions.ToList();
-
-                yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(patchUtilsType, nameof(SubEffecter_Sprayer_Utils.LogWarning)));
-
-                for (int i = 0; i < instructionList.Count; i++)
-                {
-                    CodeInstruction instruction = instructionList[i];
-
-                    //if (i > 15 && instruction.LoadsField(InstanceColorInfo) &&  instructionList[i-1].Calls(callEffectiveColorInfo))
-                    //if (i > 300 && instruction.Calls(callEffectiveColorInfo) && instructionList[i + 1].StoresField(InstanceColorInfo) && instructionList[i - 2].LoadsField(MoteInfo))
-                    if (i > 400 && i < 550 && instruction.StoresField(InstanceColorInfo) && instructionList[i - 1].Calls(callEffectiveColorInfo) && instructionList[i - 3].LoadsField(MoteInfo))
-                    {
-                        Log.Error(
-                            "found Instance color call - " + i + "\n" +
-                            "[" + (i - 3) + "]" + instructionList[i - 3].ToString() + "\n" +
-                            "[" + (i - 2) + "]" + instructionList[i - 2].ToString() + "\n" +
-                            "[" + (i - 1) + "]" + instructionList[i - 1].ToString() + "\n" +
-                            "[" + i + "]" + instruction.ToString() + "\n" +
-                            "[" + (i + 1) + "]" + instructionList[i + 1].ToString()
-                        );
-
-
-
-                        yield return instruction;
-
-                        // does access A
-                        yield return new CodeInstruction(OpCodes.Ldarg_1);
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(patchUtilsType, nameof(SubEffecter_Sprayer_Utils.LogWarningTarget)));
-                        Log.Error(" added LogWarningTarget");
-
-                        yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Ldfld, DefInfo);
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(patchUtilsType, nameof(SubEffecter_Sprayer_Utils.LogWarningSubEffecterDef)));
-                        Log.Error(" added LogWarningSubEffecterDef");
-
-                        yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Ldfld, MoteInfo);
-                        yield return new CodeInstruction(OpCodes.Ldfld, InstanceColorInfo);
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(patchUtilsType, nameof(SubEffecter_Sprayer_Utils.LogWarningColor)));
-                        Log.Error(" added LogWarningColor");
-
-                        /*
-                        // this.mote.instanceColor = GetDamageEffecterColor( A, this.def, this.mote.instanceColor)
-
-                        // this.mote
-                        yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Ldfld, MoteInfo);
-
-                        // A
-                        yield return new CodeInstruction(OpCodes.Ldarg_1);
-
-                        //this.def
-                        yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Ldfld, DefInfo);
-
-                        //this.mote.instanceColor
-                        yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Ldfld, MoteInfo);
-                        yield return new CodeInstruction(OpCodes.Ldfld, InstanceColorInfo);
-
-                        // = GetDamageEffecterColor (
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(patchType, nameof(GetDamageEffecterColor)));
-
-                        // .instanceColor =
-                        yield return new CodeInstruction(OpCodes.Stfld, InstanceColorInfo);
-                        */
-
                     }
                     else
                     {

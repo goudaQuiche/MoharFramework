@@ -86,24 +86,46 @@ namespace MoharBlood
         }
         */
 
-        public static ThingDef GetJobMote(TargetInfo B, SubEffecter SE)
+        public static ThingDef GetJobMoteReplacement(TargetInfo B, SubEffecter SE)
         {
             Log.Warning("GetJobMote");
 
-            if (!B.HasThing )
+            if (!B.HasThing || (!(B.Thing is Pawn pawn)))
             {
                 Log.Warning("found no thing");
                 //return ColoringWayUtils.bugColor;
                 return SE.def.moteDef;
             }
-            else
+            
+            //if( pawn.GetJobMote(SE, out JobMote jobMote, true))
+            if( pawn.GetJobMote(SE, out JobMote jobMote))
             {
                 Log.Warning("thing" + B.Thing);
+                return jobMote.replacementMotePool.RandomElementWithFallback(SE.def.moteDef);
             }
 
             Log.Warning("SE.parent: " + SE.parent.def.defName);
 
             return SE.def.moteDef;
+        }
+
+        public static Color GetJobMoteColor(TargetInfo B, SubEffecter SE)
+        {
+            Log.Warning("GetJobMoteColor");
+            Color alreadySetColor = SE.EffectiveColor;
+            if (!B.HasThing || (!(B.Thing is Pawn pawn)))
+            {
+                //Log.Warning("found no pawn");
+                //return ColoringWayUtils.bugColor;
+                return alreadySetColor;
+            }
+
+            if(pawn.GetJobMoteColor(SE, out Color newColor, true))
+            {
+                return newColor;
+            }
+
+            return alreadySetColor;
         }
 
         public static Color? GetDamageEffecterColor(TargetInfo A, SubEffecter SE)

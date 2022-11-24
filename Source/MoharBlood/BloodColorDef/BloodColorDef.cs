@@ -19,17 +19,16 @@ namespace MoharBlood
 
         public FleshTypeWound fleshTypeWound;
         public DamageEffecter damageEffecter;
-        public JobMote surgeryJob;
-        public JobMote butcherCorpseJob;
+
+        public List<JobMote> jobMote;
+
         public HealthTabBleeding healthTabBleeding;
         public BloodFilth bloodFilth;
 
         public bool HasFleshTypeWound => fleshTypeWound != null;
         public bool HasDamageEffecter => damageEffecter != null;
 
-        public bool HasSurgeryJobMote => surgeryJob != null;
-        public bool HasButcherCorpseJobMote => butcherCorpseJob != null;
-        public bool HasJobMote => HasSurgeryJobMote || HasButcherCorpseJobMote;
+        public bool HasJobMote => !jobMote.NullOrEmpty();
 
         public bool HasHealthTabBleeding => healthTabBleeding != null;
         public bool HasBloodFilth => bloodFilth != null;

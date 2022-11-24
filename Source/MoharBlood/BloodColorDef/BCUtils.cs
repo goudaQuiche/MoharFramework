@@ -82,6 +82,59 @@ namespace MoharBlood
             return false;
         }
 
+        public static bool GetJobMote(this Pawn pawn, SubEffecter subEffecter, out JobMote jobMote, bool debug = false)
+        {
+            if (debug) Log.Warning(pawn.LabelShort + " - Entering GetJobMote");
+
+            ThingDef moteDef = subEffecter.def.moteDef;
+            jobMote = null;
+
+            if (!(pawn.GetColorSet() is BloodColorSet bcs) || !bcs.HasJobMote)
+            {
+                if (debug) Log.Warning(pawn.LabelShort + " - GetJobMote - " + moteDef?.defName + " found no jobMote - KO");
+                return false;
+            }
+
+            //if (bcs.damageEffecter.damageEffecterDef == subEffecter.parent.def && bcs.damageEffecter.affectedFleckList.Any(x => x.fleckDef == fleckDef))
+            if ( bcs.jobMote.Where(x => x.effectWorking == subEffecter.parent.def).FirstOrFallback() is JobMote jm && subEffecter.def.moteDef == jm.originMote)
+            {
+                jobMote = jm;
+
+                if (debug) Log.Warning(pawn.LabelShort + " - GetJobMote - " + jm.originMote.defName + "found jobMote - OK - " + jm.effectWorking);
+
+                return true;
+            }
+
+            if (debug) Log.Warning(pawn.LabelShort + " - GetJobMote - found no blood color set for that fleshtype - KO");
+            return false;
+        }
+
+        public static bool GetJobMoteColor(this Pawn pawn, SubEffecter subEffecter, out Color defaultColor, bool debug = false)
+        {
+            if (debug) Log.Warning(pawn.LabelShort + " - Entering GetJobMoteColor");
+
+            FleckDef fleckDef = subEffecter.def.fleckDef;
+
+            if (!(pawn.GetColorSet() is BloodColorSet bcs) || !bcs.HasJobMote)
+            {
+                defaultColor = ColoringWayUtils.bugColor;
+                if (debug) Log.Warning(pawn.LabelShort + " - GetJobMoteColor - " + defaultColor + " found no jobMote - KO");
+                return false;
+            }
+
+            if (bcs.jobMote.Where(x => x.effectWorking == subEffecter.parent.def).FirstOrFallback() is JobMote jm && subEffecter.def.moteDef == jm.originMote)
+            {
+                defaultColor = pawn.GetPawnBloodColor(jm.HasColorWay ? jm.colorSet.colorWay : bcs.defaultValues.colorWay);
+                if (debug) Log.Warning(pawn.LabelShort + " - GetJobMoteColor - found blood color set - OK - defaultColor:" + defaultColor);
+
+                return true;
+            }
+
+            if (debug) Log.Warning(pawn.LabelShort + " - GetJobMoteColor - found no blood color set for that fleshtype - KO");
+            defaultColor = ColoringWayUtils.bugColor;
+            return false;
+        }
+
     }
 
 
