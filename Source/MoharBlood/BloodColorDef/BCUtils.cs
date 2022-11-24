@@ -109,7 +109,19 @@ namespace MoharBlood
             return false;
         }
 
-        public static bool GetJobMoteColor(this Pawn pawn, SubEffecter subEffecter, out Color defaultColor, bool debug = false)
+        public static bool GetJobMoteCorpse(this Corpse corpse, SubEffecter subEffecter, out JobMote jobMote, bool debug = false)
+        {
+            ThingDef moteDef = subEffecter.def.moteDef;
+            jobMote = null;
+            if (corpse.InnerPawn == null)
+                return false;
+
+            Pawn pawn = corpse.InnerPawn;
+
+            return pawn.GetJobMote(subEffecter, out jobMote);
+        }
+
+        public static bool GetJobMotePawnColor(this Pawn pawn, SubEffecter subEffecter, out Color defaultColor, bool debug = false)
         {
             if (debug) Log.Warning(pawn.LabelShort + " - Entering GetJobMoteColor");
 
@@ -133,6 +145,17 @@ namespace MoharBlood
             if (debug) Log.Warning(pawn.LabelShort + " - GetJobMoteColor - found no blood color set for that fleshtype - KO");
             defaultColor = ColoringWayUtils.bugColor;
             return false;
+        }
+
+        public static bool GetJobMoteCorpseColor(this Corpse corpse, SubEffecter subEffecter, out Color defaultColor, bool debug = false)
+        {
+            defaultColor = ColoringWayUtils.bugColor;
+            if (corpse.InnerPawn == null)
+                return false;
+
+            Pawn pawn = corpse.InnerPawn;
+
+            return pawn.GetJobMotePawnColor(subEffecter, out defaultColor);
         }
 
     }

@@ -87,7 +87,9 @@ namespace MoharBlood
                         LogAround(instructionList, i, -1, 6);
                         */
 
-                        //GetJobMoteReplacement( B, this)
+                        //GetJobMoteReplacement( A, B, this)
+                        // A
+                        yield return new CodeInstruction(OpCodes.Ldarg_1);
                         // B
                         yield return new CodeInstruction(OpCodes.Ldarg_2);
                         //this
@@ -114,7 +116,9 @@ namespace MoharBlood
                         //Log.Error("found this.mote.instanceColor = this.EffectiveColor ");
                         //LogAround(instructionList, i, -3, 3);
 
-                        //GetJobMoteColor( B, this)
+                        //GetJobMoteColor( A, B, this)
+                        // A
+                        yield return new CodeInstruction(OpCodes.Ldarg_1);
                         // B
                         yield return new CodeInstruction(OpCodes.Ldarg_2);
                         //this

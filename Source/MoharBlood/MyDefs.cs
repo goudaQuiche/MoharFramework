@@ -16,15 +16,27 @@ namespace MoharBlood
         public static bool HasDebug => HasBloodColor && AllBloodColorDefs.Any(x => x.debug);
 
         public static bool HasBloodSet => HasBloodColor && AllBloodColorDefs.Any(x => !x.bloodSetList.EnumerableNullOrEmpty());
+        
+        public static IEnumerable<BloodColorSet> AllBloodColorSetWithJobMote =
+            AllBloodColorDefs.Where(a => a.bloodSetList.Any(x => x.HasJobMote)).SelectMany(b => b.bloodSetList);
+
+        public static IEnumerable<JobMote> AllJobMote = AllBloodColorSetWithJobMote.SelectMany(a => a.jobMote);
+        public static IEnumerable<EffecterDef> AllJobMoteEffecterDef = AllJobMote.Select(a => a.effectWorking).Distinct();
 
         public static bool HasFleshTypeWound = !HasBloodSet ? false : AllBloodColorDefs.Any(x => x.bloodSetList.Any(y => y.HasFleshTypeWound));
         public static bool HasDamageEffecter = !HasBloodSet ? false : AllBloodColorDefs.Any(x => x.bloodSetList.Any(y => y.HasDamageEffecter));
         public static bool HasJobMote = !HasBloodSet ? false : AllBloodColorDefs.Any(x => x.bloodSetList.Any(y => y.HasJobMote));
 
         public static ThingDef HumanBlood = DefDatabase<ThingDef>.AllDefs.Where(t => t.defName == "Filth_Blood").FirstOrFallback();
+        public static ThingDef InsectBlood = DefDatabase<ThingDef>.AllDefs.Where(t => t.defName == "Filth_BloodInsect").FirstOrFallback();
 
-        public static Color HumanBloodColor = DefDatabase<ThingDef>.AllDefs.Where(t => t.defName == "Filth_Blood").FirstOrFallback()?.graphicData.color ?? Color.white;
-        public static Color InsectBloodColor = DefDatabase<ThingDef>.AllDefs.Where(t => t.defName == "Filth_BloodInsect").FirstOrFallback()?.graphicData.color ?? Color.white;
+        public static Color HumanBloodColor = HumanBlood?.graphicData.color ?? Color.white;
+        public static Color InsectBloodColor = InsectBlood?.graphicData.color ?? Color.white;
+
+        /*
+        [DefOf]
+        public EffecterDefOf.
+        */
     }
 
 

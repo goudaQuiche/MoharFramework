@@ -60,6 +60,7 @@
     <Compile Include="BloodColorDef\BCUtils.cs" />
     <Compile Include="BloodColorDef\DamageEffecter\Harmony\SubEffecter_Sprayer_Utils.cs" />
     <Compile Include="BloodColorDef\DamageEffecter\Harmony\Patch_SubEffecter_Sprayer.cs" />
+    <Compile Include="EffecterDefOf.cs" />
     <Compile Include="Resources\BloodColorEnum.cs" />
     <Compile Include="BloodColorDef\BloodColorDef.cs" />
     <Compile Include="BloodColorDef\BodyWoundColor\Harmony\PatchFleshType.cs" />

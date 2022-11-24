@@ -86,44 +86,79 @@ namespace MoharBlood
         }
         */
 
-        public static ThingDef GetJobMoteReplacement(TargetInfo B, SubEffecter SE)
+        public static ThingDef GetJobMoteReplacement(TargetInfo A, TargetInfo B, SubEffecter SE)
         {
-            Log.Warning("GetJobMote");
+            //Log.Warning("GetJobMoteReplacement");
 
-            if (!B.HasThing || (!(B.Thing is Pawn pawn)))
+            if (!MyDefs.AllJobMoteEffecterDef.Contains(SE.parent.def))
             {
-                Log.Warning("found no thing");
+                //Log.Warning("GetJobMoteReplacement effecterDef is not valid");
                 //return ColoringWayUtils.bugColor;
                 return SE.def.moteDef;
             }
-            
-            //if( pawn.GetJobMote(SE, out JobMote jobMote, true))
-            if( pawn.GetJobMote(SE, out JobMote jobMote))
+
+
+            //Log.Warning("A: " + A.Thing + "B: " + B.Thing);
+            if (SE.parent.def == MyEffecterDefOf.Surgery && B.Thing is Pawn pawn)
             {
-                Log.Warning("thing" + B.Thing);
-                return jobMote.replacementMotePool.RandomElementWithFallback(SE.def.moteDef);
+                //if( pawn.GetJobMote(SE, out JobMote jobMote, true))
+                if (pawn.GetJobMote(SE, out JobMote jobMote))
+                {
+                    //Log.Warning("thing" + B.Thing);
+                    return jobMote.replacementMotePool.RandomElementWithFallback(SE.def.moteDef);
+                }
+            }
+            else if (SE.parent.def == MyEffecterDefOf.ButcherFlesh && A.Thing is Pawn butcher)
+            {
+                //Log.Warning("butcher:" + butcher + " - corpse: " + butcher.CurJob.targetA.Thing + " - " + butcher.CurJob.targetB.Thing + " - " + butcher.CurJob.targetC.Thing);
+                if (!(butcher.CurJob.targetB.Thing is Corpse corpse))
+                    return SE.def.moteDef;
+
+                if (corpse.GetJobMoteCorpse(SE, out JobMote jobMote))
+                {
+                    return jobMote.replacementMotePool.RandomElementWithFallback(SE.def.moteDef);
+                }
             }
 
-            Log.Warning("SE.parent: " + SE.parent.def.defName);
+            //Log.Warning("SE.parent: " + SE.parent.def.defName);
 
             return SE.def.moteDef;
         }
 
-        public static Color GetJobMoteColor(TargetInfo B, SubEffecter SE)
+        public static Color GetJobMoteColor(TargetInfo A, TargetInfo B, SubEffecter SE)
         {
-            Log.Warning("GetJobMoteColor");
+            //Log.Warning("GetJobMoteColor");
             Color alreadySetColor = SE.EffectiveColor;
-            if (!B.HasThing || (!(B.Thing is Pawn pawn)))
+
+            if (!MyDefs.AllJobMoteEffecterDef.Contains(SE.parent.def))
             {
+                //Log.Warning("GetJobMoteColor found no thing B:");
                 //Log.Warning("found no pawn");
-                //return ColoringWayUtils.bugColor;
                 return alreadySetColor;
             }
 
-            if(pawn.GetJobMoteColor(SE, out Color newColor, true))
+            //Log.Warning("A: " + A.Thing + "B: " + B.Thing);
+            if (SE.parent.def == MyEffecterDefOf.Surgery && B.Thing is Pawn pawn)
             {
-                return newColor;
+                //if (pawn.GetJobMotePawnColor(SE, out Color newColor, true))
+                if (pawn.GetJobMotePawnColor(SE, out Color newColor))
+                {
+                    return newColor;
+                }
             }
+            else if (SE.parent.def == MyEffecterDefOf.ButcherFlesh && A.Thing is Pawn butcher)
+            {
+                //Log.Warning("butcher:" + butcher + " - corpse: " + butcher.CurJob.targetA.Thing + " - "+ butcher.CurJob.targetB.Thing + " - " + butcher.CurJob.targetC.Thing);
+
+                if (!(butcher.CurJob.targetB.Thing is Corpse corpse))
+                    return alreadySetColor;
+
+                if (corpse.GetJobMoteCorpseColor(SE, out Color newColor))
+                {
+                    return newColor;
+                }
+            }
+
 
             return alreadySetColor;
         }
