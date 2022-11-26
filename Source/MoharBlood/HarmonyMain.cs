@@ -16,7 +16,7 @@ namespace MoharBlood
     {
         static HarmonyPatchAll()
         {
-            //Harmony.DEBUG = true;
+            Harmony.DEBUG = true;
             Harmony MoharBlood_HarmonyPatch = new Harmony("MoharFW.MoharBlood");
 
             // Check if any def requiring patching
@@ -45,6 +45,17 @@ namespace MoharBlood
                     */
             }
             else if (MyDefs.HasDebug) Log.Warning("No DamageEffecter or JobMote found");
+
+            if (MyDefs.HasHealthTabBleeding)
+            {
+                if (Harmony_HealthCardUtility_DrawHediffRow.Try_HealthCardUtility_DrawHediffRow_Patch(MoharBlood_HarmonyPatch))
+                    Log.Message(MoharBlood_HarmonyPatch.Id + " patched HealthCardUtility.DrawHediffRow successfully.");
+
+                if (Harmony_HealthCardUtility_DrawHediffRow.Try_HealthCardUtility_NestedDrawHediffRow_Patch(MoharBlood_HarmonyPatch))
+                    Log.Message(MoharBlood_HarmonyPatch.Id + " patched HealthCardUtility.Nested.DrawHediffRow successfully.");
+                
+            }
+            else if (MyDefs.HasDebug) Log.Warning("No HealthTabBleeding found");
         }
     }
 }

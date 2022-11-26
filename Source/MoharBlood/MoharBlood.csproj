@@ -57,15 +57,16 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BloodColorDef\Harmony_Utils.cs" />
     <Compile Include="BloodColorDef\BCUtils.cs" />
+    <Compile Include="BloodColorDef\HealthCardUtility\Harmony\Patch_HealthCardUtility_DrawHediffRow.cs" />
+    <Compile Include="BloodColorDef\HealthCardUtility\Harmony\HealthCardUtility_DrawHediffRow_Utils.cs" />
     <Compile Include="BloodColorDef\DamageEffecter\Harmony\SubEffecter_Sprayer_Utils.cs" />
     <Compile Include="BloodColorDef\DamageEffecter\Harmony\Patch_SubEffecter_Sprayer.cs" />
     <Compile Include="EffecterDefOf.cs" />
     <Compile Include="Resources\BloodColorEnum.cs" />
     <Compile Include="BloodColorDef\BloodColorDef.cs" />
     <Compile Include="BloodColorDef\BodyWoundColor\Harmony\PatchFleshType.cs" />
-    <Compile Include="BloodColorDef\DamageEffecter\Harmony\trash\DamageWorker_AddInjury_ApplyToPawn.cs" />
-    <Compile Include="BloodColorDef\DamageEffecter\Harmony\trash\PatchEffecter.cs" />
     <Compile Include="Resources\MitigateFleckColor.cs" />
     <Compile Include="HarmonyMain.cs" />
     <Compile Include="CacheDictionary.cs" />

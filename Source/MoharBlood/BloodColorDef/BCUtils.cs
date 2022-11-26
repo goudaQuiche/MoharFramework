@@ -158,6 +158,31 @@ namespace MoharBlood
             return pawn.GetJobMotePawnColor(subEffecter, out defaultColor);
         }
 
+        public static bool GetHealthTabBleeding(this Pawn pawn, out HealthTabBleeding healthTabBleeding, bool debug = false)
+        {
+            if (debug) Log.Warning(pawn.LabelShort + " - Entering GetHealthTabBleeding");
+
+            healthTabBleeding = null;
+
+            if (!(pawn.GetColorSet() is BloodColorSet bcs) || !bcs.HasHealthTabBleeding)
+            {
+                if (debug) Log.Warning(pawn.LabelShort + " - GetHealthTabBleeding - found no healthTabBleeding - KO");
+                return false;
+            }
+
+            if (bcs.healthTabBleeding is HealthTabBleeding htb)
+            {
+                healthTabBleeding = htb;
+
+                if (debug) Log.Warning(pawn.LabelShort + " - GetHealthTabBleeding - found healthTabBleeding - OK - ");
+
+                return true;
+            }
+
+            if (debug) Log.Warning(pawn.LabelShort + " - GetJobMote - found no blood color set for that fleshtype - KO");
+            return false;
+        }
+
     }
 
 

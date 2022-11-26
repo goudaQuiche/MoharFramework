@@ -65,37 +65,6 @@ namespace MoharBlood
 
             }
 
-            /*
-            public static FleshTypeWound GetFleshTypeWoundData(this Hediff hediff)
-            {
-                if(hediff.pawn.GetPawnFleshTypeWound(out FleshTypeWound ftwd, out Color defaultColor))
-                {
-
-                }
-
-                return hediff.paw
-
-                return
-                MyDefs.FTBCD.SelectMany(
-                    f => f.fleshTypeWoundColor.Where(
-                        x => x.fleshTypeDef == hediff.pawn.RaceProps.FleshType
-                    )
-                )
-                .FirstOrFallback();
-                */
-            /*
-            foreach (FleshTypeBloodColorDef ftbcd in MyDefs.FTBCD)
-                if (ftbcd.fleshTypeBloodColor.Where(x => x.fleshTypeDef == hediff.pawn.RaceProps.FleshType).FirstOrFallback() is FleshTypeBloodColor answer)
-                    return answer;
-                    */
-            /*
-            foreach (FleshTypeBloodColorDef ftbcd in MyDefs.FTBCD)
-                foreach (FleshTypeBloodColor ftbc in ftbcd.fleshTypeBloodColor)
-                    if (ftbc.fleshTypeDef == hediff.pawn.RaceProps.FleshType)
-                        return ftbc;
-            */
-            //}
-
             public static bool FleshTypeDef_ChooseWoundOverlay_Prefix(FleshTypeDef __instance, Hediff hediff, ref FleshTypeDef.ResolvedWound __result)
             {
                 //if (!hediff.pawn.GetPawnFleshTypeWound(out FleshTypeWound ftwd, out Color defaultColor, true))
