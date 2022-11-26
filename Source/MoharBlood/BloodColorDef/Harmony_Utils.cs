@@ -35,6 +35,13 @@ namespace MoharBlood
 
         public static void LogWarningPawn(Pawn p)
         {
+            if (p == null)
+            {
+                Log.Warning("pawn is null");
+                return;
+            }
+            
+
             Log.Warning("LogWarningPawn :" + p?.LabelShort);
         }
 

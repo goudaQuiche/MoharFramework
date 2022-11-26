@@ -6,6 +6,7 @@ using System;
 
 using UnityEngine;
 
+
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -19,7 +20,9 @@ namespace MoharBlood
     public class Harmony_HealthCardUtility_DrawHediffRow
     {
         private static readonly string patchName = nameof(RimWorld_HealthCardUtility_DrawHediffRow_HarmonyPatch.DrawHediffRow_Transpile);
+        private static readonly string DrawHediffRow_Prefix_patchName = nameof(RimWorld_HealthCardUtility_DrawHediffRow_HarmonyPatch.DrawHediffRow_Prefix);
         private static readonly string nestedPatchName = nameof(RimWorld_HealthCardUtility_DrawHediffRow_HarmonyPatch.NestedDrawHediffRow_Transpile);
+        //private static readonly string nestedPrefix = nameof(RimWorld_HealthCardUtility_DrawHediffRow_HarmonyPatch.NestedDrawHediffRow_Prefix);
 
         private static readonly Type patchType = typeof(RimWorld_HealthCardUtility_DrawHediffRow_HarmonyPatch);
         private static readonly Type patchUtilsType = typeof(HealthCardUtility_DrawHediffRow_Utils);
@@ -42,33 +45,28 @@ namespace MoharBlood
             return true;
         }
 
+        public static bool Try_HealthCardUtility_DrawHediffRow_Prefix(Harmony myPatch)
+        {
+            try
+            {
+                MethodBase Method = AccessTools.Method(typeof(RimWorld.HealthCardUtility), "DrawHediffRow");
+                HarmonyMethod Prefix = new HarmonyMethod(patchType, "DrawHediffRow_Prefix");
+                HarmonyMethod Postfix = new HarmonyMethod(patchType, "DrawHediffRow_Postfix");
+                myPatch.Patch(Method, Prefix, Postfix);
+            }
+            catch (Exception e)
+            {
+                Log.Warning("MoharFramework.MoharBlood " + DrawHediffRow_Prefix_patchName + " failed\n" + e);
+                return false;
+            }
+            return true;
+        }
+
         // RimWorld HealthCardUtility DrawHediffRow
         public static bool Try_HealthCardUtility_NestedDrawHediffRow_Patch(Harmony myPatch)
         {
             try
             {
-
-                //Type nestedType = typeof(HealthCardUtility).GetNestedTypes(AccessTools.all).First(c => c.Name.Contains("<>c__DisplayClass31_1"));
-                //IEnumerable<Type> nestedType = typeof(HealthCardUtility).GetNestedTypes(AccessTools.all).Where(c => c.Name.Contains("<>c__DisplayClass31_1"));
-                /*
-                IEnumerable<Type> nestedType = typeof(HealthCardUtility).GetNestedTypes(AccessTools.all);
-                if (!nestedType.EnumerableNullOrEmpty())
-                {
-                    Log.Error("nt num:" + nestedType.Count());
-                    foreach (Type t in nestedType)
-                        Log.Error(t.Name);
-                }
-                else
-                {
-                    Log.Error("no nested type");
-                }
-                */
-                /*
-                foreach (MethodInfo mi in typeof(RimWorld.HealthCardUtility).GetNestedType("<DrawHediffRow>b__8", BindingFlags.Instance | BindingFlags.NonPublic).GetMethods())
-                    Log.Error(mi.Name);
-
-                */
-
 
                 MethodBase Method = AccessTools.Method(typeof(RimWorld.HealthCardUtility).GetNestedTypes(AccessTools.all).First(x => x.Name.Contains("<>c__DisplayClass31_1")), "<DrawHediffRow>b__8");
                 //MethodBase Method = AccessTools.Method(typeof(RimWorld.HealthCardUtility).GetNestedType("<DrawHediffRow>b__8", BindingFlags.Instance | BindingFlags.NonPublic), "DrawHediffRow");
@@ -86,29 +84,48 @@ namespace MoharBlood
 
         public static class RimWorld_HealthCardUtility_DrawHediffRow_HarmonyPatch
         {
+            public static Pawn curPawn;
+
+            public static void DrawHediffRow_Prefix(Pawn pawn)
+            {
+                curPawn = pawn;
+            }
+
+            public static void DrawHediffRow_Postfix()
+            {
+
+                curPawn = null;
+            }
+
             public static IEnumerable<CodeInstruction> NestedDrawHediffRow_Transpile(IEnumerable<CodeInstruction> instructions)
             {
+                FieldInfo bleedRateInfo = AccessTools.Field(typeof(HealthCardUtility).GetNestedTypes(AccessTools.all).First(x => x.Name.Contains("c__DisplayClass31_1")), "totalBleedRate");
                 FieldInfo bleedingInfo = AccessTools.Field(typeof(HealthCardUtility).GetNestedTypes(AccessTools.all).First(x => x.Name.Contains("c__DisplayClass31_1")), "bleedingIcon");
 
-                //FieldInfo pawnInfo = AccessTools.Field(typeof(HealthCardUtility).GetNestedTypes(AccessTools.all).First(x => x.Name.Contains("c__DisplayClass31_0")), "pawn");
-                //FieldInfo whatever = AccessTools.Field(typeof(HealthCardUtility).GetNestedTypes(AccessTools.all).First(x => x.Name.Contains("c__DisplayClass31_0")), "CS$<>8__locals1");
-                Type whatType = typeof(HealthCardUtility).GetNestedTypes(AccessTools.all).First(x => x.Name.Contains("c__DisplayClass31_0"));
-                FieldInfo whatever = AccessTools.Field(whatType, "<>8__locals1");
-                FieldInfo whatever2 = AccessTools.Field(whatType, "pawn");
-                FieldInfo whatever3 = AccessTools.Field(whatType, "<>8__locals1.pawn");
+                FieldInfo pawnInfo = AccessTools.Field(typeof(HealthCardUtility).GetNestedTypes(AccessTools.all).First(x => x.Name.Contains("c__DisplayClass31_0")), "pawn");
+                FieldInfo pawnInfo2 = AccessTools.Field(typeof(HealthCardUtility), "pawn");
+                //FieldInfo pawnInfo3 = AccessTools.Field(typeof(HealthCardUtility).GetNestedTypes(AccessTools.all).First(x => x.Name.Contains("8__locals1")), "pawn");
 
+                /*
                 Log.Error(
-                    "type: " + whatType
-                    + " 1: " + whatever?.ToString()
-                    + " 2: " + whatever2?.ToString()
-                    + " 3: " + whatever3?.ToString()
+                    "type: " + pawnInfo + " 1: " + pawnInfo?.ToString()
+                    + "\ntype: " + pawnInfo2 + " 2: " + pawnInfo2?.ToString()
+                    //+ "\ntype: " + pawnInfo3 + " 3: " + pawnInfo3?.ToString()
                     );
+                    */
+
 
                 //FieldInfo pawnInfo = AccessTools.Field(typeof(HealthCardUtility), "pawn");
                 //MethodInfo DrawTextureInfo = AccessTools.Method("DrawTexture", new[] { typeof(Rect), typeof(Texture) });
 
                 List<CodeInstruction> instructionList = instructions.ToList();
 
+                /*
+                yield return new CodeInstruction(OpCodes.Ldarg_0);
+                yield return new CodeInstruction(OpCodes.Ldfld, bleedingInfo);
+                yield return CodeInstruction.Call(patchHarmonyUtilsType, nameof(Harmony_Utils.LogWarningFloat));
+                */
+                
                 //string errLog = string.Empty;
                 for (int i = 0; i < instructionList.Count; i++)
                 {
@@ -124,18 +141,24 @@ namespace MoharBlood
                         yield return instruction;
 
                         /*
-                        yield return new CodeInstruction(OpCodes.Ldfld, whatever2);
-                        yield return CodeInstruction.Call(patchHarmonyUtilsType, nameof(Harmony_Utils.LogWarningPawn));
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Ldfld, pawnInfo);
                         */
+                        yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(RimWorld_HealthCardUtility_DrawHediffRow_HarmonyPatch), "curPawn"));
+                        yield return CodeInstruction.Call(patchHarmonyUtilsType, nameof(Harmony_Utils.LogWarningPawn));
+
+                        //GUI.BeginGroup(rect);
 
                         /*
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Ldfld, bleedingInfo);
+                        yield return new CodeInstruction(OpCodes.Ldfld, bleedRateInfo);
                         yield return CodeInstruction.Call(patchHarmonyUtilsType, nameof(Harmony_Utils.LogWarningFloat));
                         */
 
+                        /*
                         yield return new CodeInstruction(OpCodes.Ldc_R4, 3.14f);
                         yield return CodeInstruction.Call(patchHarmonyUtilsType, nameof(Harmony_Utils.LogWarningFloat));
+                        */
 
                         //yield return CodeInstruction.Call(patchHarmonyUtilsType, nameof(Harmony_Utils.LogWarning));
 
