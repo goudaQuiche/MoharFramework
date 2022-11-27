@@ -50,9 +50,10 @@ namespace MoharBlood
             {
                 if (Harmony_HealthCardUtility_DrawHediffRow.Try_HealthCardUtility_DrawHediffRow_Prefix(MoharBlood_HarmonyPatch))
                     Log.Message(MoharBlood_HarmonyPatch.Id + " patched HealthCardUtility.DrawHediffRow.Prefix successfully.");
-
+                /*
                 if (Harmony_HealthCardUtility_DrawHediffRow.Try_HealthCardUtility_DrawHediffRow_Patch(MoharBlood_HarmonyPatch))
                     Log.Message(MoharBlood_HarmonyPatch.Id + " patched HealthCardUtility.DrawHediffRow successfully.");
+                */
 
                 if (Harmony_HealthCardUtility_DrawHediffRow.Try_HealthCardUtility_NestedDrawHediffRow_Patch(MoharBlood_HarmonyPatch))
                     Log.Message(MoharBlood_HarmonyPatch.Id + " patched HealthCardUtility.Nested.DrawHediffRow successfully.");

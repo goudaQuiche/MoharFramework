@@ -125,6 +125,7 @@ namespace MoharBlood
     public class HealthTabBleeding
     {
         public ColorSettings colorSet;
+        public string replacementTex;
 
         public bool HasColorWay => colorSet != null;
     }
