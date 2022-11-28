@@ -42,6 +42,7 @@
     <Compile Include="CustomTransformation\HarmonyPatch_Mote.cs" />
     <Compile Include="CutoutRandom\Graphic_CutoutCollection.cs" />
     <Compile Include="CutoutRandom\Graphic_CutoutRandom.cs" />
+    <Compile Include="CutoutRandom\Graphic_MaskedCluster.cs" />
     <Compile Include="Tools\GfxTools.cs" />
     <Compile Include="AnimatedMote\Graphic_AnimatedMote.cs" />
     <Compile Include="Tools\MoteTools.cs" />
@@ -67,7 +68,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="NewFolder1\ForcedCutoutRandom\" />
     <Folder Include="obj\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

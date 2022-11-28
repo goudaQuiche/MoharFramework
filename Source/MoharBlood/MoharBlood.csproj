@@ -57,6 +57,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BloodColorDef\BloodFilth\ColorableFilth.cs" />
+    <Compile Include="BloodColorDef\BloodFilth\Harmony\Filth_AddSources_Utils.cs" />
+    <Compile Include="BloodColorDef\BloodFilth\Harmony\Patch_Filth_AddSources.cs" />
     <Compile Include="BloodColorDef\Harmony_Utils.cs" />
     <Compile Include="BloodColorDef\BCUtils.cs" />
     <Compile Include="BloodColorDef\HealthCardUtility\Harmony\Patch_HealthCardUtility_DrawHediffRow.cs" />

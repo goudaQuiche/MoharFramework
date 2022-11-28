@@ -102,11 +102,15 @@ namespace MoharBlood
         [Description("BodyImpact")]
         BodyImpact = 3,
 
+        [Description("BloodLikeAlpha")]
+        BloodLikeAlpha = 4,
+
+        // not implemented
         [Description("Custom")]
-        Custom = 4,
+        Custom = 5,
 
         [Description("No mitigation")]
-        NoMitigation = 5
+        NoMitigation = 6
     }
 
     // surgeryJobMote butcherCorpseJobMote
@@ -134,7 +138,11 @@ namespace MoharBlood
     public class BloodFilth
     {
         public ColorSettings colorSet;
+        public ThingDef bloodFilth;
 
+        public ColorMitigation mitigation;
+
+        public bool HasColorMitigation => mitigation != null;
         public bool HasColorWay => colorSet != null;
     }
 }

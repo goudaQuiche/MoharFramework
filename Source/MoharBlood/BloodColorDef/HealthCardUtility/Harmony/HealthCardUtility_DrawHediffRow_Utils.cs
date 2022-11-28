@@ -20,26 +20,13 @@ namespace MoharBlood
             }
             else
             {
-
                 //GUI.DrawTexture(rect, GetBloodDropMaterial(htb.replacementTex, color));
                 GetBloodDropMaterial(htb.replacementTex, color, out Texture tex, out Material mat);
 
-                Log.Warning("DisplayBloodDrop - GUI.color - " + GUI.color );
-                //Color guiColor = GUI.color; GUI.color = color;
-                //GUI.DrawTexture(rect, tex);
-                //GenUI.DrawTextureWithMaterial(rect, tex, mat);
-                //Graphics.DrawTexture(rect, tex, mat);
-                //GUI.DrawTexture(rect, mat.mainTexture);
-                //GUI.color = guiColor;
+                //Log.Warning("DisplayBloodDrop - GUI.color - " + GUI.color );
+
                 Graphics.DrawTexture(rect, tex, new Rect(0f, 0f, 1f, 1f), 0, 0, 0, 0, Color.white, mat);
             }
-
-
-            //default
-            /*
-            GUI.DrawTexture(rect, originTex);
-            GUI.DrawTexture(rect, originTex);
-            */
         }
 
         public static void GetBloodDropMaterial(string path, Color newColor, out Texture tex, out Material mat)
@@ -49,15 +36,6 @@ namespace MoharBlood
             //MR.mainTex = ContentFinder<Texture2D>.Get(bloodDropPath, reportFailure: true);
             MR.mainTex = ContentFinder<Texture2D>.Get(path, reportFailure: true);
             MR.shader = ShaderDatabase.CutoutComplex;
-            //MR.shader = ShaderDatabase.Cutout;
-
-            //MR.color = Color.magenta;
-            //MR.color = Color.white;
-            //MR.color = newColor;
-            //MR.colorTwo = Color.white;
-
-            //MR.renderQueue = MR.renderQueue;
-            //MR.shaderParameters = MR.shaderParameters;
 
             MR.maskTex = ContentFinder<Texture2D>.Get(bloodDropPath + Graphic_Single.MaskSuffix, reportFailure: true);
 

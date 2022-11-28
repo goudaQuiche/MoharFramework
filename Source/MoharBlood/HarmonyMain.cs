@@ -16,7 +16,7 @@ namespace MoharBlood
     {
         static HarmonyPatchAll()
         {
-            Harmony.DEBUG = true;
+            //Harmony.DEBUG = true;
             Harmony MoharBlood_HarmonyPatch = new Harmony("MoharFW.MoharBlood");
 
             // Check if any def requiring patching
@@ -60,6 +60,13 @@ namespace MoharBlood
                 
             }
             else if (MyDefs.HasDebug) Log.Warning("No HealthTabBleeding found");
+
+            if (MyDefs.HasBloodFilth)
+            {
+                if (Harmony_Patch_Filth_AddSources.Try_Filth_AddSources_Patch(MoharBlood_HarmonyPatch))
+                    Log.Message(MoharBlood_HarmonyPatch.Id + " patched Filth.AddSources successfully.");
+                
+            }else if (MyDefs.HasDebug) Log.Warning("No BloodFilth found");
         }
     }
 }

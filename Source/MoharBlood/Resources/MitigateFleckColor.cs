@@ -60,6 +60,25 @@ namespace MoharBlood
         }
         */
 
+        public static Color GetMitigatedColor(Color color, ColorMitigation cm)
+        {
+            switch (cm.type)
+            {
+                case ColorMitigationType.AirPuff:
+                    return GetAirPuffLikeColorMitigation(color);
+                case ColorMitigationType.BloodSplash:
+                    return GetBloodSplashLikeColorMitigation(color);
+                case ColorMitigationType.BodyImpact:
+                    return GetBodyImpactLikeColorMitigation(color);
+                case ColorMitigationType.Custom:
+                    return GetCustomColorMitigation(color, cm.customMitigation);
+
+                case ColorMitigationType.NoMitigation:
+                default:
+                    return color;
+            }
+        }
+
         public static Color GetMitigatedColor(Color color, FleckMitigatedColor fmc)
         {
             if (!fmc.HasColorMitigation)
