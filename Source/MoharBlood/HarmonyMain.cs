@@ -50,10 +50,6 @@ namespace MoharBlood
             {
                 if (Harmony_HealthCardUtility_DrawHediffRow.Try_HealthCardUtility_DrawHediffRow_Prefix(MoharBlood_HarmonyPatch))
                     Log.Message(MoharBlood_HarmonyPatch.Id + " patched HealthCardUtility.DrawHediffRow.Prefix successfully.");
-                /*
-                if (Harmony_HealthCardUtility_DrawHediffRow.Try_HealthCardUtility_DrawHediffRow_Patch(MoharBlood_HarmonyPatch))
-                    Log.Message(MoharBlood_HarmonyPatch.Id + " patched HealthCardUtility.DrawHediffRow successfully.");
-                */
 
                 if (Harmony_HealthCardUtility_DrawHediffRow.Try_HealthCardUtility_NestedDrawHediffRow_Patch(MoharBlood_HarmonyPatch))
                     Log.Message(MoharBlood_HarmonyPatch.Id + " patched HealthCardUtility.Nested.DrawHediffRow successfully.");
@@ -67,6 +63,20 @@ namespace MoharBlood
                     Log.Message(MoharBlood_HarmonyPatch.Id + " patched Filth.AddSources successfully.");
                 
             }else if (MyDefs.HasDebug) Log.Warning("No BloodFilth found");
+
+            if (MyDefs.HasDamageFlash)
+            {
+                if (Harmony_DamageFlash.Try_OverrideMaterialIfNeeded_Patch(MoharBlood_HarmonyPatch))
+                    Log.Message(MoharBlood_HarmonyPatch.Id + " patched OverrideMaterialIfNeeded successfully.");
+
+                if (Harmony_DamageFlash.Try_HeadMatAt_Patch(MoharBlood_HarmonyPatch))
+                    Log.Message(MoharBlood_HarmonyPatch.Id + " patched HeadMatAt successfully.");
+
+                if (Harmony_DamageFlash.Try_DamagedMatPool_GetDamageFlashMat_Transpile(MoharBlood_HarmonyPatch))
+                    Log.Message(MoharBlood_HarmonyPatch.Id + " patched GetDamageFlashMat successfully.");
+            }
+            else if (MyDefs.HasDebug) Log.Warning("No damage flash found");
+
         }
     }
 }

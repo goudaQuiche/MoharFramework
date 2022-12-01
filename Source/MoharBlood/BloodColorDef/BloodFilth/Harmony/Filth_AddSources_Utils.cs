@@ -18,7 +18,7 @@ namespace MoharBlood
             if (!(PawnsFinder.All_AliveOrDead.Where(p => sources.Contains(p.LabelShort)).FirstOrFallback() is Pawn pawn))
                 return false;
 
-            Log.Warning("found " + pawn.LabelShort);
+            //Log.Warning("found " + pawn.LabelShort);
 
             if (!(pawn.GetColorSet() is BloodColorSet bcs) || !bcs.HasHealthTabBleeding)
             {

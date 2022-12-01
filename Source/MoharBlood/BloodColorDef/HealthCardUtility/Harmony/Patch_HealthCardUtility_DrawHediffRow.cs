@@ -19,7 +19,6 @@ namespace MoharBlood
 {
     public class Harmony_HealthCardUtility_DrawHediffRow
     {
-        private static readonly string patchName = nameof(RimWorld_HealthCardUtility_DrawHediffRow_HarmonyPatch.DrawHediffRow_Transpile);
         private static readonly string DrawHediffRow_Prefix_patchName = nameof(RimWorld_HealthCardUtility_DrawHediffRow_HarmonyPatch.DrawHediffRow_Prefix);
         private static readonly string nestedPatchName = nameof(RimWorld_HealthCardUtility_DrawHediffRow_HarmonyPatch.NestedDrawHediffRow_Transpile);
         //private static readonly string nestedPrefix = nameof(RimWorld_HealthCardUtility_DrawHediffRow_HarmonyPatch.NestedDrawHediffRow_Prefix);
@@ -29,22 +28,6 @@ namespace MoharBlood
         private static readonly Type patchHarmonyUtilsType = typeof(Harmony_Utils);
 
         // RimWorld HealthCardUtility DrawHediffRow
-        public static bool Try_HealthCardUtility_DrawHediffRow_Patch(Harmony myPatch)
-        {
-            try
-            {
-                MethodBase Method = AccessTools.Method(typeof(RimWorld.HealthCardUtility), "DrawHediffRow");
-                HarmonyMethod Transpiler = new HarmonyMethod(patchType, patchName);
-                myPatch.Patch(Method, transpiler: Transpiler);
-            }
-            catch (Exception e)
-            {
-                Log.Warning("MoharFramework.MoharBlood " + patchName + " failed  - " + e);
-                return false;
-            }
-            return true;
-        }
-
         public static bool Try_HealthCardUtility_DrawHediffRow_Prefix(Harmony myPatch)
         {
             try
@@ -67,11 +50,9 @@ namespace MoharBlood
         {
             try
             {
-
                 MethodBase Method = AccessTools.Method(typeof(RimWorld.HealthCardUtility).GetNestedTypes(AccessTools.all).First(x => x.Name.Contains("<>c__DisplayClass31_1")), "<DrawHediffRow>b__8");
                 HarmonyMethod Transpiler = new HarmonyMethod(patchType, nestedPatchName);
                 myPatch.Patch(Method, transpiler: Transpiler);
-
             }
             catch (Exception e)
             {
@@ -99,7 +80,6 @@ namespace MoharBlood
             public static IEnumerable<CodeInstruction> NestedDrawHediffRow_Transpile(IEnumerable<CodeInstruction> instructions)
             {
                 FieldInfo bleedingInfo = AccessTools.Field(typeof(HealthCardUtility).GetNestedTypes(AccessTools.all).First(x => x.Name.Contains("c__DisplayClass31_1")), "bleedingIcon");
-
                 List<CodeInstruction> instructionList = instructions.ToList();
 
                 for (int i = 0; i < instructionList.Count; i++)
@@ -119,29 +99,6 @@ namespace MoharBlood
                 //Log.Error(errLog);
             }
 
-            public static IEnumerable<CodeInstruction> DrawHediffRow_Transpile(IEnumerable<CodeInstruction> instructions)
-            {
-                FieldInfo staticBleedingTexture2Info = AccessTools.Field(typeof(RimWorld.HealthCardUtility), "BleedingIcon");
-                List<CodeInstruction> instructionList = instructions.ToList();
-
-                for (int i = 0; i < instructionList.Count; i++)
-                {
-                    CodeInstruction instruction = instructionList[i];
-
-                    //errLog += "i:" + i + " - " + instruction.ToString() + "\n";
-                    if (instruction.LoadsField(staticBleedingTexture2Info) && instructionList[i + 1].opcode == OpCodes.Stfld)
-                    {
-
-                        yield return new CodeInstruction(OpCodes.Ldarg_1);
-                        yield return new CodeInstruction(OpCodes.Ldsfld, staticBleedingTexture2Info);
-                        yield return CodeInstruction.Call(patchUtilsType, nameof(HealthCardUtility_DrawHediffRow_Utils.GetBloodDropTexture));
-
-                        //yield return instruction;
-                    }
-                    else
-                        yield return instruction;
-                }
-            }
         }
     }
 }

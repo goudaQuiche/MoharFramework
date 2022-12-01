@@ -44,17 +44,6 @@ namespace MoharBlood
 
         public static class Verse_SubEffecter_Sprayer_MakeMote_HarmonyPatch
         {
-            public static void LogAround(List<CodeInstruction> instructionList, int i, int iMinDiff, int iMaxDiff)
-            {
-                string ErrorLog = string.Empty;
-
-                for (int j = iMinDiff; j <= iMaxDiff; j++)
-                {
-                    ErrorLog += "[" + (j + i) + "][" + j + "]" + instructionList[j + i].ToString() + "\n";
-                }
-                Log.Error(ErrorLog);
-            }
-
             public static IEnumerable<CodeInstruction> MakeMote_Transpile(IEnumerable<CodeInstruction> instructions)
             {
                 MethodInfo callEffectiveColorInfo = AccessTools.Method(typeof(SubEffecter), "get_EffectiveColor");
@@ -84,7 +73,7 @@ namespace MoharBlood
                     {
                         /*
                         Log.Error("found this.mote = (Mote) ThingMaker.MakeThing(this.def.moteDef)");
-                        LogAround(instructionList, i, -1, 6);
+                        Harmony_Utils.LogAround(instructionList, i, -1, 6);
                         */
 
                         //GetJobMoteReplacement( A, B, this)
@@ -99,11 +88,6 @@ namespace MoharBlood
 
                         // skipping this.def.moteDef ; [i] = this ; [i+1] = def ; [i+2] = moteDef 
                         i += 2;
-                        /*
-                        Log.Error("patched this.def.moteDef for jobMote");
-                        LogAround(instructionList, i, -1, 6);
-                        */
-                        //yield return instruction;
                     }
                     // effectWorking uses motes
                     // this.mote.instanceColor = this.EffectiveColor;
@@ -128,8 +112,6 @@ namespace MoharBlood
 
                         // skipping this.EffectiveColor ; [i] = this ; [i+1] = EffectiveColor 
                         i += 1;
-                        //Log.Error("patched this.EffectiveColor for jobMote");
-                        //yield return instruction;
                     }
                     // DamageEffecter uses flecks 
                     // instanceColor = new Color?(this.EffectiveColor),
@@ -142,7 +124,6 @@ namespace MoharBlood
                         //this
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
                         // = GetDamageEffecterColor (
-                        //yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(patchUtilsType, nameof(SubEffecter_Sprayer_Utils.GetDamageEffecterColor)));
                         yield return CodeInstruction.Call(patchUtilsType, nameof(SubEffecter_Sprayer_Utils.GetDamageEffecterColor));
 
                         // skipping this.EffectiveColor ; this = the line; EffectiveColor = next line

@@ -11,10 +11,10 @@ namespace MoharComp
             this.compClass = typeof(Comp_TargetEffect_DamageHediffChance);
         }
 
-        public List<ThingDef> backfireImmuneUser;
+        public List<ThingDef> immuneUser;
         public List<ThingDef> immuneVictim;
 
-        public bool HasBackfireImmunitySet => !backfireImmuneUser.NullOrEmpty();
+        public bool HasBackfireImmunitySet => !immuneUser.NullOrEmpty();
         public bool HasVictimImmunitySet => !immuneVictim.NullOrEmpty();
 
         public float damageChance = 0f;
@@ -23,7 +23,7 @@ namespace MoharComp
         public float backfireDamageChance = 0f;
         public float backfirehediffChance = 0f;
 
-        public List<DamageItem> damagePool;
+        public List<DamageItem> damagePool; 
         public List<HediffItem> hediffPool;
 
         public List<DamageItem> backfireDamagePool;
@@ -111,7 +111,7 @@ namespace MoharComp
 
         public bool UserIsImmune(Pawn actor)
         {
-            return Props.backfireImmuneUser.Contains(actor.def);
+            return Props.immuneUser.Contains(actor.def);
         }
 
         public bool VictimIsImmune(Pawn victim)

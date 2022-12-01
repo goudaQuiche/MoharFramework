@@ -25,6 +25,8 @@ namespace MoharBlood
         public HealthTabBleeding healthTabBleeding;
         public BloodFilth bloodFilth;
 
+        public DamageFlash damageFlasher;
+
         public bool HasFleshTypeWound => fleshTypeWound != null;
         public bool HasDamageEffecter => damageEffecter != null;
 
@@ -32,11 +34,13 @@ namespace MoharBlood
 
         public bool HasHealthTabBleeding => healthTabBleeding != null;
         public bool HasBloodFilth => bloodFilth != null;
+
+        public bool HasDamageFlash => damageFlasher != null;
     }
 
     public class Restriction
     {
-        public ThingDef race;
+        public List<ThingDef> race;
     }
     public class DefaultValues
     {
@@ -143,6 +147,13 @@ namespace MoharBlood
         public ColorMitigation mitigation;
 
         public bool HasColorMitigation => mitigation != null;
+        public bool HasColorWay => colorSet != null;
+    }
+
+    public class DamageFlash
+    {
+        public ColorSettings colorSet;
+
         public bool HasColorWay => colorSet != null;
     }
 }

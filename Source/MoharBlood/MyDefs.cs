@@ -28,6 +28,7 @@ namespace MoharBlood
         public static bool HasJobMote = !HasBloodSet ? false : AllBloodColorDefs.Any(x => x.bloodSetList.Any(y => y.HasJobMote));
         public static bool HasHealthTabBleeding = !HasBloodSet ? false : AllBloodColorDefs.Any(x => x.bloodSetList.Any(y => y.HasHealthTabBleeding));
         public static bool HasBloodFilth = !HasBloodSet ? false : AllBloodColorDefs.Any(x => x.bloodSetList.Any(y => y.HasBloodFilth));
+        public static bool HasDamageFlash = !HasBloodSet ? false : AllBloodColorDefs.Any(x => x.bloodSetList.Any(y => y.HasDamageFlash));
 
         public static ThingDef HumanBlood = DefDatabase<ThingDef>.AllDefs.Where(t => t.defName == "Filth_Blood").FirstOrFallback();
         public static ThingDef InsectBlood = DefDatabase<ThingDef>.AllDefs.Where(t => t.defName == "Filth_BloodInsect").FirstOrFallback();

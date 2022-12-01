@@ -56,7 +56,14 @@ namespace MoharBlood
 
             for (int j = iMinDiff; j <= iMaxDiff; j++)
             {
-                ErrorLog += "[" + (j + i) + "][" + j + "]" + instructionList[j + i].ToString() + "\n";
+                int newIndex = j + i;
+                ErrorLog += "[" + newIndex + "][" + j + "] - ";
+                if (newIndex >= instructionList.Count() ||newIndex < 0)
+                {
+                    ErrorLog += "Out of range";
+                }
+
+                ErrorLog += instructionList[newIndex].ToString() + "\n";
             }
             Log.Error(ErrorLog);
         }

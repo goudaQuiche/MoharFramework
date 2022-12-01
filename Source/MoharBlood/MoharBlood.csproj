@@ -60,12 +60,16 @@
     <Compile Include="BloodColorDef\BloodFilth\ColorableFilth.cs" />
     <Compile Include="BloodColorDef\BloodFilth\Harmony\Filth_AddSources_Utils.cs" />
     <Compile Include="BloodColorDef\BloodFilth\Harmony\Patch_Filth_AddSources.cs" />
+    <Compile Include="BloodColorDef\DamageFlash\Harmony\OverrideMaterialIfNeeded_Utils.cs" />
+    <Compile Include="BloodColorDef\DamageFlash\Harmony\Patch_DamageFlasher.cs" />
+    <Compile Include="BloodColorDef\DamageFlash\DamageFlashData.cs" />
     <Compile Include="BloodColorDef\Harmony_Utils.cs" />
     <Compile Include="BloodColorDef\BCUtils.cs" />
     <Compile Include="BloodColorDef\HealthCardUtility\Harmony\Patch_HealthCardUtility_DrawHediffRow.cs" />
     <Compile Include="BloodColorDef\HealthCardUtility\Harmony\HealthCardUtility_DrawHediffRow_Utils.cs" />
     <Compile Include="BloodColorDef\DamageEffecter\Harmony\SubEffecter_Sprayer_Utils.cs" />
     <Compile Include="BloodColorDef\DamageEffecter\Harmony\Patch_SubEffecter_Sprayer.cs" />
+    <Compile Include="BloodColorDef\HealthCardUtility\HealthCardData.cs" />
     <Compile Include="EffecterDefOf.cs" />
     <Compile Include="Resources\BloodColorEnum.cs" />
     <Compile Include="BloodColorDef\BloodColorDef.cs" />
@@ -85,6 +89,7 @@
     </Reference>
     <Reference Include="AlienRace">
       <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.4\Assemblies\AlienRace.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
