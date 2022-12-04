@@ -15,7 +15,7 @@ namespace MoharGfx
 
         public override void TryInsertIntoAtlas(TextureAtlasGroup groupKey)
         {
-            Graphic[] array = this.subGraphics;
+            Graphic[] array = subGraphics;
             for (int i = 0; i < array.Length; i++)
             {
                 array[i].TryInsertIntoAtlas(groupKey);
@@ -65,14 +65,12 @@ namespace MoharGfx
                 //Log.Warning("singlePath:" + singlePath + "; singleMaskPath:" + singleMaskPath);
 
                 MaterialRequest req2 = default(MaterialRequest);
-                //req2.mainTex = (req.texture ?? ContentFinder<Texture2D>.Get(req.path, true));
-
                 req2.mainTex = req.texture ?? ContentFinder<Texture2D>.Get(singlePath, true);
 
                 //Log.Warning("req2.mainTex:" + (req2.mainTex==null).ToString() + " => singlePath"+ singlePath);
                 req2.shader = req.shader;
-                req2.color = this.color;
-                req2.colorTwo = this.colorTwo;
+                req2.color = color;
+                req2.colorTwo = colorTwo;
                 req2.renderQueue = req.renderQueue;
                 req2.shaderParameters = req.shaderParameters;
                 //Log.Warning("req.shader.name => " + req.shader.name + " - req.shader.SupportsMaskTex()" + req.shader.SupportsMaskTex());
@@ -92,10 +90,10 @@ namespace MoharGfx
                     {
                         //Log.Warning("; req.path + / + valueTuple.Item1.name" + req.path + "/" + valueTuple.Item1.name + ";");
                         //list2.Add(GraphicDatabase.Get(typeof(Graphic_Single), req.path + "/" + valueTuple.Item1.name, req.shader, this.drawSize, this.color, this.colorTwo, this.data, req.shaderParameters, null));
-                        list2.Add(GraphicDatabase.Get(typeof(Graphic_Single), singlePath, req.shader, this.drawSize, this.color, this.colorTwo, this.data, req.shaderParameters, singleMaskPath));
+                        list2.Add(GraphicDatabase.Get(typeof(Graphic_Single), singlePath, req.shader, drawSize, color, colorTwo, data, req.shaderParameters, singleMaskPath));
+                        //Log.Warning($" p:{singlePath}, s:{req.shader}, ds:{this.drawSize}, c:{this.color}, c2:{this.colorTwo}, mp:{singleMaskPath}");
                     }
                 }
-
             }
 
             subGraphics = list2.ToArray();

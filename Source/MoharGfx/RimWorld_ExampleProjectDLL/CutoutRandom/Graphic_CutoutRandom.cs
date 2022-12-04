@@ -6,88 +6,70 @@ namespace MoharGfx
 {
     public class Graphic_CutoutRandom : Graphic_CutoutCollection
     {
-        
-        public override Material MatSingle => this.subGraphics[Rand.Range(0, SubGraphicsCount)].MatSingle;
-        public int SubGraphicsCount => this.subGraphics.Length;
-        
+        //public override Material MatSingle => subGraphics[thing.thingIDNumber % subGraphics.Length];
+
+        public override Material MatSingle => subGraphics[Rand.Range(0, subGraphics.Length)].MatSingle;
 
         public override Graphic GetColoredVersion(Shader newShader, Color newColor, Color newColorTwo)
         {
-            return GraphicDatabase.Get<Graphic_Random>(this.path, newShader, this.drawSize, newColor, newColorTwo, this.data, null);
+            //Log.Warning("Graphic_CutoutRandom GetColoredVersion" + this.data.texPath);
+            //return GraphicDatabase.Get<Graphic_Random>(path, newShader, drawSize, newColor, newColorTwo, data, null);
+            return GraphicDatabase.Get<Graphic_CutoutRandom>(path, newShader, drawSize, newColor, newColorTwo, data);
         }
 
         public override Material MatAt(Rot4 rot, Thing thing = null)
         {
-            if (thing == null)
-            {
-                return this.MatSingle;
-            }
-            return this.MatSingleFor(thing);
+            return thing == null ? MatSingle : MatSingleFor(thing);
         }
 
         public override Material MatSingleFor(Thing thing)
         {
             if (thing == null)
             {
-                return this.MatSingle;
+                return MatSingle;
             }
-            return this.SubGraphicFor(thing).MatSingle;
+            //Log.Warning("Graphic_CutoutRandom MatSingleFor" + this.data.texPath);
+            return SubGraphicFor(thing).MatSingle;
         }
 
         public override void DrawWorker(Vector3 loc, Rot4 rot, ThingDef thingDef, Thing thing, float extraRotation)
         {
-            Graphic graphic;
-            if (thing != null)
-            {
-                graphic = this.SubGraphicFor(thing);
-            }
-            else
-            {
-                graphic = this.subGraphics[0];
-            }
+            Graphic graphic = (thing == null) ? subGraphics[0] : SubGraphicFor(thing);
             graphic.DrawWorker(loc, rot, thingDef, thing, extraRotation);
-            if (base.ShadowGraphic != null)
-            {
-                base.ShadowGraphic.DrawWorker(loc, rot, thingDef, thing, extraRotation);
-            }
+            if (ShadowGraphic == null)
+                return;
+
+            ShadowGraphic.DrawWorker(loc, rot, thingDef, thing, extraRotation);
         }
 
         public Graphic SubGraphicFor(Thing thing)
         {
             if (thing == null)
             {
-                return this.subGraphics[0];
+                return subGraphics[0];
             }
             int num = thing.overrideGraphicIndex ?? thing.thingIDNumber;
-            return this.subGraphics[num % this.subGraphics.Length];
+            return subGraphics[num % subGraphics.Length];
         }
 
         public Graphic SubGraphicAtIndex(int index)
         {
-            return this.subGraphics[index % this.subGraphics.Length];
+            return subGraphics[index % subGraphics.Length];
         }
 
         public Graphic FirstSubgraphic()
         {
-            return this.subGraphics[0];
+            return subGraphics[0];
         }
 
         public override void Print(SectionLayer layer, Thing thing, float extraRotation)
         {
-            Graphic graphic;
-            if (thing != null)
-            {
-                graphic = this.SubGraphicFor(thing);
-            }
-            else
-            {
-                graphic = this.subGraphics[0];
-            }
+            Graphic graphic = (thing == null) ? subGraphics[0] : SubGraphicFor(thing);
             graphic.Print(layer, thing, extraRotation);
-            if (base.ShadowGraphic != null && thing != null)
-            {
-                base.ShadowGraphic.Print(layer, thing, extraRotation);
-            }
+            if (ShadowGraphic == null || thing == null)
+                return;
+
+            ShadowGraphic.Print(layer, thing, extraRotation);
         }
 
         public override string ToString()
@@ -95,9 +77,9 @@ namespace MoharGfx
             return string.Concat(new object[]
             {
                 "Graphic_CutoutRandom(path=",
-                this.path,
+                path,
                 ", count=",
-                this.subGraphics.Length,
+                subGraphics.Length,
                 ")"
             });
         }

@@ -10,6 +10,32 @@ namespace MoharHediffs
     public static class BodyPartsTools
     {
 
+        public static BodyPartRecord GetBPRWithoutHediff(this Pawn pawn, BodyPartDef bpd, HediffDef hediffDef)
+        {
+
+            // All pawn non missing body parts defined by bpd. If empty nothing is valid
+            if (!(pawn.health.hediffSet.GetNotMissingParts().Where(b => b.def == bpd) is IEnumerable<BodyPartRecord> bprL))
+                return null;
+
+            // Creating a list of bpr that have the hediff
+            List<BodyPartRecord> bprToExclude = new List<BodyPartRecord>();
+            foreach (Hediff hediff in pawn.health.hediffSet.hediffs.Where( h => h.def == hediffDef))
+            {
+                if (!bprToExclude.Contains(hediff.Part))
+                    bprToExclude.Add(hediff.Part);
+            }
+
+            // nothing to exclude, any bpr is valid
+            if (bprToExclude.NullOrEmpty())
+                return bprL.RandomElementWithFallback();
+
+            // All bpr that are in the primary list and not in exclusion list. If empty, nothing is valid
+            if (!(bprL.Where(b => !bprToExclude.Contains(b)) is IEnumerable<BodyPartRecord> nonHediffBprL))
+                return null;
+
+            return nonHediffBprL.RandomElementWithFallback();
+        }
+
         public static bool CheckIfExistingNaturalBP(this Pawn pawn, BodyPartDef bodyPartDef, bool myDebug = false)
         {
                 BodyPartRecord BPR = pawn.GetBPRecord(bodyPartDef) ?? null;

@@ -50,10 +50,12 @@ namespace MoharBlood
             {
                 //Log.Warning("AddSources_Postfix");
                 if(__instance.def.thingClass == typeof(ColorableFilth))
+                //if(__instance.def.defName == "Filth_CrystalBlood")
                 {
                     //Log.Warning("Found colorable Filth");
                     //Filth_AddSources_Utils.GetBloodfilth(sources, (ColorableFilth)__instance, true);
                     Filth_AddSources_Utils.GetBloodfilth(sources, (ColorableFilth)__instance);
+                    //Filth_AddSources_Utils.GetBloodfilth(sources, __instance);
                 }
             }
 
