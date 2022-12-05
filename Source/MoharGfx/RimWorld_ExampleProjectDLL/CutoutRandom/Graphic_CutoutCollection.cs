@@ -11,8 +11,6 @@ namespace MoharGfx
         protected Graphic[] subGraphics;
         //protected Material mat;
 
-        // Token: 0x06001C19 RID: 7193 RVA: 0x000ABBE8 File Offset: 0x000A9DE8
-
         public override void TryInsertIntoAtlas(TextureAtlasGroup groupKey)
         {
             Graphic[] array = subGraphics;

@@ -38,7 +38,7 @@ namespace MoharBlood
             newColor = bf.HasColorMitigation ? MitigateFleckColor.GetMitigatedColor(newColor, bf.mitigation) : newColor;
             if (debug) Log.Warning(pawn.LabelShort + " - GetBloodfilth - found bloodFilth - OK - mitigated(" + bf.HasColorMitigation + "): " + newColor);
 
-            filth.pawnColor = newColor;
+            filth.Init(newColor);
             //filth.SetColor(newColor);
 
             if (debug) Log.Warning("DrawColor:" + filth.DrawColor);
@@ -46,6 +46,22 @@ namespace MoharBlood
             return true;
         }
 
+        public static float AngleFromRot(this Graphic graphic, Rot4 rot)
+        {
+            if (graphic.ShouldDrawRotated)
+            {
+                float asAngle = rot.AsAngle;
+                asAngle += graphic.DrawRotatedExtraAngleOffset;
+                if ((rot == Rot4.West && graphic.WestFlipped) || (rot == Rot4.East && graphic.EastFlipped))
+                {
+                    asAngle += 180f;
+                }
+                return asAngle;
+            }
+            return 0f;
+        }
+
+        /*
         public static bool GetBloodfilth(IEnumerable<string> sources, Filth filth, bool debug = false)
         {
             if (debug) Log.Warning(" Entering GetBloodfilth");
@@ -81,6 +97,6 @@ namespace MoharBlood
             if (debug) Log.Warning(pawn.LabelShort + " - GetBloodfilth - found no blood color set for that fleshtype - KO");
             return false;
         }
-
+        */
     }
 }

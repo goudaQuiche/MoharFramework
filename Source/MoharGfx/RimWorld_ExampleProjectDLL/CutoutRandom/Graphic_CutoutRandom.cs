@@ -34,6 +34,7 @@ namespace MoharGfx
 
         public override void DrawWorker(Vector3 loc, Rot4 rot, ThingDef thingDef, Thing thing, float extraRotation)
         {
+            //Log.Warning("Graphic_CutoutRandom DrawWorker" + this.data.texPath);
             Graphic graphic = (thing == null) ? subGraphics[0] : SubGraphicFor(thing);
             graphic.DrawWorker(loc, rot, thingDef, thing, extraRotation);
             if (ShadowGraphic == null)

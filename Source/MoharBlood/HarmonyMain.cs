@@ -61,8 +61,12 @@ namespace MoharBlood
             {
                 if (Harmony_Patch_Filth_AddSources.Try_Filth_AddSources_Patch(MoharBlood_HarmonyPatch))
                     Log.Message(MoharBlood_HarmonyPatch.Id + " patched Filth.AddSources successfully.");
-                
-            }else if (MyDefs.HasDebug) Log.Warning("No BloodFilth found");
+
+                if(HarmonyPatch_Verse_Graphic.Try_GraphicPrint_Patch(MoharBlood_HarmonyPatch))
+                    Log.Message(MoharBlood_HarmonyPatch.Id + " patched Graphic.Print successfully.");
+
+            }
+            else if (MyDefs.HasDebug) Log.Warning("No BloodFilth found");
 
             if (MyDefs.HasDamageFlash)
             {
@@ -76,6 +80,7 @@ namespace MoharBlood
                     Log.Message(MoharBlood_HarmonyPatch.Id + " patched GetDamageFlashMat successfully.");
             }
             else if (MyDefs.HasDebug) Log.Warning("No damage flash found");
+
 
         }
     }

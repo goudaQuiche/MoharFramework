@@ -13,7 +13,7 @@ namespace MoharGfx
 
         public override void Print(SectionLayer layer, Thing thing, float extraRotation)
         {
-            //Log.Warning(thing + " Called Graphic_MaskedCluster print");
+            Log.Warning(thing + " Called Graphic_MaskedCluster print");
 
             Vector3 a = thing.TrueCenter();
             Rand.PushState();

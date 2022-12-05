@@ -59,6 +59,7 @@
   <ItemGroup>
     <Compile Include="BloodColorDef\BloodFilth\ColorableFilth.cs" />
     <Compile Include="BloodColorDef\BloodFilth\Harmony\Filth_AddSources_Utils.cs" />
+    <Compile Include="BloodColorDef\BloodFilth\Harmony\Patch_Verse_Graphic.cs" />
     <Compile Include="BloodColorDef\BloodFilth\Harmony\Patch_Filth_AddSources.cs" />
     <Compile Include="BloodColorDef\DamageFlash\Harmony\OverrideMaterialIfNeeded_Utils.cs" />
     <Compile Include="BloodColorDef\DamageFlash\Harmony\Patch_DamageFlasher.cs" />
