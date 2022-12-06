@@ -62,9 +62,11 @@ namespace MoharBlood
     public class WoundColorAssociation
     {
         public List<string> textureList;
-        public ColorSettings colorSet;
+        public ColorSettings colorOne;
+        public ColorSettings colorTwo;
 
-        public bool HasColorWay => colorSet != null;
+        public bool HasColorOne => colorOne != null;
+        public bool HasColorTwo => colorTwo != null;
     }
 
     //FleshTypeDamageEffecter

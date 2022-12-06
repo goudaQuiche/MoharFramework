@@ -7,44 +7,14 @@ using Verse;
 
 namespace MoharBlood
 {
-    public enum ColoringWay
-    {
-        [Description("Skin first color")]
-        SkinFirst = 1,
-        [Description("Skin second color")]
-        SkinSecond = 2,
-
-        [Description("Insect")]
-        Insect = 3,
-        [Description("Human")]
-        Human = 4,
-
-        [Description("BloodFilth")]
-        BloodFilth = 5,
-
-        [Description("defaultColor")]
-        DefaultColor = 6,
-
-        [Description("Debug")]
-        Debug = 7,
-
-       [Description("Unset")]
-        Unset = 8
-    }
-
     public static class ColoringWayUtils
     {
-        // bright pink
-        public static Color debugColor = Color.magenta;
-        public static Color bugColor = Color.white;
-
-
         // Alien 1st skin color
         public static Color GetSkinFirstColor(this Pawn pawn)
         {
             if (!(pawn.TryGetComp<AlienPartGenerator.AlienComp>() is AlienPartGenerator.AlienComp alienComp))
             {
-                return bugColor;
+                return MyDefs.BugColor;
             }
 
             return alienComp.GetChannel("skin").first;
@@ -55,7 +25,7 @@ namespace MoharBlood
         {
             if (!(pawn.TryGetComp<AlienPartGenerator.AlienComp>() is AlienPartGenerator.AlienComp alienComp))
             {
-                return bugColor;
+                return MyDefs.BugColor;
             }
 
             return alienComp.GetChannel("skin").second;
@@ -64,7 +34,7 @@ namespace MoharBlood
         // ThingDef_AlienRace/race/bloodDef - filth
         public static Color GetBloodFilthColor(this Pawn pawn)
         {
-            return pawn.RaceProps.BloodDef?.graphicData.color ?? bugColor;
+            return pawn.RaceProps.BloodDef?.graphicData?.color ?? MyDefs.BugColor;
         }
 
         // 
@@ -91,13 +61,13 @@ namespace MoharBlood
                     return pawn.GetDefaultColor();
 
                 case ColoringWay.Debug:
-                    return debugColor;
+                    return MyDefs.DebugColor;
 
                 case ColoringWay.Unset:
-                    return bugColor;
+                    return MyDefs.BugColor;
 
                 default:
-                    return bugColor;
+                    return MyDefs.BugColor;
             }
         }
     }

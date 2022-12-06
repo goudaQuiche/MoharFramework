@@ -10,43 +10,48 @@ namespace MoharBlood
 
         private static readonly string bloodDropPath = "UI/Icons/Medical/BloodDrop";
         private static readonly Texture2D bleedingIcon = ContentFinder<Texture2D>.Get(bloodDropPath);
+        public static readonly Rect OneByOneRect = new Rect(0f, 0f, 1f, 1f);
 
-
-        //GUI.DrawTexture(r.ContractedBy(GenMath.LerpDouble(0f, 0.6f, 5f, 0f, Mathf.Min(this.totalBleedRate, 1f))), this.bleedingIcon);
-        public static void DisplayBloodDrop(Rect rect, Texture2D originTex, Pawn pawn)
+        public static void DisplayUncachedBloodDrop(Rect rect, Texture2D originTex, Pawn pawn)
         {
-            bool foundCache = StaticCollections.HealthCardGetCache(pawn, out bool isEligible, out Texture cachedTexture, out Material cachedMaterial);
+            bool foundParams = pawn.GetHealthTabBleeding(out HealthTabBleeding htb, out Color color);
+
+            if (!foundParams)
+            {
+                GUI.DrawTexture(rect, originTex);
+                return;
+            }
+            GetBloodDropMaterial(htb.replacementTex, color, out Texture tex, out Material mat);
+            Graphics.DrawTexture(rect, tex, OneByOneRect, 0, 0, 0, 0, Color.white, mat);
+        }
+
+        public static void DisplayCachedBloodDrop(Rect rect, Texture2D originTex, Pawn pawn)
+        {
+            bool foundCache = CachedHealthCard.GetCache(pawn.thingIDNumber, out bool isEligible, out Texture cachedTexture, out Material cachedMaterial);
 
             if (foundCache)
             {
-                    Log.Warning(
-                        pawn.LabelShort + " - HealthCardGetCache - found cache : "
-                        + " isEligible : " + isEligible
-                    );
-
                 if (!isEligible)
                 {
                     GUI.DrawTexture(rect, originTex);
                     return;
                 }
-
-                Graphics.DrawTexture(rect, cachedTexture, new Rect(0f, 0f, 1f, 1f), 0, 0, 0, 0, Color.white, cachedMaterial);
+                Graphics.DrawTexture(rect, cachedTexture, OneByOneRect, 0, 0, 0, 0, Color.white, cachedMaterial);
                 return;
             }
 
-            if (!pawn.GetHealthTabBleeding(out HealthTabBleeding htb, out Color color))
+            bool foundParams = pawn.GetHealthTabBleeding(out HealthTabBleeding htb, out Color color);
+
+            if (!foundParams)
             {
-                StaticCollections.HealthCardAddIneligibleCache(pawn);
+                CachedHealthCard.AddIneligibleCache(pawn.thingIDNumber);
+                GUI.DrawTexture(rect, originTex);
+                return;
             }
 
-            //GUI.DrawTexture(rect, GetBloodDropMaterial(htb.replacementTex, color));
             GetBloodDropMaterial(htb.replacementTex, color, out Texture tex, out Material mat);
-            StaticCollections.HealthCardAddCacheAddEligibleCache(pawn, tex, mat);
-
-            //Log.Warning("DisplayBloodDrop - GUI.color - " + GUI.color );
-
-            Graphics.DrawTexture(rect, tex, new Rect(0f, 0f, 1f, 1f), 0, 0, 0, 0, Color.white, mat);
-
+            Graphics.DrawTexture(rect, tex, OneByOneRect, 0, 0, 0, 0, Color.white, mat);
+            CachedHealthCard.AddEligibleCache(pawn.thingIDNumber, tex, mat);
         }
 
         public static void GetBloodDropMaterial(string path, Color newColor, out Texture tex, out Material mat)
@@ -63,7 +68,7 @@ namespace MoharBlood
             //Log.Warning(" - GetBloodDropMaterial - trying material - " + path + " - color : " + newColor);
             tex = mat.mainTexture;
         }
-
+        /*
         public static Texture2D GetBloodDropTexture(Pawn pawn, Texture2D originTex)
         {
             MaterialRequest MR = default(MaterialRequest);
@@ -85,5 +90,6 @@ namespace MoharBlood
 
             return newTex;
         }
+        */
     }
 }

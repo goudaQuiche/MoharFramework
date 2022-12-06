@@ -15,9 +15,9 @@ namespace MoharBlood
         {
             if (debug) Log.Warning(pawn.LabelShort + " - Entering GetDamageFlash");
 
-            defaultColor = ColoringWayUtils.bugColor;
+            defaultColor = MyDefs.BugColor;
 
-            if(StaticCollections.DamageFlashGetCache(pawn, out bool isEligible, out Color cacheColor))
+            if(CachedDamageFlash.GetCache(pawn, out bool isEligible, out Color cacheColor))
             {
                 defaultColor = cacheColor;
                 if (debug)
@@ -32,8 +32,7 @@ namespace MoharBlood
             if (!(pawn.GetColorSet() is BloodColorSet bcs) || !bcs.HasDamageFlash)
             {
                 if (debug) Log.Warning(pawn.LabelShort + " - GetDamageFlash - found no damageFlash - KO");
-
-                StaticCollections.DamageFlashAddIneligibleCache(pawn);
+                CachedDamageFlash.AddIneligibleCache(pawn);
 
                 return false;
             }
@@ -44,12 +43,12 @@ namespace MoharBlood
                 defaultColor = pawn.GetPawnBloodColor(df.HasColorWay ? df.colorSet.colorWay : bcs.defaultValues.colorWay);
 
                 if (debug) Log.Warning(pawn.LabelShort + " - GetDamageFlash - found damageFlash - OK - color : " + defaultColor);
-                StaticCollections.DamageFlashAddEligibleCache(pawn, defaultColor);
+                CachedDamageFlash.AddEligibleCache(pawn, defaultColor);
 
                 return true;
             }
 
-            StaticCollections.DamageFlashAddIneligibleCache(pawn);
+            CachedDamageFlash.AddIneligibleCache(pawn);
             if (debug) Log.Warning(pawn.LabelShort + " - GetDamageFlash - found no blood color set for pawn def - KO");
             return false;
         }

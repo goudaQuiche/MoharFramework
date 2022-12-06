@@ -90,7 +90,8 @@ namespace MoharBlood
                     {
                         // saved in the harmony prefix DrawHediffRow_Prefix
                         yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(RimWorld_HealthCardUtility_DrawHediffRow_HarmonyPatch), "curPawn"));
-                        yield return CodeInstruction.Call(patchUtilsType, nameof(HealthCardUtility_DrawHediffRow_Utils.DisplayBloodDrop));
+                        //yield return CodeInstruction.Call(patchUtilsType, nameof(HealthCardUtility_DrawHediffRow_Utils.DisplayBloodDrop));
+                        yield return CodeInstruction.Call(patchUtilsType, nameof(HealthCardUtility_DrawHediffRow_Utils.DisplayCachedBloodDrop));
                     }
                     else
                         yield return instruction;

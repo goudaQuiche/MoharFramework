@@ -121,7 +121,7 @@ namespace MoharBlood
             public static void HeadMatAt_Postfix()
             {
                 Verse_BodyDamageFlash_HarmonyPatch.isEligible = false;
-                Verse_BodyDamageFlash_HarmonyPatch.newColor = ColoringWayUtils.bugColor;
+                Verse_BodyDamageFlash_HarmonyPatch.newColor = MyDefs.BugColor;
             }
 
             /*
@@ -158,7 +158,7 @@ namespace MoharBlood
         public static class Verse_BodyDamageFlash_HarmonyPatch
         {
             public static bool isEligible = false;
-            public static Color newColor = ColoringWayUtils.bugColor;
+            public static Color newColor = MyDefs.BugColor;
 
             public static bool OverrideMaterialIfNeeded_Prefix(Pawn pawn)
             {
@@ -174,7 +174,7 @@ namespace MoharBlood
             public static void OverrideMaterialIfNeeded_Postfix()
             {
                 isEligible = false;
-                newColor = ColoringWayUtils.bugColor;
+                newColor = MyDefs.BugColor;
             }
 
             public static IEnumerable<CodeInstruction> DamagedMatPool_GetDamageFlashMat_Transpile(IEnumerable<CodeInstruction> instructions)

@@ -37,32 +37,56 @@ namespace MoharBlood
             public static FleshTypeDef.ResolvedWound MyResolve(FleshTypeDef.Wound wound, Pawn pawn, FleshTypeWound woundData, Color defaultColor)
             {
                 Shader shader = wound.tintWithSkinColor ? ShaderDatabase.WoundSkin : ShaderDatabase.Wound;
-                if (wound.texture != null)
+
+                if (wound.texture == null)
                 {
-                    Color pickedColor = defaultColor;
-                    ColoringWay coloringWay = ColoringWay.Unset;
-
-                    if (woundData.woundColorList.Where(w => w.textureList.Contains(wound.texture)).FirstOrFallback() is WoundColorAssociation wca)
-                    {
-                        if(wca.HasColorWay)
-                            coloringWay = wca.colorSet.colorWay;
-                        //Log.Warning(pawn.LabelShort + " found WoundColorAssociation for " + wound.texture + " : " + pickedColor.DescriptionAttr());
-                    }
-
-                    Color newColor = coloringWay == ColoringWay.Unset ? defaultColor : pawn.GetPawnBloodColor(coloringWay);
-                    //Log.Warning(pawn.LabelShort + " Color : " + newColor);
-
-                    return new FleshTypeDef.ResolvedWound(wound, MaterialPool.MatFrom(wound.texture, shader, newColor));
-                }
-                return new FleshTypeDef.ResolvedWound(
+                    return new FleshTypeDef.ResolvedWound(
                     wound,
                     MaterialPool.MatFrom(wound.textureSouth, shader, wound.color),
                     MaterialPool.MatFrom(wound.textureEast, shader, wound.color),
                     MaterialPool.MatFrom(wound.textureNorth, shader, wound.color),
                     MaterialPool.MatFrom(wound.textureWest, shader, wound.color),
                     wound.flipSouth, wound.flipEast, wound.flipNorth, wound.flipWest
-                );
+                    );
+                }
 
+                Color pickedColor = defaultColor;
+                ColoringWay colorOneWay = ColoringWay.Unset;
+                ColoringWay colorTwoWay = ColoringWay.Unset;
+                int colorNum = 1;
+
+                if (woundData.woundColorList.Where(w => w.textureList.Contains(wound.texture)).FirstOrFallback() is WoundColorAssociation wca)
+                {
+                    colorOneWay = wca.HasColorOne ? wca.colorOne.colorWay : ColoringWay.Unset;
+                    colorTwoWay = wca.HasColorTwo ? wca.colorTwo.colorWay : ColoringWay.Unset;
+                    if (wca.HasColorTwo) colorNum += 1;
+                    //Log.Warning(pawn.LabelShort + " found WoundColorAssociation for " + wound.texture + " : " + pickedColor.DescriptionAttr());
+                }
+
+                Color newColorOne = colorOneWay == ColoringWay.Unset ? defaultColor : pawn.GetPawnBloodColor(colorOneWay);
+                Color newColorTwo = colorTwoWay == ColoringWay.Unset ? defaultColor : pawn.GetPawnBloodColor(colorTwoWay);
+                //Log.Warning(pawn.LabelShort + " Color : " + newColor);
+
+                if (colorNum == 1)
+                    return new FleshTypeDef.ResolvedWound(wound, MaterialPool.MatFrom(wound.texture, shader, newColorOne));
+
+                return new FleshTypeDef.ResolvedWound(wound, GetTwoColorsWoundMaterial(wound.texture, newColorOne, newColorTwo));
+            }
+
+            public static Material GetTwoColorsWoundMaterial(string path, Color colorOne, Color colorTwo)
+            {
+                MaterialRequest MR = default(MaterialRequest);
+
+                MR.mainTex = ContentFinder<Texture2D>.Get(path, reportFailure: true);
+                MR.shader = ShaderDatabase.CutoutComplex;
+                MR.maskTex = ContentFinder<Texture2D>.Get(path + Graphic_Single.MaskSuffix, reportFailure: true);
+                MR.color = colorOne;
+                MR.colorTwo = colorTwo;
+
+                Material mat = MaterialPool.MatFrom(MR);
+
+                //Log.Warning(" - GetBloodDropMaterial - trying material - " + path + " - color : " + newColor);
+                return mat;
             }
 
             public static bool FleshTypeDef_ChooseWoundOverlay_Prefix(FleshTypeDef __instance, Hediff hediff, ref FleshTypeDef.ResolvedWound __result)

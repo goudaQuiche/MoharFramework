@@ -36,6 +36,9 @@ namespace MoharBlood
         public static Color HumanBloodColor = HumanBlood?.graphicData.color ?? Color.white;
         public static Color InsectBloodColor = InsectBlood?.graphicData.color ?? Color.white;
 
+        public static Color DebugColor = Color.magenta;
+        public static Color BugColor = Color.white;
+
         /*
         [DefOf]
         public EffecterDefOf.

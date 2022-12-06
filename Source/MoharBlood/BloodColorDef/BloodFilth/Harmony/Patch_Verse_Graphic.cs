@@ -56,11 +56,32 @@ namespace MoharBlood
                 //+ "\n" + $"{loc} {rot} {thing} {extraRotation}");
                 //Log.Warning($"Graphic_Print offsetDrawPos:{cf.offsetDrawPos} randomDrawSize:{cf.randomDrawSize} randomRotation:{cf.randomRotation}");
 
-                Printer_Plane.PrintPlane(layer, cf.offsetDrawPos, cf.randomDrawSize, __instance.MatAt(thing.Rotation, thing), cf.randomRotation);
-
+                //Printer_Plane.PrintPlane(layer, cf.offsetDrawPos, cf.randomDrawSize, __instance.MatAt(thing.Rotation, thing), cf.randomRotation);
+                MyPrint(__instance, layer, thing);
                 return false;
             }
 
+            public static void MyPrint(Graphic graphic, SectionLayer layer, Thing thing)
+            {
+                const float PositionVariance = 0.45f;
+                const float SizeFactorMin = 0.8f;
+                const float SizeFactorMax = 1.2f;
+
+                Vector3 a = thing.TrueCenter();
+                Rand.PushState();
+                Rand.Seed = thing.Position.GetHashCode();
+                int num = (thing as Filth)?.thickness ?? 3;
+                for (int i = 0; i < num; i++)
+                {
+                    Material matSingle = graphic.MatSingle;
+                    Vector3 center = a + new Vector3(Rand.Range(-PositionVariance, PositionVariance), 0f, Rand.Range(-PositionVariance, PositionVariance));
+                    Vector2 size = new Vector2(Rand.Range(graphic.data.drawSize.x * SizeFactorMin, graphic.data.drawSize.x * SizeFactorMax), Rand.Range(graphic.data.drawSize.y * SizeFactorMin, graphic.data.drawSize.y * SizeFactorMax));
+                    float rot = Rand.RangeInclusive(0, 360);
+                    bool flipUv = Rand.Value < 0.5f;
+                    Printer_Plane.PrintPlane(layer, center, size, matSingle, rot, flipUv);
+                }
+                Rand.PopState();
+            }
         }
     }
 }

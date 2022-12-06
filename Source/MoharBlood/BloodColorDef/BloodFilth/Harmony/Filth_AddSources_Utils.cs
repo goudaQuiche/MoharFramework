@@ -25,7 +25,7 @@ namespace MoharBlood
                 if (debug) Log.Warning(pawn.LabelShort + " - GetBloodfilth - found no bloodFilth - KO");
                 return false;
             }
-            Color newColor = ColoringWayUtils.bugColor;
+            Color newColor = MyDefs.BugColor;
 
             if (!(bcs.bloodFilth is BloodFilth bf))
             {

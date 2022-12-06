@@ -16,7 +16,7 @@ namespace MoharBlood
             if (debug) Log.Warning(pawn.LabelShort + " - Entering GetHealthTabBleeding");
 
             healthTabBleeding = null;
-            defaultColor = ColoringWayUtils.bugColor;
+            defaultColor = MyDefs.BugColor;
 
             if (!(pawn.GetColorSet() is BloodColorSet bcs) || !bcs.HasHealthTabBleeding)
             {

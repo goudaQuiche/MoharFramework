@@ -29,7 +29,7 @@ namespace MoharBlood
         {
             if (debug) Log.Warning(pawn.LabelShort + " - Entering GetPawnFleshTypeWound");
 
-            defaultColor = ColoringWayUtils.bugColor;
+            defaultColor = MyDefs.BugColor;
             fleshTypeWound = null;
 
             if (!(pawn.GetColorSet() is BloodColorSet bcs))
@@ -60,7 +60,7 @@ namespace MoharBlood
             if (!(pawn.GetColorSet() is BloodColorSet bcs) || !bcs.HasDamageEffecter)
             {
                 if (debug) Log.Warning(pawn.LabelShort + " - GetPawnDamageEffecter - " + fleckDef?.defName + " found no blood color set - KO");
-                defaultColor = ColoringWayUtils.bugColor;
+                defaultColor = MyDefs.BugColor;
                 damageEffecter = null;
                 return false;
             }
@@ -76,7 +76,7 @@ namespace MoharBlood
             }
 
             if (debug) Log.Warning(pawn.LabelShort + " - GetPawnDamageEffecter - found no blood color set for that fleshtype - KO");
-            defaultColor = ColoringWayUtils.bugColor;
+            defaultColor = MyDefs.BugColor;
             damageEffecter = null;
             return false;
         }
@@ -95,7 +95,7 @@ namespace MoharBlood
             }
 
             //if (bcs.damageEffecter.damageEffecterDef == subEffecter.parent.def && bcs.damageEffecter.affectedFleckList.Any(x => x.fleckDef == fleckDef))
-            if ( bcs.jobMote.Where(x => x.effectWorking == subEffecter.parent.def).FirstOrFallback() is JobMote jm && subEffecter.def.moteDef == jm.originMote)
+            if (bcs.jobMote.Where(x => x.effectWorking == subEffecter.parent.def).FirstOrFallback() is JobMote jm && subEffecter.def.moteDef == jm.originMote)
             {
                 jobMote = jm;
 
@@ -128,7 +128,7 @@ namespace MoharBlood
 
             if (!(pawn.GetColorSet() is BloodColorSet bcs) || !bcs.HasJobMote)
             {
-                defaultColor = ColoringWayUtils.bugColor;
+                defaultColor = MyDefs.BugColor;
                 if (debug) Log.Warning(pawn.LabelShort + " - GetJobMoteColor - " + defaultColor + " found no jobMote - KO");
                 return false;
             }
@@ -142,13 +142,13 @@ namespace MoharBlood
             }
 
             if (debug) Log.Warning(pawn.LabelShort + " - GetJobMoteColor - found no blood color set for that fleshtype - KO");
-            defaultColor = ColoringWayUtils.bugColor;
+            defaultColor = MyDefs.BugColor;
             return false;
         }
 
         public static bool GetJobMoteCorpseColor(this Corpse corpse, SubEffecter subEffecter, out Color defaultColor, bool debug = false)
         {
-            defaultColor = ColoringWayUtils.bugColor;
+            defaultColor = MyDefs.BugColor;
             if (corpse.InnerPawn == null)
                 return false;
 
