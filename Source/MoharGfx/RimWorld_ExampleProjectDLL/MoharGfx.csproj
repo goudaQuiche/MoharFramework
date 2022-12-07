@@ -40,6 +40,7 @@
     <Compile Include="CustomTransformation\CustomTransformation_Mote.cs" />
     <Compile Include="CustomTransformation\CustomTransformation_MoteDef.cs" />
     <Compile Include="CustomTransformation\HarmonyPatch_Mote.cs" />
+    <Compile Include="CutoutRandom\Graphic_CutoutStackCount.cs" />
     <Compile Include="CutoutRandom\Graphic_CutoutCollection.cs" />
     <Compile Include="CutoutRandom\Graphic_CutoutRandom.cs" />
     <Compile Include="CutoutRandom\Graphic_MaskedCluster.cs" />
