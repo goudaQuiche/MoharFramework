@@ -29,11 +29,12 @@ namespace CSSU
             //Harmony.DEBUG = true;
             Harmony CSSU_HarmonyPatch = new Harmony("MoharFW.CompSpawnSubplantUnlocker");
 
-                
+            /*    
             foreach(ThingDef td in MyDefs.AllDefsWithCSS)
             {
                 Log.Warning("Found " + td.defName);
             }
+            */
 
             if (Harmony_jobDriver_Meditate.Try_jobDriver_Meditate_IEnumeratorMoveNext_Patch(CSSU_HarmonyPatch))
                 Log.Message(CSSU_HarmonyPatch.Id + " patched JobDriver_Meditate.MakeNewToils successfully.");

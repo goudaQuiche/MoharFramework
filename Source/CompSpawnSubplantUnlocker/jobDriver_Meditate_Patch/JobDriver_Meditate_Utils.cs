@@ -26,10 +26,10 @@ namespace CSSU
                 if (t == null) continue;
 
                 CompSpawnSubplant compSpawnSubplant = t.TryGetComp<CompSpawnSubplant>();
-                if (compSpawnSubplant != null)
-                {
-                    compSpawnSubplant.AddProgress(JobDriver_Meditate.AnimaTreeSubplantProgressPerTick, false);
-                }
+                if (compSpawnSubplant == null)
+                    continue;
+                
+                compSpawnSubplant.AddProgress(JobDriver_Meditate.AnimaTreeSubplantProgressPerTick, false);
             }
         }
     }
