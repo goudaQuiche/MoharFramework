@@ -35,14 +35,9 @@ namespace CSSU
                 Log.Warning("Found " + td.defName);
             }
 
-            /*
-            if (MyDefs.HasFleshTypeWound)
-            {
-                if (Harmony_FleshTypeDef.Try_FleshTypeDef_ResolveWound_Patch(MoharBlood_HarmonyPatch))
-                    Log.Message(MoharBlood_HarmonyPatch.Id + " patched FleshTypeDef.ChooseWoundOverlay successfully.");
-            }
-            else if(MyDefs.HasDebug) Log.Warning("No fleshTypeWound found");
-            */
+            if (Harmony_jobDriver_Meditate.Try_jobDriver_Meditate_IEnumeratorMoveNext_Patch(CSSU_HarmonyPatch))
+                Log.Message(CSSU_HarmonyPatch.Id + " patched JobDriver_Meditate.MakeNewToils successfully.");
+
         }
     }
 }
