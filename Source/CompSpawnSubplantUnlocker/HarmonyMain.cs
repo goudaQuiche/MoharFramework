@@ -1,10 +1,4 @@
-﻿using RimWorld;
-using System.Collections.Generic;
-using Verse;
-using System;
-using System.Linq;
-using System.Reflection;
-using UnityEngine;
+﻿using Verse;
 using HarmonyLib;
 
 namespace CSSU
@@ -12,17 +6,25 @@ namespace CSSU
     [StaticConstructorOnStartup]
     static class HarmonyPatchAll
     {
+       //public readonly static IEnumerable<ThingDef> OnceAllDefsWithCSS = MyDefs.AllDefsWithCSS;
+
         static HarmonyPatchAll()
         {
             if (!MyDefs.IsRoyaltyLoaded)
             {
-                Log.Warning("Mohar CSSU - No royalty, nothing to be done");
+                if (Prefs.DevMode) Log.Message("Mohar CSSU - No royalty, nothing to be done");
                 return;
             }
-            
+
+            /*
+            IEnumerable<ThingDef> OnceAllDefsWithCSS = new List<ThingDef>();
+            OnceAllDefsWithCSS = MyDefs.AllDefsWithCSS;
+            */
+
             if(!MyDefs.HasDefsWithCSS)
+            //if (OnceAllDefsWithCSS.EnumerableNullOrEmpty())
             {
-                Log.Warning("Mohar CSSU - Found no definition with CompSpawnSubplant, nothing to be done");
+                if (Prefs.DevMode) Log.Message("Mohar CSSU - Found no definition with CompSpawnSubplant, nothing to be done");
                 return;
             }
 

@@ -2,17 +2,15 @@
 using Verse;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using UnityEngine;
 
 namespace CSSU
 {
     public static class MyDefs
     {
         //CompProperties_SpawnSubplant
+        
         public static IEnumerable<ThingDef> AllDefsWithCSS = DefDatabase<ThingDef>.AllDefs.Where(
             x =>
-            //x.defName != "Plant_TreeAnima" &&
             x.modContentPack != null &&
             x.modContentPack.PackageId != ModContentPack.CoreModPackageId &&
             x.modContentPack.PackageId != ModContentPack.RoyaltyModPackageId &&
@@ -21,9 +19,22 @@ namespace CSSU
             !x.comps.NullOrEmpty() && 
             x.comps.Any(y => y is CompProperties_SpawnSubplant)
         );
+        
+        //public static IEnumerable<ThingDef> SimpleAllDefsWithCSS = DefDatabase<ThingDef>.AllDefs.Where(x => x.defName == "LTF_Crystal_Cairn");
 
         public static bool HasDefsWithCSS => !AllDefsWithCSS.EnumerableNullOrEmpty();
         public static bool IsRoyaltyLoaded => ModLister.CheckRoyalty("Mohar CSSU");
 
     }
+    
+    [StaticConstructorOnStartup]
+    static class StaticDef
+    {
+        public static IEnumerable<ThingDef> AllDefs = new List<ThingDef>();
+        static StaticDef()
+        {
+            AllDefs = MyDefs.AllDefsWithCSS.ToList();
+        }
+    }
+
 }

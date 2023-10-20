@@ -9,7 +9,7 @@ namespace MoharBlood
     {
 
         private static readonly string bloodDropPath = "UI/Icons/Medical/BloodDrop";
-        private static readonly Texture2D bleedingIcon = ContentFinder<Texture2D>.Get(bloodDropPath);
+        private static readonly Texture2D bleedingIcon = ContentFinder<Texture2D>.Get(bloodDropPath, false);
         public static readonly Rect OneByOneRect = new Rect(0f, 0f, 1f, 1f);
 
         public static void DisplayUncachedBloodDrop(Rect rect, Texture2D originTex, Pawn pawn)

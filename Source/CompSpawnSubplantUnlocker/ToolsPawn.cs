@@ -1,15 +1,10 @@
-﻿using RimWorld;
-using Verse;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using Verse;
 using System.Reflection;
 
 namespace CSSU
 {
     public static class ToolsPawn
     {
-
         public static string PawnResumeString(this Pawn pawn)
         {
             return (pawn?.LabelShort.CapitalizeFirst() +
@@ -30,9 +25,5 @@ namespace CSSU
             if (attributes != null && attributes.Length > 0) return attributes[0].description;
             else return source.ToString();
         }
-
-       
     }
-
-
 }

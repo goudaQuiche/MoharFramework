@@ -63,13 +63,13 @@ namespace CSSU
                         instructionList[i].IsLdloc() && instructionList[i + 1].IsLdarg(0) &&
                         instructionList[i + 2].LoadsField(pawn) && instructionList[i + 4].Calls(GetPlant_methodInfo))
                     {
+                        //AddProgress(c, pawn.Map)
                         yield return new CodeInstruction(OpCodes.Ldloc_S, (object)4);
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
                         yield return CodeInstruction.LoadField(typeof(Verse.AI.JobDriver), "pawn");
                         yield return new CodeInstruction(OpCodes.Callvirt, mapProperty);
-
-                        //AddProgress(IntVec3 cell, Map map)
                         yield return CodeInstruction.Call(patchUtilsType, nameof(JobDriver_Meditate_Utils.AddProgress));
+                        //yield return CodeInstruction.Call(patchUtilsType, nameof(JobDriver_Meditate_Utils.RawAddProgress));
 
                         /*
                         Log.Warning(instruction.ToString());

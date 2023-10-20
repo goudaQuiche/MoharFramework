@@ -1,9 +1,5 @@
 ﻿using RimWorld;
 using Verse;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using UnityEngine;
 
 namespace CSSU
 {
@@ -11,7 +7,7 @@ namespace CSSU
     {
         public static void AddProgress(IntVec3 cell, Map map)
         {
-            foreach(ThingDef td in MyDefs.AllDefsWithCSS)
+            foreach (ThingDef td in StaticDef.AllDefs)
             {
                 Thing t = null;
                 if (td.category == ThingCategory.Building)
@@ -32,5 +28,22 @@ namespace CSSU
                 compSpawnSubplant.AddProgress(JobDriver_Meditate.AnimaTreeSubplantProgressPerTick, false);
             }
         }
+
+        /*
+        public static void RawAddProgress(IntVec3 cell, Map map)
+        {
+
+            Thing t = null;
+            t = cell.GetFirstBuilding(map);
+
+            if (t == null) return;
+
+            CompSpawnSubplant compSpawnSubplant = t.TryGetComp<CompSpawnSubplant>();
+            if (compSpawnSubplant == null)
+                return;
+
+            compSpawnSubplant.AddProgress(JobDriver_Meditate.AnimaTreeSubplantProgressPerTick, false);
+        }
+        */
     }
 }
