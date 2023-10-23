@@ -16,7 +16,8 @@ namespace MoharGfx
         public string MainDebugStr => MyDebug ? Def.defName + " CustomTransformation_Mote - " : string.Empty;
 
         // Color Alpha
-        public bool HasAlpha => Def.HasAlpha;
+        public bool HasArbitraryAlpha => Def.HasArbitraryAlpha;
+        public bool HasAlphaCurve => Def.HasAlphaCurve;
 
         // periodic random rotation
         public int randRot_NextPeriod;
@@ -56,7 +57,19 @@ namespace MoharGfx
             randRot_NextPeriod = Def.transformation.rotation.periodicRandRot.period.RandomInRange;
         }
 
-        public override float Alpha => HasAlpha ? Def.transformation.color.arbitraryAlpha * base.Alpha : base.Alpha;
+        public override float Alpha {
+            get
+            {
+                if (HasAlphaCurve)
+                    return Def.transformation.color.alphaCurve.Evaluate(LifeSpentRatio);
+
+                if (HasArbitraryAlpha)
+                    return Def.transformation.color.arbitraryAlpha * base.Alpha;
+
+                return base.Alpha;
+            }
+            
+        }
 
         float GetSUExactRotation
         {

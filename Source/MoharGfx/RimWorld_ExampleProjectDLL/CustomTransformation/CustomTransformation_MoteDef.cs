@@ -14,7 +14,8 @@ namespace MoharGfx
 
         // color
         public bool HasColor => HasTransformation && transformation.HasColor;
-        public bool HasAlpha => HasColor && transformation.color.HasArbitraryAlpha;
+        public bool HasArbitraryAlpha => HasColor && transformation.color.HasArbitraryAlpha;
+        public bool HasAlphaCurve => HasColor && transformation.color.HasAlphaCurve;
 
         // misc - flipped
         public bool HasMisc => HasTransformation && transformation.HasMisc;
@@ -55,8 +56,10 @@ namespace MoharGfx
     public class ColorAltering
     {
         public float arbitraryAlpha = 1f;
+        public SimpleCurve alphaCurve = null;
 
         public bool HasArbitraryAlpha => arbitraryAlpha != 1;
+        public bool HasAlphaCurve => alphaCurve != null;
     }
 
     public class Misc
