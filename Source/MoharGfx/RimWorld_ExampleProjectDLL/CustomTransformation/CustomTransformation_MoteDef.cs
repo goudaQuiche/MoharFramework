@@ -29,7 +29,7 @@ namespace MoharGfx
         //scale
         public bool HasScale => HasTransformation && transformation.HasScale;
         public bool HasPulsingScale => HasScale && transformation.scale.HasPulsingScale;
-
+        public bool HasScaleCurve => HasScale && transformation.scale.HasScaleCurve;
 
 
         public bool debug = false;
@@ -114,7 +114,10 @@ namespace MoharGfx
     public class Scale
     {
         public PulsingScale pulsingScale;
+        public SimpleCurve scaleCurve = null;
+
         public bool HasPulsingScale => pulsingScale != null;
+        public bool HasScaleCurve => scaleCurve != null;
     }
     public class PulsingScale
     {

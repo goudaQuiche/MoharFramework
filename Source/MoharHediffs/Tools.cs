@@ -15,10 +15,11 @@ namespace MoharHediffs
             return Math.Min(Math.Max(value, min), max);
         }
 
-        public static void DestroyParentHediff(Hediff parentHediff, bool debug=false)
+        public static void DestroyParentHediff(Hediff parentHediff, bool debug = false)
         {
             if (parentHediff.pawn != null && parentHediff.def.defName != null)
-                Warn(parentHediff.pawn.Label + "'s Hediff: " + parentHediff.def.defName + " says goodbye.", debug);
+                if (debug)
+                    Log.Warning(parentHediff.pawn.Label + "'s Hediff: " + parentHediff.def.defName + " says goodbye.");
 
             parentHediff.Severity = 0;
         }
@@ -26,7 +27,8 @@ namespace MoharHediffs
         public static void DestroyHediff(this Pawn pawn, Hediff hediff, bool debug = false)
         {
             if (hediff.pawn != null && hediff.def.defName != null)
-                Warn(hediff.pawn.Label + "'s Hediff: " + hediff.def.defName + " says goodbye.", debug);
+                if (debug)
+                    Log.Warning(hediff.pawn.Label + "'s Hediff: " + hediff.def.defName + " says goodbye.");
 
             pawn.health.RemoveHediff(hediff);
         }
@@ -37,13 +39,15 @@ namespace MoharHediffs
 
             if (pawn == null)
             {
-                Tools.Warn("GetPawnAgeOverlifeExpectancyRatio pawn NOT OK", debug);
+                if (debug)
+                    Log.Warning("GetPawnAgeOverlifeExpectancyRatio pawn NOT OK");
                 return ratio;
             }
 
             ratio = (pawn.ageTracker.AgeBiologicalYearsFloat / pawn.RaceProps.lifeExpectancy);
 
-            Tools.Warn(pawn.Label + " Age: " + pawn.ageTracker.AgeBiologicalYearsFloat + "; lifeExpectancy: " + pawn.RaceProps.lifeExpectancy + "; ratio:" + ratio, debug);
+            if (debug)
+                Log.Warning(pawn.Label + " Age: " + pawn.ageTracker.AgeBiologicalYearsFloat + "; lifeExpectancy: " + pawn.RaceProps.lifeExpectancy + "; ratio:" + ratio);
             
             return ratio;
         }
@@ -53,7 +57,8 @@ namespace MoharHediffs
 
             if (!OkPawn(pawn))
             {
-                Tools.Warn("GetPawnAgeOverlifeExpectancyRatio pawn NOT OK", debug);
+                if (debug)
+                    Log.Warning("GetPawnAgeOverlifeExpectancyRatio pawn NOT OK");
                 return ratio;
             }
 
@@ -69,7 +74,9 @@ namespace MoharHediffs
         {
             if (pawn == null)
             {
-                Warn("pawn is null - wounded ", debug);
+                if (debug)
+                    Log.Warning("pawn is null - wounded ");
+
                 return false;
             }
 
@@ -83,19 +90,25 @@ namespace MoharHediffs
                 }
             }
 
-            Warn(pawn.Label + " is wounded ", debug && (num>0));
-            return (num > 0);
+            if (debug && (num > 0))
+                Log.Warning(pawn.Label + " is wounded ");
+
+            return num > 0;
         }
+
         public static bool IsHungry(this Pawn pawn, bool debug = false)
         {
             if (pawn == null)
             {
-                Warn("pawn is null - IsHungry ", debug);
+                if (debug)
+                    Log.Warning("pawn is null - IsHungry ");
+
                 return false;
             }
 
             bool answer = pawn.needs.food != null && pawn.needs.food.CurCategory == HungerCategory.Starving;
-            Warn(pawn.Label + " is hungry ", debug && answer);
+            if (debug && answer)
+                Log.Warning(pawn.Label + " is hungry ");
 
             return answer;
         }
@@ -112,7 +125,7 @@ namespace MoharHediffs
 
         public static bool OkPawn(Pawn pawn)
         {
-            return ((pawn != null) && (pawn.Map != null));
+            return (pawn != null) && (pawn.Map != null);
         }
         public static void Warn(string warning, bool debug = false)
         {

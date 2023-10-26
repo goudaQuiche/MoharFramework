@@ -142,6 +142,12 @@ namespace MoharGfx
             TryStraightenUp();
             //if ( TryStraightenUp() && MyDebug) Log.Warning("Did straighten Up");
             TryPeriodicRandomRotation();
+
+            if (Def.HasScaleCurve)
+            {
+                float scale = Def.transformation.scale.scaleCurve.Evaluate(LifeSpentRatio);
+                exactScale = new Vector3(scale, 0, scale);
+            }
         }
 
         /*

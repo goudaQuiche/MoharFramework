@@ -13,9 +13,7 @@ namespace MoharHediffs
         // closed match in RGB space
         public static Color ClosestColor(Pawn pawn, bool complementary = false, bool myDebug = false)
         {
-
             AlienPartGenerator.AlienComp alienComp = Tools.GetAlien(pawn);
-
             Color pColor;
             
             if(alienComp == null)
@@ -23,10 +21,10 @@ namespace MoharHediffs
             else
             {
                 pColor = alienComp.GetChannel("skin").first;
-                Tools.Warn(pawn.LabelShort +" is alien, color="+pColor,  myDebug);
+                if(myDebug)
+                    Log.Warning(pawn.LabelShort +" is alien, color="+pColor);
                 
             }
-                
 
             Color answer = Color.blue;
 
@@ -78,21 +76,19 @@ namespace MoharHediffs
             );
 
 
-            Tools.Warn(
-                pawn.LabelShort+"'s pColor: " + pColor
-                , myDebug
-            );
-            Tools.Warn(
-                "purpleDiff: " + purpleDiff +
+            if (myDebug)
+            {
+                Log.Warning(pawn.LabelShort + "'s pColor: " + pColor);
+                Log.Warning(
+                    "purpleDiff: " + purpleDiff +
                 "; blueDiff: " + blueDiff +
                 "; cyanDiff: " + cyanDiff +
                 "; greenDiff: " + greenDiff +
                 "; yellowDiff: " + yellowDiff +
                 "; orangeDiff: " + orangeDiff +
                 "; redDiff: " + redDiff
-                , myDebug
-            );
-
+                );
+            }
 
             if (purpleDiff < minVal)
             {
@@ -146,7 +142,10 @@ namespace MoharHediffs
                     answer = MyGfx.Green;
             }
 
-            Tools.Warn((complementary)?"complementary":"closest"+" Color=" + answer, myDebug);
+            if (myDebug)
+            {
+                Log.Warning(complementary ? "complementary" : "closest" + " Color=" + answer);
+            }
 
             return answer;
         }
