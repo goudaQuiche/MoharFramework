@@ -37,6 +37,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AnimatedMote\IndexEngine.cs" />
+    <Compile Include="AlphaScaleLayer\AlphaScaleLayer_Mote.cs" />
+    <Compile Include="AlphaScaleLayer\AlphaScaleLayer_MoteDef.cs" />
     <Compile Include="CustomTransformation\CustomTransformation_Mote.cs" />
     <Compile Include="CustomTransformation\CustomTransformation_MoteDef.cs" />
     <Compile Include="CustomTransformation\HarmonyPatch_Mote.cs" />
