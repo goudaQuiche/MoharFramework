@@ -9,14 +9,16 @@ namespace MoharGfx
         public AlphaScaleLayer alphaScaleLayer;
         public bool HasASL => alphaScaleLayer != null;
 
-        //scale
         public bool HasAlpha => HasASL && alphaScaleLayer.HasAlpha;
         public bool HasScale => HasASL && alphaScaleLayer.HasScale;
         public bool HasLayer => HasASL && alphaScaleLayer.HasLayer;
 
+        public bool HasWeigthedAlpha => HasASL && alphaScaleLayer.HasWeigthedAlpha;
+        public bool HasWeigthedScale => HasASL && alphaScaleLayer.HasWeigthedScale;
+
         public bool debug = false;
 
-        public static AlphaScaleLayer_MoteDef MyNamed(string defName) => DefDatabase<AlphaScaleLayer_MoteDef>.GetNamed(defName, false);
+        public static AlphaScaleLayer_MoteDef MyNamed(string defName) => DefDatabase<AlphaScaleLayer_MoteDef>.GetNamed(defName);
     }
 
     public class AlphaScaleLayer
@@ -24,17 +26,22 @@ namespace MoharGfx
         public SimpleCurve alpha;
         public SimpleCurve scale;
 
+        public FloatRange weightedScaleRange;
+        public FloatRange weightedAlphaRange;
+
         public List<LayerSet> layerSets;
 
         public bool HasAlpha => !alpha.EnumerableNullOrEmpty();
         public bool HasScale => !scale.EnumerableNullOrEmpty();
         public bool HasLayer => !layerSets.NullOrEmpty();
-       
+
+        public bool HasWeigthedAlpha => weightedAlphaRange != null;
+        public bool HasWeigthedScale => weightedScaleRange != null;
     }
 
     public class LayerSet
     {
-        public FloatRange lifeRange;
+        public float lifeRange;
         public AltitudeLayer layer;
     }
 

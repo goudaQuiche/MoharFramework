@@ -7,8 +7,7 @@ namespace MoharGfx
     public class AlphaScaleLayer_Mote : MoteThrown
     {
         /*
-        private Vector3 linkDrawPos = new Vector3(-1000f, -1000f, -1000f);
-        public bool isLinked = false;
+        WIP Weighted range/scale
         */
 
         public AlphaScaleLayer_MoteDef Def => def as AlphaScaleLayer_MoteDef;
@@ -16,12 +15,38 @@ namespace MoharGfx
         public string MainDebugStr => MyDebug ? Def.defName + " AlphaScaleLayer_Mote - " : string.Empty;
 
         public bool HasASL => Def.HasASL;
+
         public bool HasAlpha => Def.HasAlpha;
         public bool HasScale => Def.HasScale;
         public bool HasLayer => Def.HasLayer;
 
+        public bool HasWeightedAlpha => Def.HasWeigthedAlpha;
+        public bool HasWeigthedScale => Def.HasWeigthedScale;
+
+        public int TickAge => Find.TickManager.TicksGame - spawnTick;
         public float LifeSpentRatio;
+
         public Vector3 InitialScale;
+        public AltitudeLayer? NullableAltitudeLayer = null;
+
+        public float? WeightedScale = null;
+        public float? WeightedAlpha = null;
+
+        public void SetWeightedScale (float ratio)
+        {
+            if (!HasWeigthedScale)
+                WeightedScale = null;
+
+            WeightedScale = Def.alphaScaleLayer.weightedScaleRange.LerpThroughRange(ratio);
+        }
+
+        public void SetWeightedAlpha(float ratio)
+        {
+            if (!HasWeightedAlpha)
+                WeightedAlpha = null;
+
+            WeightedAlpha = Def.alphaScaleLayer.weightedAlphaRange.LerpThroughRange(ratio);
+        }
 
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
@@ -33,11 +58,15 @@ namespace MoharGfx
             get
             {
                 //if (Def.debug && Def.HasAlpha) Log.Warning($"{MainDebugStr} Alpha");
+                float result = base.Alpha;
 
                 if (HasAlpha)
-                    return Def.alphaScaleLayer.alpha.Evaluate(LifeSpentRatio);
+                    result *= Def.alphaScaleLayer.alpha.Evaluate(LifeSpentRatio);
 
-                return base.Alpha;
+                if (HasWeightedAlpha && WeightedAlpha != null)
+                    result *= (float) WeightedAlpha;
+
+                return result;
             }
         }
 
@@ -50,9 +79,20 @@ namespace MoharGfx
             if (!HasScale)
                 return;
 
-            //float ratio = Def.alphaScaleLayer.scale.Evaluate(deltaTime);
-            float ratio = Def.alphaScaleLayer.scale.Evaluate(LifeSpentRatio);
-            exactScale = new Vector3(ratio * InitialScale.x, 0, ratio * InitialScale.z);
+            exactScale = new Vector3(InitialScale.x, 0,InitialScale.z);
+
+            if (HasScale)
+            {
+                float LerpScaleRatio = Def.alphaScaleLayer.scale.Evaluate(LifeSpentRatio);
+                exactScale.x *= LerpScaleRatio;
+                exactScale.z *= LerpScaleRatio;
+            }
+
+            if(HasWeigthedScale && WeightedScale != null)
+            {
+                exactScale.x *= (float)WeightedScale;
+                exactScale.z *= (float)WeightedScale;
+            }
 
             exactScale.x = Mathf.Max(exactScale.x, 0.0001f);
             exactScale.z = Mathf.Max(exactScale.z, 0.0001f);
@@ -65,27 +105,26 @@ namespace MoharGfx
         {
             get
             {
-                if (!HasLayer)
+                if (NullableAltitudeLayer != null)
+                    return (AltitudeLayer)NullableAltitudeLayer;
+
+                if (HasLayer)
                 {
-                    if (Def.debug) Log.Warning(MainDebugStr + "GetLayer - Found layer conf - should not happen");
-                    return AltitudeLayer.Building;
+                    for (int i = 0; i < Def.alphaScaleLayer.layerSets.Count; i++)
+                    {
+                        LayerSet cls = Def.alphaScaleLayer.layerSets[i];
+                        if (LifeSpentRatio <= cls.lifeRange)
+                            return cls.layer;
+                    }
                 }
 
-                for (int i = 0; i < Def.alphaScaleLayer.layerSets.Count; i++)
-                {
-                    LayerSet cls = Def.alphaScaleLayer.layerSets[i];
-                    if (cls.lifeRange.Includes(LifeSpentRatio))
-                        return cls.layer;
-                }
-
-                if (Def.debug) Log.Warning(MainDebugStr + "GetLayer - Found no layer - should not happen");
-                return AltitudeLayer.Building;
+                return Def.altitudeLayer;
             }
         }
 
         public override void Draw()
         {
-            if (HasLayer)
+            if (HasLayer || NullableAltitudeLayer != null)
             {
                 Draw(GetLayer.AltitudeFor());
                 return;
@@ -98,7 +137,6 @@ namespace MoharGfx
         {
             get
             {
-                int TickAge = Find.TickManager.TicksGame - spawnTick;
                 int TickLifeSpan = (int)(Def.mote.Lifespan * 60);
                 return (float)TickAge / TickLifeSpan;
             }
