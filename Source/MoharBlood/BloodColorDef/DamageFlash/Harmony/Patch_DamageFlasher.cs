@@ -67,6 +67,8 @@ namespace MoharBlood
             try
             {
                 //MethodBase Method = AccessTools.Method(typeof(Verse.PawnGraphicSet), "HeadMatAt");
+                Verse.PawnRenderNodeWorker_Head.
+
                 MethodBase Method = AccessTools.Method(typeof(Verse.PawnGraphicSet), "HeadMatAt");
                 //Verse.PawnRenderer.
                 
