@@ -1,5 +1,2 @@
-MoharCustomHAR
-MoHarRegeneration ok
-MoharHediffs ok
-Ubet
-MoarGfx
+MoharBlood PawnGraphicSet
+shieldbelt

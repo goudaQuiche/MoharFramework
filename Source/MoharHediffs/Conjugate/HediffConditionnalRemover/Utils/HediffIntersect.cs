@@ -79,7 +79,9 @@ namespace MoharHediffs
             Tools.Warn(debugStr + " Entering", Mydebug);
 
             float temperature = pawn.AmbientTemperature;
-            float lightLevel = pawn.Map.glowGrid.GameGlowAt(pawn.Position);
+            
+            //float lightLevel = pawn.Map.glowGrid.GameGlowAt(pawn.Position);
+            float lightLevel = pawn.Map.glowGrid.GroundGlowAt(pawn.Position);
             Room room = pawn.GetRoom();
             bool outside = (room == null) ? true : room.PsychologicallyOutdoors;
 

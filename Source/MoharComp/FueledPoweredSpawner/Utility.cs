@@ -39,7 +39,8 @@ namespace FuPoSpa
 
         public static void TrySpawnFilth(Thing refT, float filthRadius, ThingDef filthDef)
         {
-            if (refT.Map != null && CellFinder.TryFindRandomReachableCellNear(refT.Position, refT.Map, filthRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors), (IntVec3 x) => x.Standable(refT.Map), (Region x) => true, out IntVec3 result))
+            //if (refT.Map != null && CellFinder.TryFindRandomReachableCellNear(refT.Position, refT.Map, filthRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors), (IntVec3 x) => x.Standable(refT.Map), (Region x) => true, out IntVec3 result))
+            if (refT.Map != null && CellFinder.TryFindRandomReachableNearbyCell(refT.Position, refT.Map, filthRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors), (IntVec3 x) => x.Standable(refT.Map), (Region x) => true, out IntVec3 result))
             {
                 FilthMaker.TryMakeFilth(result, refT.Map, filthDef);
             }

@@ -68,7 +68,7 @@ namespace OHFP
             }
 
             Tools.Warn(p.LabelShort + " got applied " + manhunterState.defName, MyDebug);
-            p.mindState.mentalStateHandler.TryStartMentalState(manhunterState, reason, true, false, null);
+            p.mindState.mentalStateHandler.TryStartMentalState(manhunterState, reason, true, false, false, null);
 
             return true;
         }
@@ -77,7 +77,8 @@ namespace OHFP
         {
             if (p.playerSettings != null && hatcheeParent.playerSettings != null && hatcheeParent.Faction == hatcheeFaction)
             {
-                p.playerSettings.AreaRestriction = hatcheeParent.playerSettings.AreaRestriction;
+                //p.playerSettings.AreaRestriction = hatcheeParent.playerSettings.AreaRestriction;
+                p.playerSettings.AreaRestrictionInPawnCurrentMap = hatcheeParent.playerSettings.AreaRestrictionInPawnCurrentMap;
             }
         }
 

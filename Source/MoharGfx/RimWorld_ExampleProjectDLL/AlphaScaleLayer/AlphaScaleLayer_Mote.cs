@@ -51,7 +51,8 @@ namespace MoharGfx
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
             base.SpawnSetup(map, respawningAfterLoad);
-            InitialScale = new Vector3( exactScale.x, 0 , exactScale.z);
+            
+            InitialScale = new Vector3(ExactScale.x, 0 , ExactScale.z);
         }
 
         public override float Alpha {
@@ -79,23 +80,23 @@ namespace MoharGfx
             if (!HasScale)
                 return;
 
-            exactScale = new Vector3(InitialScale.x, 0,InitialScale.z);
-
+            linearScale = new Vector3(InitialScale.x, 0,InitialScale.z);
+            
             if (HasScale)
             {
                 float LerpScaleRatio = Def.alphaScaleLayer.scale.Evaluate(LifeSpentRatio);
-                exactScale.x *= LerpScaleRatio;
-                exactScale.z *= LerpScaleRatio;
+                linearScale.x *= LerpScaleRatio;
+                linearScale.z *= LerpScaleRatio;
             }
 
             if(HasWeigthedScale && WeightedScale != null)
             {
-                exactScale.x *= (float)WeightedScale;
-                exactScale.z *= (float)WeightedScale;
+                linearScale.x *= (float)WeightedScale;
+                linearScale.z *= (float)WeightedScale;
             }
 
-            exactScale.x = Mathf.Max(exactScale.x, 0.0001f);
-            exactScale.z = Mathf.Max(exactScale.z, 0.0001f);
+            linearScale.x = Mathf.Max(ExactScale.x, 0.0001f);
+            linearScale.z = Mathf.Max(ExactScale.z, 0.0001f);
 
             //if (Def.debug) Log.Warning($"{MainDebugStr} TimeInterval LSR:{LifeSpentRatio} ratio:{ratio} Scale:{exactScale}");
             
@@ -122,15 +123,15 @@ namespace MoharGfx
             }
         }
 
-        public override void Draw()
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             if (HasLayer || NullableAltitudeLayer != null)
             {
-                Draw(GetLayer.AltitudeFor());
+                DrawMote(GetLayer.AltitudeFor());
                 return;
             }
 
-            base.Draw();
+            DrawMote(def.altitudeLayer.AltitudeFor());
         }
 
         public float GetLifeSpentRatio

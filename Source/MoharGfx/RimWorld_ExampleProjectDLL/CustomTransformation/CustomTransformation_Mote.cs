@@ -146,7 +146,7 @@ namespace MoharGfx
             if (Def.HasScaleCurve)
             {
                 float scale = Def.transformation.scale.scaleCurve.Evaluate(LifeSpentRatio);
-                exactScale = new Vector3(scale, 0, scale);
+                linearScale = new Vector3(scale, 0, scale);
             }
         }
 

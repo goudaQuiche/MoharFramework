@@ -14,7 +14,10 @@ namespace MoharAiJob
             if (refT.Map == null)
                 return false;
 
-            if(CellFinder.TryFindRandomReachableCellNear(
+            //if(CellFinder.TryFindRandomReachableCellNear(
+            //if (CellFinder.TryFindRandomReachableCellNearPosition(
+            if (CellFinder.TryFindRandomReachableNearbyCell(
+            
                 refT.Position, refT.Map, filthRadius, 
                 TraverseParms.For(TraverseMode.NoPassClosedDoors), 
                 (IntVec3 x) => x.Standable(refT.Map), 
@@ -22,6 +25,8 @@ namespace MoharAiJob
                 out IntVec3 result))
 
                 return FilthMaker.TryMakeFilth(result, refT.Map, filthDef);
+
+
 
             return false;
         }
@@ -240,7 +245,8 @@ namespace MoharAiJob
         {
             if (p.playerSettings != null && hatcheeParent.playerSettings != null && hatcheeParent.Faction == hatcheeFaction)
             {
-                p.playerSettings.AreaRestriction = hatcheeParent.playerSettings.AreaRestriction;
+                p.playerSettings.AreaRestrictionInPawnCurrentMap = hatcheeParent.playerSettings.AreaRestrictionInPawnCurrentMap;
+                //p.playerSettings.AreaRestriction = hatcheeParent.playerSettings.AreaRestriction;
                 return true;
             }
             return false;

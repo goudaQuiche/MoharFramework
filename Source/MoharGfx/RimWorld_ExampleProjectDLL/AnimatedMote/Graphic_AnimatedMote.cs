@@ -71,7 +71,7 @@ namespace MoharGfx
 
         public void ResolveScale(Mote mote, Thing thing, out Vector3 finalePos, out Vector3 exactScale)
         {
-            exactScale = mote.exactScale;
+            exactScale = mote.linearScale;
             //Log.Warning(thing.def.defName + " scaling " + HasPulsingScale + " : " + PulsingScaleRange);
 
             exactScale.x *= data.drawSize.x;

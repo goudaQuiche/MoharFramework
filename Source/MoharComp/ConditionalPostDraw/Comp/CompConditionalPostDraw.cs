@@ -335,6 +335,8 @@ namespace ConPoDra
             return newValue;
         }
 
+        //public override gizmo
+
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
             for (int i = 0; i < Props.postDraw.Count; i++)

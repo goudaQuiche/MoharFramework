@@ -254,7 +254,9 @@ namespace MoharJoy
         float ArcRatio => HasFlyingShadow ? ArcHeightFactor * GenMath.InverseParabola(DistanceCoveredFraction) : 0;
         Vector3 MyPosition => DrawPos + Vector3.forward * ArcRatio;
 
-        public override void Draw()
+        //public override draw
+
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             Vector3 position = MyPosition;
             position.y = def.altitudeLayer.AltitudeFor();

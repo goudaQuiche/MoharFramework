@@ -139,7 +139,8 @@ namespace MoharHediffs
            // CalculateValues();
         }
 
-        public override void Notify_PawnDied()
+        //public override void Notify_PawnDied()
+        public override void Notify_PawnDied(DamageInfo? dinfo, Hediff culprit = null)
         {
             string debugStr = MyDebug ? Pawn.LabelShort + " HediffComp_RandySpawnUponDeath Notify_PawnDied" : "";
 
@@ -168,7 +169,7 @@ namespace MoharHediffs
 
             if (failure)
             {
-                base.Notify_PawnDied();
+                base.Notify_PawnDied(dinfo, culprit); 
                 return;
             }
 
@@ -184,7 +185,7 @@ namespace MoharHediffs
                 if (!DiceThrow(AlreadyPickedOptions))
                 {
                     if (MyDebug) Log.Warning(debugStr + " DiceThrow wrong results");
-                    base.Notify_PawnDied();
+                    base.Notify_PawnDied(dinfo, culprit);
                     return;
                 }
                 else
@@ -209,7 +210,7 @@ namespace MoharHediffs
                 if (MyDebug) Log.Warning(debugStr + " Corpse handled");
             }
 
-            base.Notify_PawnDied();
+            base.Notify_PawnDied(dinfo, culprit);
         }
 
         //

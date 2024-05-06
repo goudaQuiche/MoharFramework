@@ -63,11 +63,11 @@ namespace DUDOD
                 MemorizeWeapon();
         }
 
-        public override void Notify_PawnDied()
+        public override void Notify_PawnDied(DamageInfo? dinfo, Hediff culprit = null)
         {
-            base.Notify_PawnDied();
+            base.Notify_PawnDied(dinfo, culprit);
 
-            if(Props.DestroyUponDeath)
+            if (Props.DestroyUponDeath)
                 PawnDestroy();
         }
 

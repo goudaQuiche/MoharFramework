@@ -199,7 +199,7 @@ namespace ShieldApparel
 		{
             if (Wearer.Position == null || Wearer.Map == null)
                 return;
-
+            
             SoundDefOf.EnergyShield_Broken.PlayOneShot(new TargetInfo(Wearer.Position, Wearer.Map));
 			//MoteMaker.MakeStaticMote(Wearer.TrueCenter(), Wearer.Map, ThingDefOf.Mote_ExplosionFlash, 12f);
             FleckMaker.Static(base.Wearer.TrueCenter(), base.Wearer.Map, FleckDefOf.ExplosionFlash, 12f);
